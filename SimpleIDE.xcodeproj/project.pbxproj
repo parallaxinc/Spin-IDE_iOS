@@ -1,0 +1,873 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2709085E19FABD84002429FB /* Hello_Message.c in Resources */ = {isa = PBXBuildFile; fileRef = 2709085C19FABA5A002429FB /* Hello_Message.c */; };
+		2709086819FAC3AF002429FB /* libsimpletools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2709086719FAC3AF002429FB /* libsimpletools.a */; };
+		2709086F19FAC48E002429FB /* libsimpletext.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2709086C19FAC48E002429FB /* libsimpletext.a */; };
+		2709087519FAC4F3002429FB /* libsimplei2c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2709087319FAC4F3002429FB /* libsimplei2c.a */; };
+		2709087619FACBC1002429FB /* libsimplei2c.a in Resources */ = {isa = PBXBuildFile; fileRef = 2709087319FAC4F3002429FB /* libsimplei2c.a */; };
+		2709087719FACBC1002429FB /* simplei2c.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709087419FAC4F3002429FB /* simplei2c.h */; };
+		2709087819FACBC1002429FB /* libsimpletext.a in Resources */ = {isa = PBXBuildFile; fileRef = 2709086C19FAC48E002429FB /* libsimpletext.a */; };
+		2709087919FACBC1002429FB /* serial.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086D19FAC48E002429FB /* serial.h */; };
+		2709087A19FACBC1002429FB /* simpletext.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086E19FAC48E002429FB /* simpletext.h */; };
+		2709087B19FACBC1002429FB /* simpletools.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086619FAC3AA002429FB /* simpletools.h */; };
+		2709087C19FACBC1002429FB /* libsimpletools.a in Resources */ = {isa = PBXBuildFile; fileRef = 2709086719FAC3AF002429FB /* libsimpletools.a */; };
+		270E489919F97A8300318268 /* libpropeller-elf-cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489819F97A8300318268 /* libpropeller-elf-cpp.a */; };
+		270E489B19F97AC200318268 /* libcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489A19F97AC200318268 /* libcpp.a */; };
+		270E489D19F97AEF00318268 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489C19F97AEF00318268 /* libiberty.a */; };
+		270E489F19F97AFC00318268 /* libdecnumber.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489E19F97AFC00318268 /* libdecnumber.a */; };
+		2722FAFB1918505B00B17227 /* newfile.png in Resources */ = {isa = PBXBuildFile; fileRef = 2722FAFA1918505B00B17227 /* newfile.png */; };
+		2722FAFE1918528800B17227 /* DetailViewNavigationControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */; };
+		2738F4C619182B1900DF7352 /* SpinHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738F4C519182B1900DF7352 /* SpinHighlighter.m */; };
+		2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067C1910310900FA7E5D /* Foundation.framework */; };
+		2742067F1910310900FA7E5D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067E1910310900FA7E5D /* CoreGraphics.framework */; };
+		274206811910310900FA7E5D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 274206801910310900FA7E5D /* UIKit.framework */; };
+		274206871910310900FA7E5D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 274206851910310900FA7E5D /* InfoPlist.strings */; };
+		274206891910310900FA7E5D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206881910310900FA7E5D /* main.m */; };
+		2742068D1910310900FA7E5D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2742068C1910310900FA7E5D /* AppDelegate.m */; };
+		274206901910310900FA7E5D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2742068E1910310900FA7E5D /* Main.storyboard */; };
+		274206961910310900FA7E5D /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206951910310900FA7E5D /* DetailViewController.m */; };
+		274206981910310900FA7E5D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274206971910310900FA7E5D /* Images.xcassets */; };
+		274206A01910310900FA7E5D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067C1910310900FA7E5D /* Foundation.framework */; };
+		274206A11910310900FA7E5D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 274206801910310900FA7E5D /* UIKit.framework */; };
+		274206A91910310900FA7E5D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 274206A71910310900FA7E5D /* InfoPlist.strings */; };
+		274206AB1910310900FA7E5D /* SimpleIDETests.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206AA1910310900FA7E5D /* SimpleIDETests.m */; };
+		274206B61910349D00FA7E5D /* ProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206B51910349D00FA7E5D /* ProjectViewController.m */; };
+		274206B9191039B500FA7E5D /* ProjectOptionsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206B8191039B500FA7E5D /* ProjectOptionsView.m */; };
+		274206BC191039CF00FA7E5D /* CompilerOptionsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206BB191039CF00FA7E5D /* CompilerOptionsView.m */; };
+		274206BF191039E000FA7E5D /* LinkerOptionsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206BE191039E000FA7E5D /* LinkerOptionsView.m */; };
+		274206C31910682E00FA7E5D /* PickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206C11910682E00FA7E5D /* PickerViewController.m */; };
+		274206C41910682E00FA7E5D /* PickerViewController_7.xib in Resources */ = {isa = PBXBuildFile; fileRef = 274206C21910682E00FA7E5D /* PickerViewController_7.xib */; };
+		2751D04819EF10D300C37FA1 /* NavToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2751D04719EF10D300C37FA1 /* NavToolBar.m */; };
+		275B26D01A02A99D0011B72E /* libbackend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26CF1A02A99D0011B72E /* libbackend.a */; };
+		275B26D21A02A9B80011B72E /* libcc1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26D11A02A9B80011B72E /* libcc1.a */; };
+		275BB9821913046500F0F020 /* HighlighterRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 275BB9811913046500F0F020 /* HighlighterRule.m */; };
+		27680F881A04004300D66F02 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27680F871A04004300D66F02 /* libiconv.dylib */; };
+		277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D561A02D292008130E9 /* libmpfr.a */; };
+		277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D581A02D7C4008130E9 /* libmpn.a */; };
+		277E6D5B1A02D86D008130E9 /* libmpz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D5A1A02D86D008130E9 /* libmpz.a */; };
+		277E6D5D1A02D8A3008130E9 /* libgmp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D5C1A02D8A3008130E9 /* libgmp.a */; };
+		277E6D5F1A02D8E8008130E9 /* libmpc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D5E1A02D8E8008130E9 /* libmpc.a */; };
+		279EB67119E47C92007AD8B3 /* run_ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 279EB66F19E47C92007AD8B3 /* run_ipad.png */; };
+		279EB67219E47C92007AD8B3 /* run_ipad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 279EB67019E47C92007AD8B3 /* run_ipad@2x.png */; };
+		27BFBB071911856A0091F183 /* SourceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB061911856A0091F183 /* SourceView.m */; };
+		27BFBB0A191186AC0091F183 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB09191186AC0091F183 /* Common.m */; };
+		27BFBB0D1911AD100091F183 /* Highlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB0C1911AD100091F183 /* Highlighter.m */; };
+		27BFBB101911B3880091F183 /* CHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB0F1911B3880091F183 /* CHighlighter.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		274206A21910310900FA7E5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 274206711910310900FA7E5D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 274206781910310900FA7E5D;
+			remoteInfo = SimpleIDE;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2709085C19FABA5A002429FB /* Hello_Message.c */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; name = Hello_Message.c; path = Samples/Hello_Message.c; sourceTree = "<group>"; };
+		2709086619FAC3AA002429FB /* simpletools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = simpletools.h; path = libraries/Utility/libsimpletools/simpletools.h; sourceTree = "<group>"; };
+		2709086719FAC3AF002429FB /* libsimpletools.a */ = {isa = PBXFileReference; explicitFileType = text; name = libsimpletools.a; path = libraries/Utility/libsimpletools/cmm/libsimpletools.a; sourceTree = "<group>"; };
+		2709086C19FAC48E002429FB /* libsimpletext.a */ = {isa = PBXFileReference; explicitFileType = text; path = libsimpletext.a; sourceTree = "<group>"; };
+		2709086D19FAC48E002429FB /* serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = serial.h; path = libraries/TextDevices/libsimpletext/serial.h; sourceTree = "<group>"; };
+		2709086E19FAC48E002429FB /* simpletext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = simpletext.h; path = libraries/TextDevices/libsimpletext/simpletext.h; sourceTree = "<group>"; };
+		2709087319FAC4F3002429FB /* libsimplei2c.a */ = {isa = PBXFileReference; explicitFileType = text; path = libsimplei2c.a; sourceTree = "<group>"; };
+		2709087419FAC4F3002429FB /* simplei2c.h */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = simplei2c.h; sourceTree = "<group>"; };
+		270E489819F97A8300318268 /* libpropeller-elf-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libpropeller-elf-cpp.a"; sourceTree = "<group>"; };
+		270E489A19F97AC200318268 /* libcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcpp.a; sourceTree = "<group>"; };
+		270E489C19F97AEF00318268 /* libiberty.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiberty.a; sourceTree = "<group>"; };
+		270E489E19F97AFC00318268 /* libdecnumber.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libdecnumber.a; sourceTree = "<group>"; };
+		2722FAFA1918505B00B17227 /* newfile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newfile.png; sourceTree = "<group>"; };
+		2722FAFC1918528800B17227 /* DetailViewNavigationControllerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewNavigationControllerViewController.h; sourceTree = "<group>"; };
+		2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewNavigationControllerViewController.m; sourceTree = "<group>"; };
+		2738F4C419182B1900DF7352 /* SpinHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpinHighlighter.h; sourceTree = "<group>"; };
+		2738F4C519182B1900DF7352 /* SpinHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpinHighlighter.m; sourceTree = "<group>"; };
+		274206791910310900FA7E5D /* SimpleIDE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleIDE.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2742067C1910310900FA7E5D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		2742067E1910310900FA7E5D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		274206801910310900FA7E5D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		274206841910310900FA7E5D /* SimpleIDE-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SimpleIDE-Info.plist"; sourceTree = "<group>"; };
+		274206861910310900FA7E5D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		274206881910310900FA7E5D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2742068A1910310900FA7E5D /* SimpleIDE-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SimpleIDE-Prefix.pch"; sourceTree = "<group>"; };
+		2742068B1910310900FA7E5D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		2742068C1910310900FA7E5D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		2742068F1910310900FA7E5D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		274206941910310900FA7E5D /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		274206951910310900FA7E5D /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		274206971910310900FA7E5D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		2742069D1910310900FA7E5D /* SimpleIDETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleIDETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		274206A61910310900FA7E5D /* SimpleIDETests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SimpleIDETests-Info.plist"; sourceTree = "<group>"; };
+		274206A81910310900FA7E5D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		274206AA1910310900FA7E5D /* SimpleIDETests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleIDETests.m; sourceTree = "<group>"; };
+		274206B41910349D00FA7E5D /* ProjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectViewController.h; sourceTree = "<group>"; };
+		274206B51910349D00FA7E5D /* ProjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProjectViewController.m; sourceTree = "<group>"; };
+		274206B7191039B500FA7E5D /* ProjectOptionsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectOptionsView.h; sourceTree = "<group>"; };
+		274206B8191039B500FA7E5D /* ProjectOptionsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProjectOptionsView.m; sourceTree = "<group>"; };
+		274206BA191039CF00FA7E5D /* CompilerOptionsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompilerOptionsView.h; sourceTree = "<group>"; };
+		274206BB191039CF00FA7E5D /* CompilerOptionsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CompilerOptionsView.m; sourceTree = "<group>"; };
+		274206BD191039E000FA7E5D /* LinkerOptionsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinkerOptionsView.h; sourceTree = "<group>"; };
+		274206BE191039E000FA7E5D /* LinkerOptionsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinkerOptionsView.m; sourceTree = "<group>"; };
+		274206C01910682E00FA7E5D /* PickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickerViewController.h; sourceTree = "<group>"; };
+		274206C11910682E00FA7E5D /* PickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickerViewController.m; sourceTree = "<group>"; };
+		274206C21910682E00FA7E5D /* PickerViewController_7.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PickerViewController_7.xib; sourceTree = "<group>"; };
+		2751D04619EF10D300C37FA1 /* NavToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavToolBar.h; sourceTree = "<group>"; };
+		2751D04719EF10D300C37FA1 /* NavToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavToolBar.m; sourceTree = "<group>"; };
+		275B26CF1A02A99D0011B72E /* libbackend.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbackend.a; sourceTree = "<group>"; };
+		275B26D11A02A9B80011B72E /* libcc1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcc1.a; sourceTree = "<group>"; };
+		275BB9801913046500F0F020 /* HighlighterRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlighterRule.h; sourceTree = "<group>"; };
+		275BB9811913046500F0F020 /* HighlighterRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlighterRule.m; sourceTree = "<group>"; };
+		27680F871A04004300D66F02 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		277E6D561A02D292008130E9 /* libmpfr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpfr.a; sourceTree = "<group>"; };
+		277E6D581A02D7C4008130E9 /* libmpn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpn.a; sourceTree = "<group>"; };
+		277E6D5A1A02D86D008130E9 /* libmpz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpz.a; sourceTree = "<group>"; };
+		277E6D5C1A02D8A3008130E9 /* libgmp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgmp.a; sourceTree = "<group>"; };
+		277E6D5E1A02D8E8008130E9 /* libmpc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpc.a; sourceTree = "<group>"; };
+		279EB66F19E47C92007AD8B3 /* run_ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run_ipad.png; sourceTree = "<group>"; };
+		279EB67019E47C92007AD8B3 /* run_ipad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "run_ipad@2x.png"; sourceTree = "<group>"; };
+		279EB67319E49BEE007AD8B3 /* libpropeller-elf-cpp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libpropeller-elf-cpp.h"; sourceTree = "<group>"; };
+		27BFBB051911856A0091F183 /* SourceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceView.h; sourceTree = "<group>"; };
+		27BFBB061911856A0091F183 /* SourceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceView.m; sourceTree = "<group>"; };
+		27BFBB08191186AC0091F183 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		27BFBB09191186AC0091F183 /* Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Common.m; sourceTree = "<group>"; };
+		27BFBB0B1911AD100091F183 /* Highlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Highlighter.h; sourceTree = "<group>"; };
+		27BFBB0C1911AD100091F183 /* Highlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Highlighter.m; sourceTree = "<group>"; };
+		27BFBB0E1911B3880091F183 /* CHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHighlighter.h; sourceTree = "<group>"; };
+		27BFBB0F1911B3880091F183 /* CHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHighlighter.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		274206761910310900FA7E5D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27680F881A04004300D66F02 /* libiconv.dylib in Frameworks */,
+				277E6D5F1A02D8E8008130E9 /* libmpc.a in Frameworks */,
+				2742067F1910310900FA7E5D /* CoreGraphics.framework in Frameworks */,
+				2709086819FAC3AF002429FB /* libsimpletools.a in Frameworks */,
+				277E6D5D1A02D8A3008130E9 /* libgmp.a in Frameworks */,
+				270E489919F97A8300318268 /* libpropeller-elf-cpp.a in Frameworks */,
+				270E489D19F97AEF00318268 /* libiberty.a in Frameworks */,
+				277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */,
+				277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */,
+				274206811910310900FA7E5D /* UIKit.framework in Frameworks */,
+				2709086F19FAC48E002429FB /* libsimpletext.a in Frameworks */,
+				2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */,
+				277E6D5B1A02D86D008130E9 /* libmpz.a in Frameworks */,
+				270E489B19F97AC200318268 /* libcpp.a in Frameworks */,
+				2709087519FAC4F3002429FB /* libsimplei2c.a in Frameworks */,
+				275B26D21A02A9B80011B72E /* libcc1.a in Frameworks */,
+				275B26D01A02A99D0011B72E /* libbackend.a in Frameworks */,
+				270E489F19F97AFC00318268 /* libdecnumber.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2742069A1910310900FA7E5D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				274206A11910310900FA7E5D /* UIKit.framework in Frameworks */,
+				274206A01910310900FA7E5D /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2709085B19FABA18002429FB /* Samples */ = {
+			isa = PBXGroup;
+			children = (
+				2709085C19FABA5A002429FB /* Hello_Message.c */,
+			);
+			name = Samples;
+			sourceTree = "<group>";
+		};
+		2709085F19FAC18E002429FB /* libraries */ = {
+			isa = PBXGroup;
+			children = (
+				2709087019FAC4F3002429FB /* Protocol */,
+				2709086919FAC3EB002429FB /* TextDevices */,
+				2709086519FAC367002429FB /* Utility */,
+			);
+			name = libraries;
+			sourceTree = "<group>";
+		};
+		2709086019FAC296002429FB /* libsimpletools */ = {
+			isa = PBXGroup;
+			children = (
+				2709086619FAC3AA002429FB /* simpletools.h */,
+				2709086119FAC2A3002429FB /* cmm */,
+			);
+			name = libsimpletools;
+			sourceTree = "<group>";
+		};
+		2709086119FAC2A3002429FB /* cmm */ = {
+			isa = PBXGroup;
+			children = (
+				2709086719FAC3AF002429FB /* libsimpletools.a */,
+			);
+			name = cmm;
+			sourceTree = "<group>";
+		};
+		2709086519FAC367002429FB /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				2709086019FAC296002429FB /* libsimpletools */,
+			);
+			name = Utility;
+			sourceTree = "<group>";
+		};
+		2709086919FAC3EB002429FB /* TextDevices */ = {
+			isa = PBXGroup;
+			children = (
+				2709086A19FAC423002429FB /* libsimpletext */,
+			);
+			name = TextDevices;
+			sourceTree = "<group>";
+		};
+		2709086A19FAC423002429FB /* libsimpletext */ = {
+			isa = PBXGroup;
+			children = (
+				2709086B19FAC48E002429FB /* cmm */,
+				2709086D19FAC48E002429FB /* serial.h */,
+				2709086E19FAC48E002429FB /* simpletext.h */,
+			);
+			name = libsimpletext;
+			sourceTree = "<group>";
+		};
+		2709086B19FAC48E002429FB /* cmm */ = {
+			isa = PBXGroup;
+			children = (
+				2709086C19FAC48E002429FB /* libsimpletext.a */,
+			);
+			name = cmm;
+			path = libraries/TextDevices/libsimpletext/cmm;
+			sourceTree = "<group>";
+		};
+		2709087019FAC4F3002429FB /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				2709087119FAC4F3002429FB /* libsimplei2c */,
+			);
+			name = Protocol;
+			path = libraries/Protocol;
+			sourceTree = "<group>";
+		};
+		2709087119FAC4F3002429FB /* libsimplei2c */ = {
+			isa = PBXGroup;
+			children = (
+				2709087219FAC4F3002429FB /* cmm */,
+				2709087419FAC4F3002429FB /* simplei2c.h */,
+			);
+			path = libsimplei2c;
+			sourceTree = "<group>";
+		};
+		2709087219FAC4F3002429FB /* cmm */ = {
+			isa = PBXGroup;
+			children = (
+				2709087319FAC4F3002429FB /* libsimplei2c.a */,
+			);
+			path = cmm;
+			sourceTree = "<group>";
+		};
+		2722FAF91918504900B17227 /* Art */ = {
+			isa = PBXGroup;
+			children = (
+				2722FAFA1918505B00B17227 /* newfile.png */,
+				279EB66F19E47C92007AD8B3 /* run_ipad.png */,
+				279EB67019E47C92007AD8B3 /* run_ipad@2x.png */,
+			);
+			name = Art;
+			sourceTree = "<group>";
+		};
+		274206701910310900FA7E5D = {
+			isa = PBXGroup;
+			children = (
+				274206821910310900FA7E5D /* SimpleIDE */,
+				274206A41910310900FA7E5D /* SimpleIDETests */,
+				2742067B1910310900FA7E5D /* Frameworks */,
+				2742067A1910310900FA7E5D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2742067A1910310900FA7E5D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				274206791910310900FA7E5D /* SimpleIDE.app */,
+				2742069D1910310900FA7E5D /* SimpleIDETests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2742067B1910310900FA7E5D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27680F871A04004300D66F02 /* libiconv.dylib */,
+				2742067C1910310900FA7E5D /* Foundation.framework */,
+				2742067E1910310900FA7E5D /* CoreGraphics.framework */,
+				274206801910310900FA7E5D /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		274206821910310900FA7E5D /* SimpleIDE */ = {
+			isa = PBXGroup;
+			children = (
+				2742068B1910310900FA7E5D /* AppDelegate.h */,
+				2742068C1910310900FA7E5D /* AppDelegate.m */,
+				27BFBB0E1911B3880091F183 /* CHighlighter.h */,
+				27BFBB0F1911B3880091F183 /* CHighlighter.m */,
+				27BFBB08191186AC0091F183 /* Common.h */,
+				27BFBB09191186AC0091F183 /* Common.m */,
+				274206BA191039CF00FA7E5D /* CompilerOptionsView.h */,
+				274206BB191039CF00FA7E5D /* CompilerOptionsView.m */,
+				27BFBB0B1911AD100091F183 /* Highlighter.h */,
+				27BFBB0C1911AD100091F183 /* Highlighter.m */,
+				275BB9801913046500F0F020 /* HighlighterRule.h */,
+				275BB9811913046500F0F020 /* HighlighterRule.m */,
+				274206BD191039E000FA7E5D /* LinkerOptionsView.h */,
+				274206BE191039E000FA7E5D /* LinkerOptionsView.m */,
+				2742068E1910310900FA7E5D /* Main.storyboard */,
+				274206941910310900FA7E5D /* DetailViewController.h */,
+				274206951910310900FA7E5D /* DetailViewController.m */,
+				2722FAFC1918528800B17227 /* DetailViewNavigationControllerViewController.h */,
+				2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */,
+				2751D04619EF10D300C37FA1 /* NavToolBar.h */,
+				2751D04719EF10D300C37FA1 /* NavToolBar.m */,
+				274206C01910682E00FA7E5D /* PickerViewController.h */,
+				274206C11910682E00FA7E5D /* PickerViewController.m */,
+				274206C21910682E00FA7E5D /* PickerViewController_7.xib */,
+				274206B7191039B500FA7E5D /* ProjectOptionsView.h */,
+				274206B8191039B500FA7E5D /* ProjectOptionsView.m */,
+				274206B41910349D00FA7E5D /* ProjectViewController.h */,
+				274206B51910349D00FA7E5D /* ProjectViewController.m */,
+				27BFBB051911856A0091F183 /* SourceView.h */,
+				27BFBB061911856A0091F183 /* SourceView.m */,
+				2738F4C419182B1900DF7352 /* SpinHighlighter.h */,
+				2738F4C519182B1900DF7352 /* SpinHighlighter.m */,
+				274206971910310900FA7E5D /* Images.xcassets */,
+				274206831910310900FA7E5D /* Supporting Files */,
+			);
+			path = SimpleIDE;
+			sourceTree = "<group>";
+		};
+		274206831910310900FA7E5D /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2709085F19FAC18E002429FB /* libraries */,
+				2709085B19FABA18002429FB /* Samples */,
+				270E489819F97A8300318268 /* libpropeller-elf-cpp.a */,
+				275B26D11A02A9B80011B72E /* libcc1.a */,
+				270E489A19F97AC200318268 /* libcpp.a */,
+				270E489E19F97AFC00318268 /* libdecnumber.a */,
+				270E489C19F97AEF00318268 /* libiberty.a */,
+				275B26CF1A02A99D0011B72E /* libbackend.a */,
+				277E6D5C1A02D8A3008130E9 /* libgmp.a */,
+				277E6D5E1A02D8E8008130E9 /* libmpc.a */,
+				277E6D561A02D292008130E9 /* libmpfr.a */,
+				277E6D581A02D7C4008130E9 /* libmpn.a */,
+				277E6D5A1A02D86D008130E9 /* libmpz.a */,
+				279EB67319E49BEE007AD8B3 /* libpropeller-elf-cpp.h */,
+				2722FAF91918504900B17227 /* Art */,
+				274206841910310900FA7E5D /* SimpleIDE-Info.plist */,
+				274206851910310900FA7E5D /* InfoPlist.strings */,
+				274206881910310900FA7E5D /* main.m */,
+				2742068A1910310900FA7E5D /* SimpleIDE-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		274206A41910310900FA7E5D /* SimpleIDETests */ = {
+			isa = PBXGroup;
+			children = (
+				274206AA1910310900FA7E5D /* SimpleIDETests.m */,
+				274206A51910310900FA7E5D /* Supporting Files */,
+			);
+			path = SimpleIDETests;
+			sourceTree = "<group>";
+		};
+		274206A51910310900FA7E5D /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				274206A61910310900FA7E5D /* SimpleIDETests-Info.plist */,
+				274206A71910310900FA7E5D /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		274206781910310900FA7E5D /* SimpleIDE */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 274206AE1910310900FA7E5D /* Build configuration list for PBXNativeTarget "SimpleIDE" */;
+			buildPhases = (
+				274206751910310900FA7E5D /* Sources */,
+				274206761910310900FA7E5D /* Frameworks */,
+				274206771910310900FA7E5D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SimpleIDE;
+			productName = SimpleIDE;
+			productReference = 274206791910310900FA7E5D /* SimpleIDE.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2742069C1910310900FA7E5D /* SimpleIDETests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 274206B11910310900FA7E5D /* Build configuration list for PBXNativeTarget "SimpleIDETests" */;
+			buildPhases = (
+				274206991910310900FA7E5D /* Sources */,
+				2742069A1910310900FA7E5D /* Frameworks */,
+				2742069B1910310900FA7E5D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				274206A31910310900FA7E5D /* PBXTargetDependency */,
+			);
+			name = SimpleIDETests;
+			productName = SimpleIDETests;
+			productReference = 2742069D1910310900FA7E5D /* SimpleIDETests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		274206711910310900FA7E5D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = Parallax;
+				TargetAttributes = {
+					2742069C1910310900FA7E5D = {
+						TestTargetID = 274206781910310900FA7E5D;
+					};
+				};
+			};
+			buildConfigurationList = 274206741910310900FA7E5D /* Build configuration list for PBXProject "SimpleIDE" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 274206701910310900FA7E5D;
+			productRefGroup = 2742067A1910310900FA7E5D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				274206781910310900FA7E5D /* SimpleIDE */,
+				2742069C1910310900FA7E5D /* SimpleIDETests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		274206771910310900FA7E5D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2709087619FACBC1002429FB /* libsimplei2c.a in Resources */,
+				2709087719FACBC1002429FB /* simplei2c.h in Resources */,
+				2709087819FACBC1002429FB /* libsimpletext.a in Resources */,
+				2709087919FACBC1002429FB /* serial.h in Resources */,
+				2709087A19FACBC1002429FB /* simpletext.h in Resources */,
+				2709087B19FACBC1002429FB /* simpletools.h in Resources */,
+				2709087C19FACBC1002429FB /* libsimpletools.a in Resources */,
+				2709085E19FABD84002429FB /* Hello_Message.c in Resources */,
+				2722FAFB1918505B00B17227 /* newfile.png in Resources */,
+				279EB67119E47C92007AD8B3 /* run_ipad.png in Resources */,
+				279EB67219E47C92007AD8B3 /* run_ipad@2x.png in Resources */,
+				274206981910310900FA7E5D /* Images.xcassets in Resources */,
+				274206871910310900FA7E5D /* InfoPlist.strings in Resources */,
+				274206C41910682E00FA7E5D /* PickerViewController_7.xib in Resources */,
+				274206901910310900FA7E5D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2742069B1910310900FA7E5D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				274206A91910310900FA7E5D /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		274206751910310900FA7E5D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27BFBB0A191186AC0091F183 /* Common.m in Sources */,
+				2742068D1910310900FA7E5D /* AppDelegate.m in Sources */,
+				274206BF191039E000FA7E5D /* LinkerOptionsView.m in Sources */,
+				274206891910310900FA7E5D /* main.m in Sources */,
+				275BB9821913046500F0F020 /* HighlighterRule.m in Sources */,
+				274206C31910682E00FA7E5D /* PickerViewController.m in Sources */,
+				274206BC191039CF00FA7E5D /* CompilerOptionsView.m in Sources */,
+				2738F4C619182B1900DF7352 /* SpinHighlighter.m in Sources */,
+				274206961910310900FA7E5D /* DetailViewController.m in Sources */,
+				2722FAFE1918528800B17227 /* DetailViewNavigationControllerViewController.m in Sources */,
+				274206B61910349D00FA7E5D /* ProjectViewController.m in Sources */,
+				274206B9191039B500FA7E5D /* ProjectOptionsView.m in Sources */,
+				27BFBB071911856A0091F183 /* SourceView.m in Sources */,
+				27BFBB101911B3880091F183 /* CHighlighter.m in Sources */,
+				27BFBB0D1911AD100091F183 /* Highlighter.m in Sources */,
+				2751D04819EF10D300C37FA1 /* NavToolBar.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		274206991910310900FA7E5D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				274206AB1910310900FA7E5D /* SimpleIDETests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		274206A31910310900FA7E5D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 274206781910310900FA7E5D /* SimpleIDE */;
+			targetProxy = 274206A21910310900FA7E5D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		274206851910310900FA7E5D /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				274206861910310900FA7E5D /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		2742068E1910310900FA7E5D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2742068F1910310900FA7E5D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		274206A71910310900FA7E5D /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				274206A81910310900FA7E5D /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		274206AC1910310900FA7E5D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					IN_GCC,
+					HAVE_STRSIGNAL,
+					"__CHAR_BIT__=8",
+					"CHAR_BIT=8",
+					"SIZEOF_LONG=8",
+					"INT_MAX=2147483648",
+					GATHER_STATISTICS,
+					"TARGET_NAME=\\\"propeller-elf\\\"",
+					CROSS_DIRECTORY_STRUCTURE,
+					HAVE_CONFIG_H,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					build/gcc/gmp,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				New_Setting = "";
+				New_Setting1 = "";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		274206AD1910310900FA7E5D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					IN_GCC,
+					HAVE_STRSIGNAL,
+					"__CHAR_BIT__=8",
+					"CHAR_BIT=8",
+					"SIZEOF_LONG=8",
+					"INT_MAX=2147483648",
+					GATHER_STATISTICS,
+					"TARGET_NAME=\\\"propeller-elf\\\"",
+					CROSS_DIRECTORY_STRUCTURE,
+					HAVE_CONFIG_H,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					build/gcc/gmp,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				New_Setting = "";
+				New_Setting1 = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		274206AF1910310900FA7E5D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = armv7;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Mike Westerfield (436W7W733E)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SimpleIDE/SimpleIDE-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					IN_GCC,
+					HAVE_STRSIGNAL,
+					"__CHAR_BIT__=8",
+					"CHAR_BIT=8",
+					"SIZEOF_LONG=8",
+					"INT_MAX=2147483648",
+					GATHER_STATISTICS,
+					"TARGET_NAME=\\\"propeller-elf\\\"",
+					CROSS_DIRECTORY_STRUCTURE,
+					HAVE_CONFIG_H,
+					"BASEVER=\\\"4.6.1\\\"",
+					"BUGURL=\\\"<http://code.google.com/p/propgcc/issues>\\\"",
+					"PKGVERSION=\\\"(propellergcc-alpha_v1_9_0_)\\\"",
+					"DATESTAMP=\\\"9\\ June\\ 2014\\\"",
+					"DEVPHASE=\\\"experimental,\\ prerelease,\\ \\\"",
+					"REVISION=\\\"1.0.0.0\\\"",
+					"PREFIX=\\\"/opt/paralax\\\"",
+					"STANDARD_EXEC_PREFIX=\\\"/gnu/libexec/gcc/\\\"",
+					"WANT_TMP_ALLOCA=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				INFOPLIST_FILE = "SimpleIDE/SimpleIDE-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/SimpleIDE/build/gcc/gcc/libdecnumber",
+					"$(PROJECT_DIR)/SimpleIDE/build/gcc/gcc/libcpp",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libcpp-fxhoqbppohjdpqbvcpzlvrqtvbnu/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libmpfr-grtrkkxcqznmrmcvxdgefesphcbh/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libiberty-eyanmlrqfknakvczlnzhdgxhozlq/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libbackend-eyhhaizvbpcunialboobkfzykaan/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libz-bsmhnlebjnpfclemzaicjakjfptp/Build/Products/Debug-iphoneos",
+					"$(PROJECT_DIR)/SimpleIDE",
+					"/Users/Mike/Projects/Parallax/gcc/build-ios/gcc/libcpp",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/cmm",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/Utility/libsimpletools/cmm",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/TextDevices/libsimpletext/cmm",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/Protocol/libsimplei2c/cmm",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = armv7;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		274206B01910310900FA7E5D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = armv7;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SimpleIDE/SimpleIDE-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					IN_GCC,
+					HAVE_STRSIGNAL,
+					"__CHAR_BIT__=8",
+					"CHAR_BIT=8",
+					"SIZEOF_LONG=8",
+					"INT_MAX=2147483648",
+					GATHER_STATISTICS,
+					"TARGET_NAME=\\\"propeller-elf\\\"",
+					CROSS_DIRECTORY_STRUCTURE,
+					HAVE_CONFIG_H,
+					"BASEVER=\\\"4.6.1\\\"",
+					"BUGURL=\\\"<http://code.google.com/p/propgcc/issues>\\\"",
+					"PKGVERSION=\\\"(propellergcc-alpha_v1_9_0_)\\\"",
+					"DATESTAMP=\\\"9\\ June\\ 2014\\\"",
+					"DEVPHASE=\\\"experimental,\\ prerelease,\\ \\\"",
+					"REVISION=\\\"1.0.0.0\\\"",
+					"PREFIX=\\\"/opt/paralax\\\"",
+					"STANDARD_EXEC_PREFIX=\\\"/gnu/libexec/gcc/\\\"",
+					"WANT_TMP_ALLOCA=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				INFOPLIST_FILE = "SimpleIDE/SimpleIDE-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/SimpleIDE/build/gcc/gcc/libdecnumber",
+					"$(PROJECT_DIR)/SimpleIDE/build/gcc/gcc/libcpp",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libcpp-fxhoqbppohjdpqbvcpzlvrqtvbnu/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libmpfr-grtrkkxcqznmrmcvxdgefesphcbh/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libiberty-eyanmlrqfknakvczlnzhdgxhozlq/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libbackend-eyhhaizvbpcunialboobkfzykaan/Build/Products/Debug-iphoneos",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/libz-bsmhnlebjnpfclemzaicjakjfptp/Build/Products/Debug-iphoneos",
+					"$(PROJECT_DIR)/SimpleIDE",
+					"/Users/Mike/Projects/Parallax/gcc/build-ios/gcc/libcpp",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/cmm",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/Utility/libsimpletools/cmm",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/TextDevices/libsimpletext/cmm",
+					"$(PROJECT_DIR)/SimpleIDE/libraries/Protocol/libsimplei2c/cmm",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = armv7;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		274206B21910310900FA7E5D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SimpleIDE.app/SimpleIDE";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SimpleIDE/SimpleIDE-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "SimpleIDETests/SimpleIDETests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		274206B31910310900FA7E5D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SimpleIDE.app/SimpleIDE";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SimpleIDE/SimpleIDE-Prefix.pch";
+				INFOPLIST_FILE = "SimpleIDETests/SimpleIDETests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		274206741910310900FA7E5D /* Build configuration list for PBXProject "SimpleIDE" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				274206AC1910310900FA7E5D /* Debug */,
+				274206AD1910310900FA7E5D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		274206AE1910310900FA7E5D /* Build configuration list for PBXNativeTarget "SimpleIDE" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				274206AF1910310900FA7E5D /* Debug */,
+				274206B01910310900FA7E5D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		274206B11910310900FA7E5D /* Build configuration list for PBXNativeTarget "SimpleIDETests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				274206B21910310900FA7E5D /* Debug */,
+				274206B31910310900FA7E5D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 274206711910310900FA7E5D /* Project object */;
+}
