@@ -9,7 +9,7 @@
 #ifndef SimpleIDE_libpropeller_elf_cpp_h
 #define SimpleIDE_libpropeller_elf_cpp_h
 
-int
-maingcc (int argc, char **argv);
+// Main entry point for propeller-elf-cpp.
+int maingcc (int argc, char **argv);
 
 #endif

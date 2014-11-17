@@ -18,7 +18,6 @@
 		2709087A19FACBC1002429FB /* simpletext.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086E19FAC48E002429FB /* simpletext.h */; };
 		2709087B19FACBC1002429FB /* simpletools.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086619FAC3AA002429FB /* simpletools.h */; };
 		2709087C19FACBC1002429FB /* libsimpletools.a in Resources */ = {isa = PBXBuildFile; fileRef = 2709086719FAC3AF002429FB /* libsimpletools.a */; };
-		270E489919F97A8300318268 /* libpropeller-elf-cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489819F97A8300318268 /* libpropeller-elf-cpp.a */; };
 		270E489B19F97AC200318268 /* libcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489A19F97AC200318268 /* libcpp.a */; };
 		270E489D19F97AEF00318268 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489C19F97AEF00318268 /* libiberty.a */; };
 		270E489F19F97AFC00318268 /* libdecnumber.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489E19F97AFC00318268 /* libdecnumber.a */; };
@@ -48,6 +47,8 @@
 		275B26D01A02A99D0011B72E /* libbackend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26CF1A02A99D0011B72E /* libbackend.a */; };
 		275B26D21A02A9B80011B72E /* libcc1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26D11A02A9B80011B72E /* libcc1.a */; };
 		275BB9821913046500F0F020 /* HighlighterRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 275BB9811913046500F0F020 /* HighlighterRule.m */; };
+		2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.c in Sources */ = {isa = PBXBuildFile; fileRef = 2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.c */; };
+		2765F5091A0D7411006B32F4 /* libpropeller-elf-cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2765F5081A0D7411006B32F4 /* libpropeller-elf-cpp.a */; };
 		27680F881A04004300D66F02 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27680F871A04004300D66F02 /* libiconv.dylib */; };
 		277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D561A02D292008130E9 /* libmpfr.a */; };
 		277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D581A02D7C4008130E9 /* libmpn.a */; };
@@ -60,6 +61,7 @@
 		27BFBB0A191186AC0091F183 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB09191186AC0091F183 /* Common.m */; };
 		27BFBB0D1911AD100091F183 /* Highlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB0C1911AD100091F183 /* Highlighter.m */; };
 		27BFBB101911B3880091F183 /* CHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB0F1911B3880091F183 /* CHighlighter.m */; };
+		27DCC28F1A16C6E500F0D3D7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27DCC28E1A16C6E500F0D3D7 /* libz.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,7 +83,6 @@
 		2709086E19FAC48E002429FB /* simpletext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = simpletext.h; path = libraries/TextDevices/libsimpletext/simpletext.h; sourceTree = "<group>"; };
 		2709087319FAC4F3002429FB /* libsimplei2c.a */ = {isa = PBXFileReference; explicitFileType = text; path = libsimplei2c.a; sourceTree = "<group>"; };
 		2709087419FAC4F3002429FB /* simplei2c.h */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = simplei2c.h; sourceTree = "<group>"; };
-		270E489819F97A8300318268 /* libpropeller-elf-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libpropeller-elf-cpp.a"; sourceTree = "<group>"; };
 		270E489A19F97AC200318268 /* libcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcpp.a; sourceTree = "<group>"; };
 		270E489C19F97AEF00318268 /* libiberty.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiberty.a; sourceTree = "<group>"; };
 		270E489E19F97AFC00318268 /* libdecnumber.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libdecnumber.a; sourceTree = "<group>"; };
@@ -125,6 +126,14 @@
 		275B26D11A02A9B80011B72E /* libcc1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcc1.a; sourceTree = "<group>"; };
 		275BB9801913046500F0F020 /* HighlighterRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlighterRule.h; sourceTree = "<group>"; };
 		275BB9811913046500F0F020 /* HighlighterRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlighterRule.m; sourceTree = "<group>"; };
+		2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iOS_SimpleIDE.c; sourceTree = "<group>"; };
+		2765F5051A0D40FC006B32F4 /* iOS_SimpleIDE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iOS_SimpleIDE.h; sourceTree = "<group>"; };
+		2765F5071A0D433A006B32F4 /* pex-common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "pex-common.h"; sourceTree = "<group>"; };
+		2765F5081A0D7411006B32F4 /* libpropeller-elf-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libpropeller-elf-cpp.a"; sourceTree = "<group>"; };
+		2765F50A1A0D75DE006B32F4 /* libiberty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libiberty.h; sourceTree = "<group>"; };
+		2765F50B1A0D75F3006B32F4 /* ansidecl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ansidecl.h; sourceTree = "<group>"; };
+		2765F50C1A0D765B006B32F4 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		2765F50D1A0D766E006B32F4 /* auto-host.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "auto-host.h"; sourceTree = "<group>"; };
 		27680F871A04004300D66F02 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		277E6D561A02D292008130E9 /* libmpfr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpfr.a; sourceTree = "<group>"; };
 		277E6D581A02D7C4008130E9 /* libmpn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpn.a; sourceTree = "<group>"; };
@@ -142,6 +151,7 @@
 		27BFBB0C1911AD100091F183 /* Highlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Highlighter.m; sourceTree = "<group>"; };
 		27BFBB0E1911B3880091F183 /* CHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHighlighter.h; sourceTree = "<group>"; };
 		27BFBB0F1911B3880091F183 /* CHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHighlighter.m; sourceTree = "<group>"; };
+		27DCC28E1A16C6E500F0D3D7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,12 +163,13 @@
 				277E6D5F1A02D8E8008130E9 /* libmpc.a in Frameworks */,
 				2742067F1910310900FA7E5D /* CoreGraphics.framework in Frameworks */,
 				2709086819FAC3AF002429FB /* libsimpletools.a in Frameworks */,
+				27DCC28F1A16C6E500F0D3D7 /* libz.a in Frameworks */,
 				277E6D5D1A02D8A3008130E9 /* libgmp.a in Frameworks */,
-				270E489919F97A8300318268 /* libpropeller-elf-cpp.a in Frameworks */,
 				270E489D19F97AEF00318268 /* libiberty.a in Frameworks */,
 				277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */,
 				277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */,
 				274206811910310900FA7E5D /* UIKit.framework in Frameworks */,
+				2765F5091A0D7411006B32F4 /* libpropeller-elf-cpp.a in Frameworks */,
 				2709086F19FAC48E002429FB /* libsimpletext.a in Frameworks */,
 				2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */,
 				277E6D5B1A02D86D008130E9 /* libmpz.a in Frameworks */,
@@ -354,6 +365,7 @@
 				2738F4C419182B1900DF7352 /* SpinHighlighter.h */,
 				2738F4C519182B1900DF7352 /* SpinHighlighter.m */,
 				274206971910310900FA7E5D /* Images.xcassets */,
+				2765F5061A0D42ED006B32F4 /* gcc_interface */,
 				274206831910310900FA7E5D /* Supporting Files */,
 			);
 			path = SimpleIDE;
@@ -364,7 +376,7 @@
 			children = (
 				2709085F19FAC18E002429FB /* libraries */,
 				2709085B19FABA18002429FB /* Samples */,
-				270E489819F97A8300318268 /* libpropeller-elf-cpp.a */,
+				2765F5081A0D7411006B32F4 /* libpropeller-elf-cpp.a */,
 				275B26D11A02A9B80011B72E /* libcc1.a */,
 				270E489A19F97AC200318268 /* libcpp.a */,
 				270E489E19F97AFC00318268 /* libdecnumber.a */,
@@ -375,6 +387,7 @@
 				277E6D561A02D292008130E9 /* libmpfr.a */,
 				277E6D581A02D7C4008130E9 /* libmpn.a */,
 				277E6D5A1A02D86D008130E9 /* libmpz.a */,
+				27DCC28E1A16C6E500F0D3D7 /* libz.a */,
 				279EB67319E49BEE007AD8B3 /* libpropeller-elf-cpp.h */,
 				2722FAF91918504900B17227 /* Art */,
 				274206841910310900FA7E5D /* SimpleIDE-Info.plist */,
@@ -401,6 +414,20 @@
 				274206A71910310900FA7E5D /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2765F5061A0D42ED006B32F4 /* gcc_interface */ = {
+			isa = PBXGroup;
+			children = (
+				2765F5051A0D40FC006B32F4 /* iOS_SimpleIDE.h */,
+				2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.c */,
+				2765F50B1A0D75F3006B32F4 /* ansidecl.h */,
+				2765F50D1A0D766E006B32F4 /* auto-host.h */,
+				2765F50C1A0D765B006B32F4 /* config.h */,
+				2765F50A1A0D75DE006B32F4 /* libiberty.h */,
+				2765F5071A0D433A006B32F4 /* pex-common.h */,
+			);
+			name = gcc_interface;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -525,6 +552,7 @@
 				274206B61910349D00FA7E5D /* ProjectViewController.m in Sources */,
 				274206B9191039B500FA7E5D /* ProjectOptionsView.m in Sources */,
 				27BFBB071911856A0091F183 /* SourceView.m in Sources */,
+				2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.c in Sources */,
 				27BFBB101911B3880091F183 /* CHighlighter.m in Sources */,
 				27BFBB0D1911AD100091F183 /* Highlighter.m in Sources */,
 				2751D04819EF10D300C37FA1 /* NavToolBar.m in Sources */,
@@ -718,6 +746,7 @@
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				INFOPLIST_FILE = "SimpleIDE/SimpleIDE-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SimpleIDE/build/gcc/gcc/libdecnumber",
@@ -774,6 +803,7 @@
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				INFOPLIST_FILE = "SimpleIDE/SimpleIDE-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SimpleIDE/build/gcc/gcc/libdecnumber",

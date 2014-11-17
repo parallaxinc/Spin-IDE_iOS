@@ -4,7 +4,7 @@
 //
 //	This singleton class controls the detail view for the app.
 //
-//  Created by Mike Westerfield on 4/29/14.
+//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html ).
 //  Copyright (c) 2014 Parallax. All rights reserved.
 //
 
@@ -156,14 +156,46 @@ typedef enum buttons {                                  // Indexes for the butto
     maingcc(2, args);
     free(args);
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *sandboxPath = [paths objectAtIndex: 0];
-    NSString *source = [sandboxPath stringByAppendingPathComponent: @"Hello_Message.c"];
+    NSString *sandboxPath = [Common sandbox];
+    
+    NSString *commandLine = @"propeller-elf-gcc -I ";
+    NSString *include = [sandboxPath stringByAppendingPathComponent: @"include/"];
+    commandLine = [commandLine stringByAppendingString: include];
+    
+    commandLine = [commandLine stringByAppendingString: @" -L . -I "];
+    NSString *libsimpletools = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools"];
+    commandLine = [commandLine stringByAppendingString: libsimpletools];
+    
+    commandLine = [commandLine stringByAppendingString: @" -L "];
+    NSString *libsimpletools_cmm = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools/cmm/"];
+    commandLine = [commandLine stringByAppendingString: libsimpletools_cmm];
+    
+    commandLine = [commandLine stringByAppendingString: @" -I "];
+    NSString *libsimpletext = [sandboxPath stringByAppendingPathComponent: @"libraries/TextDevices/libsimpletext"];
+    commandLine = [commandLine stringByAppendingString: libsimpletext];
+    
+    commandLine = [commandLine stringByAppendingString: @" -L "];
+    NSString *libsimpletext_cmm = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools/cmm/"];
+    commandLine = [commandLine stringByAppendingString: libsimpletext_cmm];
+    
+    commandLine = [commandLine stringByAppendingString: @" -I "];
+    NSString *libsimplei2c = [sandboxPath stringByAppendingPathComponent: @"libraries/Protocol/libsimplei2c"];
+    commandLine = [commandLine stringByAppendingString: libsimplei2c];
+    
+    commandLine = [commandLine stringByAppendingString: @" -L "];
+    NSString *libsimplei2c_cmm = [sandboxPath stringByAppendingPathComponent: @"libraries/Protocol/libsimplei2c/cmm/"];
+    commandLine = [commandLine stringByAppendingString: libsimplei2c_cmm];
+    
+    commandLine = [commandLine stringByAppendingString: @" -o "];
     NSString *outfile = [sandboxPath stringByAppendingPathComponent: @"cmm/Hello_Message.elf"];
-    NSString *commandLine = [@"propeller-elf-gcc -I . -L . -I libraries/Utility/libsimpletools -L libraries/Utility/libsimpletools/cmm/ -I libraries/TextDevices/libsimpletext -L libraries/TextDevices/libsimpletext/cmm/ -I libraries/Protocol/libsimplei2c -L libraries/Protocol/libsimplei2c/cmm/ -o " stringByAppendingString: outfile];
+    commandLine = [commandLine stringByAppendingString: outfile];
+
     commandLine = [commandLine stringByAppendingString: @" -Os -mcmm -m32bit-doubles -fno-exceptions -std=c99 "];
+    NSString *source = [sandboxPath stringByAppendingPathComponent: @"Hello_Message.c"];
     commandLine = [commandLine stringByAppendingString: source];
+    
     commandLine = [commandLine stringByAppendingString: @" -lm -lsimpletools -lsimpletext -lsimplei2c -lm -lsimpletools -lsimpletext -lm -lsimpletools -lm"];
+    
     args = [self commandLineArgumentsFor: [commandLine UTF8String] count: &count];
     for (int i = 0; i < count; ++i) printf("%2d: %s\n", i, args[i]);
     maingcc(count, args);

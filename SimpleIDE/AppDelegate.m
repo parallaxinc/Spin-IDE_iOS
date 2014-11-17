@@ -2,19 +2,20 @@
 //  AppDelegate.m
 //  SimpleIDE
 //
-//  Created by Mike Westerfield on 4/29/14.
+//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html ).
 //  Copyright (c) 2014 Parallax. All rights reserved.
 //
 
 #import "AppDelegate.h"
+
+#import "Common.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Place compiler files in the sandbox.
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *sandboxPath = [paths objectAtIndex: 0];
+    NSString *sandboxPath = [Common sandbox];
 
     NSArray *files = [[NSArray alloc] initWithObjects: @"Hello_Message", nil];
     for (int i = 0; i < [files count]; ++i) {
@@ -82,7 +83,7 @@
     splitViewController.delegate = (id)navigationController.topViewController;
     return YES;
 }
-							
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
