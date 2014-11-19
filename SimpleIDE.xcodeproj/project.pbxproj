@@ -24,6 +24,10 @@
 		2722FAFB1918505B00B17227 /* newfile.png in Resources */ = {isa = PBXBuildFile; fileRef = 2722FAFA1918505B00B17227 /* newfile.png */; };
 		2722FAFE1918528800B17227 /* DetailViewNavigationControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */; };
 		2738F4C619182B1900DF7352 /* SpinHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738F4C519182B1900DF7352 /* SpinHighlighter.m */; };
+		273E31C81A1AC03B0076F6BF /* libopcodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31C71A1AC03B0076F6BF /* libopcodes.a */; };
+		273E31CA1A1AC05B0076F6BF /* libbfd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31C91A1AC05B0076F6BF /* libbfd.a */; };
+		273E31D01A1AC52E0076F6BF /* libgas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31CF1A1AC52E0076F6BF /* libgas.a */; };
+		273E31D21A1AC84A0076F6BF /* libpropeller-elf-cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31D11A1AC84A0076F6BF /* libpropeller-elf-cpp.a */; };
 		2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067C1910310900FA7E5D /* Foundation.framework */; };
 		2742067F1910310900FA7E5D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067E1910310900FA7E5D /* CoreGraphics.framework */; };
 		274206811910310900FA7E5D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 274206801910310900FA7E5D /* UIKit.framework */; };
@@ -47,8 +51,8 @@
 		275B26D01A02A99D0011B72E /* libbackend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26CF1A02A99D0011B72E /* libbackend.a */; };
 		275B26D21A02A9B80011B72E /* libcc1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26D11A02A9B80011B72E /* libcc1.a */; };
 		275BB9821913046500F0F020 /* HighlighterRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 275BB9811913046500F0F020 /* HighlighterRule.m */; };
+		275CC6951A1D5FFC00C40731 /* libld.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275CC6941A1D5FFC00C40731 /* libld.a */; };
 		2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.c in Sources */ = {isa = PBXBuildFile; fileRef = 2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.c */; };
-		2765F5091A0D7411006B32F4 /* libpropeller-elf-cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2765F5081A0D7411006B32F4 /* libpropeller-elf-cpp.a */; };
 		27680F881A04004300D66F02 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27680F871A04004300D66F02 /* libiconv.dylib */; };
 		277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D561A02D292008130E9 /* libmpfr.a */; };
 		277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D581A02D7C4008130E9 /* libmpn.a */; };
@@ -91,6 +95,10 @@
 		2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewNavigationControllerViewController.m; sourceTree = "<group>"; };
 		2738F4C419182B1900DF7352 /* SpinHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpinHighlighter.h; sourceTree = "<group>"; };
 		2738F4C519182B1900DF7352 /* SpinHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpinHighlighter.m; sourceTree = "<group>"; };
+		273E31C71A1AC03B0076F6BF /* libopcodes.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopcodes.a; sourceTree = "<group>"; };
+		273E31C91A1AC05B0076F6BF /* libbfd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbfd.a; sourceTree = "<group>"; };
+		273E31CF1A1AC52E0076F6BF /* libgas.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgas.a; sourceTree = "<group>"; };
+		273E31D11A1AC84A0076F6BF /* libpropeller-elf-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libpropeller-elf-cpp.a"; sourceTree = "<group>"; };
 		274206791910310900FA7E5D /* SimpleIDE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleIDE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2742067C1910310900FA7E5D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2742067E1910310900FA7E5D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -126,10 +134,10 @@
 		275B26D11A02A9B80011B72E /* libcc1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcc1.a; sourceTree = "<group>"; };
 		275BB9801913046500F0F020 /* HighlighterRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlighterRule.h; sourceTree = "<group>"; };
 		275BB9811913046500F0F020 /* HighlighterRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlighterRule.m; sourceTree = "<group>"; };
+		275CC6941A1D5FFC00C40731 /* libld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libld.a; sourceTree = "<group>"; };
 		2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iOS_SimpleIDE.c; sourceTree = "<group>"; };
 		2765F5051A0D40FC006B32F4 /* iOS_SimpleIDE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iOS_SimpleIDE.h; sourceTree = "<group>"; };
 		2765F5071A0D433A006B32F4 /* pex-common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "pex-common.h"; sourceTree = "<group>"; };
-		2765F5081A0D7411006B32F4 /* libpropeller-elf-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libpropeller-elf-cpp.a"; sourceTree = "<group>"; };
 		2765F50A1A0D75DE006B32F4 /* libiberty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libiberty.h; sourceTree = "<group>"; };
 		2765F50B1A0D75F3006B32F4 /* ansidecl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ansidecl.h; sourceTree = "<group>"; };
 		2765F50C1A0D765B006B32F4 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
@@ -165,17 +173,21 @@
 				2709086819FAC3AF002429FB /* libsimpletools.a in Frameworks */,
 				27DCC28F1A16C6E500F0D3D7 /* libz.a in Frameworks */,
 				277E6D5D1A02D8A3008130E9 /* libgmp.a in Frameworks */,
+				273E31C81A1AC03B0076F6BF /* libopcodes.a in Frameworks */,
 				270E489D19F97AEF00318268 /* libiberty.a in Frameworks */,
 				277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */,
+				275CC6951A1D5FFC00C40731 /* libld.a in Frameworks */,
 				277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */,
 				274206811910310900FA7E5D /* UIKit.framework in Frameworks */,
-				2765F5091A0D7411006B32F4 /* libpropeller-elf-cpp.a in Frameworks */,
 				2709086F19FAC48E002429FB /* libsimpletext.a in Frameworks */,
 				2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */,
+				273E31CA1A1AC05B0076F6BF /* libbfd.a in Frameworks */,
+				273E31D01A1AC52E0076F6BF /* libgas.a in Frameworks */,
 				277E6D5B1A02D86D008130E9 /* libmpz.a in Frameworks */,
 				270E489B19F97AC200318268 /* libcpp.a in Frameworks */,
 				2709087519FAC4F3002429FB /* libsimplei2c.a in Frameworks */,
 				275B26D21A02A9B80011B72E /* libcc1.a in Frameworks */,
+				273E31D21A1AC84A0076F6BF /* libpropeller-elf-cpp.a in Frameworks */,
 				275B26D01A02A99D0011B72E /* libbackend.a in Frameworks */,
 				270E489F19F97AFC00318268 /* libdecnumber.a in Frameworks */,
 			);
@@ -376,18 +388,22 @@
 			children = (
 				2709085F19FAC18E002429FB /* libraries */,
 				2709085B19FABA18002429FB /* Samples */,
-				2765F5081A0D7411006B32F4 /* libpropeller-elf-cpp.a */,
+				273E31D11A1AC84A0076F6BF /* libpropeller-elf-cpp.a */,
 				275B26D11A02A9B80011B72E /* libcc1.a */,
 				270E489A19F97AC200318268 /* libcpp.a */,
 				270E489E19F97AFC00318268 /* libdecnumber.a */,
 				270E489C19F97AEF00318268 /* libiberty.a */,
 				275B26CF1A02A99D0011B72E /* libbackend.a */,
+				273E31CF1A1AC52E0076F6BF /* libgas.a */,
+				273E31C71A1AC03B0076F6BF /* libopcodes.a */,
+				273E31C91A1AC05B0076F6BF /* libbfd.a */,
 				277E6D5C1A02D8A3008130E9 /* libgmp.a */,
 				277E6D5E1A02D8E8008130E9 /* libmpc.a */,
 				277E6D561A02D292008130E9 /* libmpfr.a */,
 				277E6D581A02D7C4008130E9 /* libmpn.a */,
 				277E6D5A1A02D86D008130E9 /* libmpz.a */,
 				27DCC28E1A16C6E500F0D3D7 /* libz.a */,
+				275CC6941A1D5FFC00C40731 /* libld.a */,
 				279EB67319E49BEE007AD8B3 /* libpropeller-elf-cpp.h */,
 				2722FAF91918504900B17227 /* Art */,
 				274206841910310900FA7E5D /* SimpleIDE-Info.plist */,

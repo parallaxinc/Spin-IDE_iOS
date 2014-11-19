@@ -20,7 +20,13 @@
 #include "pex-common.h"
 
 // Main entry point for cc1.
-extern int toplev_main (int, char **);
+extern int toplev_main (int, char * const *);
+
+// Main entry point for gas.
+extern int toplev_as_main (int, char * const *);
+
+// Main entry point for ld.
+extern int toplev_ldmain (int, char * const *);
 
 #define DEBUG_GCC YES
 
@@ -142,6 +148,14 @@ extern const char *ios_ex_run (struct pex_obj *obj, int flags,
         // The compiler is calling cc1. Redirect this call to toplev_main, the gcc-defined alternate
         // entry point for cc1. (See propgcc/gcc/gcc/main.c.)
         toplev_main (argc, argv);
+    } else if (strcmp(executable, "as") == 0) {
+        // The compiler is calling gas. Redirect this call to toplev_as_main, the alternate
+        // entry point for gas. (See propgcc/binutils/gas/as.c and propgcc/binutils/gas/toplev_as_main.c.)
+        toplev_as_main (argc, argv);
+    } else if (strcmp(executable, "ld") == 0) {
+        // The compiler is calling gas. Redirect this call to toplev_as_main, the alternate
+        // entry point for gas. (See propgcc/binutils/gas/as.c and propgcc/binutils/gas/toplev_as_main.c.)
+        toplev_ldmain (argc, argv);
     }
     
     return NULL;
