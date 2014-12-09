@@ -91,7 +91,6 @@ typedef enum buttons {                                  // Indexes for the butto
                         "\n"
                         "int main()                                    // main function\n"
                         "{\n"
-     					"  for(int i = 0; i < 10; ++i)\n"
                         "    print(\"Hello!!!\");                        // Display a message\n"
                         "}\n"]; // TODO: Remove
 }
@@ -162,8 +161,12 @@ typedef enum buttons {                                  // Indexes for the butto
     NSString *include = [sandboxPath stringByAppendingPathComponent: @"include/"];
     commandLine = [commandLine stringByAppendingString: include];
     
-    commandLine = [commandLine stringByAppendingString: @" -L . -I "];
-    NSString *libsimpletools = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools"];
+    commandLine = [commandLine stringByAppendingString: @" -L "];
+    NSString *libsimpletools = sandboxPath;
+    commandLine = [commandLine stringByAppendingString: libsimpletools];
+    
+    commandLine = [commandLine stringByAppendingString: @" -I "];
+    libsimpletools = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools"];
     commandLine = [commandLine stringByAppendingString: libsimpletools];
     
     commandLine = [commandLine stringByAppendingString: @" -L "];
@@ -186,7 +189,7 @@ typedef enum buttons {                                  // Indexes for the butto
     NSString *libsimplei2c_cmm = [sandboxPath stringByAppendingPathComponent: @"libraries/Protocol/libsimplei2c/cmm/"];
     commandLine = [commandLine stringByAppendingString: libsimplei2c_cmm];
     
-    commandLine = [commandLine stringByAppendingString: @" -o "];
+    commandLine = [commandLine stringByAppendingString: @"\" -o "];
     NSString *outfile = [sandboxPath stringByAppendingPathComponent: @"cmm/Hello_Message.elf"];
     commandLine = [commandLine stringByAppendingString: outfile];
 

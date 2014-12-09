@@ -93,3 +93,16 @@ extern const char *ios_ex_run (struct pex_obj *obj, int flags,
 			    const char *executable, char * const *argv,
 			    const char *outname, const char *errname,
 			    int *err);
+
+/*
+ Returns the sandbox prefix for iOS.
+ */
+
+extern const char *ios_sandbox ();
+
+/*
+ Returns the prefix for the propeller-elf version-specific library in the sandbox.
+ */
+
+extern const char *ios_sandbox_propeller_elf ();
+

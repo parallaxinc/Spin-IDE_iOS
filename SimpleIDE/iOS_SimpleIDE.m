@@ -19,6 +19,8 @@
 
 #include "pex-common.h"
 
+#import "Common.h"
+
 // Main entry point for cc1.
 extern int toplev_main (int, char * const *);
 
@@ -153,10 +155,95 @@ extern const char *ios_ex_run (struct pex_obj *obj, int flags,
         // entry point for gas. (See propgcc/binutils/gas/as.c and propgcc/binutils/gas/toplev_as_main.c.)
         toplev_as_main (argc, argv);
     } else if (strcmp(executable, "ld") == 0) {
-        // The compiler is calling gas. Redirect this call to toplev_as_main, the alternate
-        // entry point for gas. (See propgcc/binutils/gas/as.c and propgcc/binutils/gas/toplev_as_main.c.)
-        toplev_ldmain (argc, argv);
+        // The compiler is calling ld. Redirect this call to toplev_ldmain, the alternate
+        // entry point for ld. (See propgcc/binutils/gas/toplev_ldmain.c.)
+        
+        char **argv4 = (char **) malloc(sizeof(char *)*(argc + 2));
+        for (int i = 0; i < argc; ++i)
+            argv4[i] = argv[i];
+        argv4[argc++] = "-o";
+        char *outname = "a.out";
+        char *out = (char *) malloc(sizeof(char)*(strlen([Common csandbox]) + strlen(outname) + 1));
+        strcpy(out, [Common csandbox]);
+        strcat(out, outname);
+        argv4[argc++] = out;
+        printf("     added -o %s\n", out); // TODO: Remove
+        
+        toplev_ldmain (argc, argv4);
+        
+        free(argv4);
+        free(out);
+    }
+    
+    // TODO: Remove the following debug code.
+    char *o = NULL;
+    for (int i = 0; i < argc; ++i)
+        if (strcmp(argv[i], "-o") == 0) {
+            o = argv[i + 1];
+            break;
+        }
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath: [NSString stringWithCString: o encoding: NSUTF8StringEncoding]];
+    printf("%s %s\n", o ? o : "<null>", exists ? "exists" : "does not exist");
+    if (exists) {
+        FILE *f = fopen(o, "r");
+        int ch = 1;
+        int i = 0;
+        printf("%04X: ", 0);
+        while ((ch = fgetc(f)) != -1) {
+            printf("%02X", ch);
+            if (++i%16 == 0)
+                printf("\n%04X: ", i);
+            else if (i%4 == 0)
+                putchar(' ');
+        }
+        putchar('\n');
+        fclose(f);
+        
+        f = fopen(o, "r");
+        ch = 1;
+        while ((ch = fgetc(f)) != -1) {
+            if (ch >= ' ' || ch == '\n' || ch == '\t')
+                printf("%c", ch);
+        }
+        putchar('\n');
+        fclose(f);
     }
     
     return NULL;
+}
+
+/*
+ Returns the sandbox prefix for iOS.
+ */
+
+static char *sandbox_path = NULL;
+
+extern const char *ios_sandbox () {
+    if (sandbox_path == NULL) {
+        const char *sandbox = [Common csandbox];
+        sandbox_path = (char *) malloc(sizeof(char)*(2 + strlen(sandbox)));
+        strcpy(sandbox_path, sandbox);
+        if (sandbox_path[strlen(sandbox_path) - 1] != '/')
+            strcat(sandbox_path, "/");
+    }
+    return sandbox_path;
+}
+
+/*
+ Returns the prefix for the propeller-elf version-specific library in the sandbox.
+ */
+
+static char *sandbox_propeller_elf_path = NULL;
+
+extern const char *ios_sandbox_propeller_elf () {
+    if (sandbox_propeller_elf_path == NULL) {
+        const char *sandbox = [Common csandbox];
+        const char *propeller_elf = "propeller-elf/4.6.1/";
+        sandbox_propeller_elf_path = (char *) malloc(sizeof(char)*(2 + strlen(sandbox) + strlen(propeller_elf)));
+        strcpy(sandbox_propeller_elf_path, sandbox);
+        if (sandbox_propeller_elf_path[strlen(sandbox_propeller_elf_path) - 1] != '/')
+            strcat(sandbox_propeller_elf_path, "/");
+        strcat(sandbox_propeller_elf_path, propeller_elf);
+    }
+    return sandbox_propeller_elf_path;
 }
