@@ -1,7 +1,7 @@
 /* Hooks to iOS for use with Simple IDE.
    Copyright (C) 2014
    Free Software Foundation, Inc.
-   Contributed by Mike Westerfield at the Byte Works, Inc. (mike@byteworks.us)
+   Contributed by Mike Westerfield at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html)
 
 This file is part of GCC.
 

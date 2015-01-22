@@ -4,7 +4,7 @@
 //
 //	This singleton class controls the detail view for the app.
 //
-//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html ).
+//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html).
 //  Copyright (c) 2014 Parallax. All rights reserved.
 //
 
@@ -12,118 +12,76 @@
 
 #import "libpropeller-elf-cpp.h"
 #import "NavToolBar.h"
+#import "ProjectViewController.h"
 
-typedef enum buttons {                                  // Indexes for the buttons on the button bar.
-    newIndex, runIndex
-} buttons;
 
-// The number of buttons that can appear on the button bar.
-#define buttonCount (1 + runIndex)
+typedef enum {tagOpenProject} alertTags;
+
+static DetailViewController *this;						// This singleton instance of this class.
 
 
 @interface DetailViewController () {
     BOOL initialized;								// Has the view been initialized?
-    UIBarButtonItem *barButtons[buttonCount];		// The current bar buttons.
 }
 
-@property (nonatomic, retain) IBOutlet UIToolbar *tbToolbar;
+@property (nonatomic, retain) UIPopoverController *pickerPopoverController;
+@property (nonatomic, retain) NSMutableArray *projects;
+@property (nonatomic, retain) UIButton *runButton;
 @property (nonatomic, retain) UIView *toolBarView;
-
-@property (strong, nonatomic) UIPopoverController *masterPopoverController;
-
-- (void) configureView;
+@property (nonatomic, retain) UIButton *xbeeButton;
 
 @end
 
 
 @implementation DetailViewController
 
-@synthesize sourceView;
+@synthesize delegate;
+@synthesize pickerPopoverController;
+@synthesize projects;
+@synthesize runButton;
+@synthesize sourceConsoleSplitView;
 @synthesize sourceNavigationItem;
-@synthesize tbToolbar;
 @synthesize toolBarView;
-
-
-#pragma mark - Managing the detail item
-
-- (void) setDetailItem: (id) newDetailItem
-{
-    if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
-        
-        // Update the view.
-        [self configureView];
-    }
-
-    if (self.masterPopoverController != nil) {
-        [self.masterPopoverController dismissPopoverAnimated:YES];
-    }        
-}
-
-- (void) configureView {
-    // Update the user interface for the detail item.
-    if (self.detailItem) {
-        self.detailDescriptionLabel.text = [self.detailItem description];
-    }
-}
-
-/*!
- * Called after the controller’s view is loaded into memory.
- */
-
-- (void) viewDidLoad {
-    [super viewDidLoad];
-    
-	// Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
-    
-    [sourceView setHighlightedText: @"/*\n"
-                        "  Hello Message.c\n"
-                        "\n"
-                        "  Version 0.94 for use with SimpleIDE 9.40 and its Simple Libraries\n"
-                        "\n"
-                        "  Display a hello message in the serial terminal.\n"
-                        "\n"
-                        "  http://learn.parallax.com/propeller-c-start-simple/simple-hello-message\n"
-                        "*/\n"
-                        "\n"
-                        "#include \"simpletools.h\"                      // Include simpletools header\n"
-                        "\n"
-                        "int main()                                    // main function\n"
-                        "{\n"
-                        "    print(\"Hello!!!\");                        // Display a message\n"
-                        "}\n"]; // TODO: Remove
-}
+@synthesize xbeeButton;
 
 #pragma mark - Misc
 
 /*!
- * Break a command line up into space delimited tokens.
+ * Add a new button to the toolBarView.
  *
- * @param line		The command line to break up.
- * @param count		NOTE: Indirect pointer to a value that is set to the number of command line argments. Must not be NULL.
+ * @param imageName		The name of the image for the button.
+ * @param x				The horizontal location for the button in the view. Updated to the pixel just 
+ *						after the new button.
+ * @param action		The action to trigger when the button is released.
  *
- * @return			The array of command line arguments. The caller is responsible for disposal of the array and all
- *					strings pointed to by the array; call freeCommandLine for disposal.
+ * @return				The button created.
  */
 
-- (char **) commandLineArgumentsFor: (const char *) line count: (int *) count {
-    // Break the line up into an array of space delimited NSStrings.
-    NSString *nsline = [NSString stringWithUTF8String: line];
-    NSArray *nsargs = [nsline componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+- (UIButton *) addButtonWithImageNamed: (NSString *) imageName x: (float *) x action: (SEL) action {
+    float toolBarHeight = self.navigationController.navigationBar.frame.size.height;
+
+    UIImage *image = [UIImage imageNamed: imageName];
+    UIButton *button = [UIButton buttonWithType: UIButtonTypeCustom];
+    button.frame = CGRectMake(*x, (toolBarHeight - image.size.height)/2, image.size.width, image.size.height);
+    [button setImage: image forState: UIControlStateNormal];
+    [button addTarget: self action: action forControlEvents: UIControlEventTouchUpInside];
+    [toolBarView addSubview: button];
     
-    // Setthe number of arguments.
-    *count = nsargs.count;
+    *x += image.size.width;
     
-    // Form the array of arguments.
-    char **args = malloc(sizeof(char *)*nsargs.count);
-    for (int i = 0; i < nsargs.count; ++i) {
-        args[i] = malloc(sizeof(char)*(strlen([nsargs[i] UTF8String]) + 1));
-        strcpy(args[i], [nsargs[i] UTF8String]);
-    }
-    
-    // Retrun the array.
-    return args;
+    return button;
+}
+
+/*!
+ * There is only one detail view controller in the program, and there is always a default view 
+ * controller, assuming initialization is complete. This call returns the singleton instance of 
+ * the default view controller.
+ *
+ * @return			The project view controller.
+ */
+
++ (DetailViewController *) defaultDetailViewController {
+    return this;
 }
 
 /*!
@@ -139,90 +97,164 @@ typedef enum buttons {                                  // Indexes for the butto
     free(args);
 }
 
+/*!
+ * This workhorse method handles the heavy lifting for all of the buttons that use a picker view to
+ * select options.
+ *
+ * @param tag			The tag identifying the action for this view.
+ * @param prompt		The prompt that appear at the top of the view.
+ * @param elements		An array of strings to display in the picker.
+ * @param button		The button that started the action; used to position the view.
+ * @param index			The index of the initially selected row.
+ */
+
+- (void) pickerAction: (alertTags) tag
+               prompt: (NSString *) prompt
+             elements: (NSArray *) elements
+               button: (UIButton *) button
+                index: (int) index
+{
+    // Create the controller and add the root controller.
+    OpenProjectViewController *pickerController = [[OpenProjectViewController alloc] initWithNibName: @"OpenProjectViewController"
+                                                                                              bundle: nil
+                                                                                              prompt: prompt
+                                                                                                 tag: tag];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController: pickerController];
+    pickerController.navController = navigationController;
+    pickerController.pickerElements = elements;
+    pickerController.delegate = self;
+    ProjectViewController *projectViewController = [ProjectViewController defaultProjectViewController];
+    if (projectViewController.project && projectViewController.project.name)
+        [pickerController setSelectedElement: projectViewController.project.name];
+    
+    // Create the popover.
+    UIPopoverController *pickerPopover = [[NSClassFromString(@"UIPopoverController") alloc]
+                                          initWithContentViewController: navigationController];
+    [pickerPopover setPopoverContentSize: pickerController.view.frame.size];
+    CGRect viewSize = pickerController.view.frame;
+    [pickerPopover setPopoverContentSize: viewSize.size];
+    [pickerPopover setDelegate: self];
+    
+    // Display the popover.
+    self.pickerPopoverController = pickerPopover;
+    [self.pickerPopoverController presentPopoverFromRect: button.frame
+                                                  inView: toolBarView
+                                permittedArrowDirections: UIPopoverArrowDirectionUp
+                                                animated: YES];
+    
+    // Select the proper row in the picker.
+    if (index < elements.count)
+        [pickerController.picker selectRow: index inComponent: 0 animated: NO];
+}
+
 #pragma mark - Actions
 
-- (void) newButtonAction {
-    printf("Implement newButtonAction\n"); // TODO:
+/*!
+ * Handle a hit on the Build Project button.
+ */
+
+- (void) buildProjectAction {
+    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateBuildProject)])
+        [delegate detailViewControllerDelegateBuildProject];
 }
 
 /*!
- * Handle a hit on the Run Program button.
+ * Handle a hit on the Delete Project button.
+ *
+ * @param sender		The button that triggered this action.
  */
 
-- (void) runProgramAction {
-    int count;
-    char **args = [self commandLineArgumentsFor: "propeller-elf-gcc -v" count: &count];
-    maingcc(2, args);
-    free(args);
-    
-    NSString *sandboxPath = [Common sandbox];
-    
-    NSString *commandLine = @"propeller-elf-gcc -I ";
-    NSString *include = [sandboxPath stringByAppendingPathComponent: @"include/"];
-    commandLine = [commandLine stringByAppendingString: include];
-    
-    commandLine = [commandLine stringByAppendingString: @" -L "];
-    NSString *libsimpletools = sandboxPath;
-    commandLine = [commandLine stringByAppendingString: libsimpletools];
-    
-    commandLine = [commandLine stringByAppendingString: @" -I "];
-    libsimpletools = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools"];
-    commandLine = [commandLine stringByAppendingString: libsimpletools];
-    
-    commandLine = [commandLine stringByAppendingString: @" -L "];
-    NSString *libsimpletools_cmm = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools/cmm/"];
-    commandLine = [commandLine stringByAppendingString: libsimpletools_cmm];
-    
-    commandLine = [commandLine stringByAppendingString: @" -I "];
-    NSString *libsimpletext = [sandboxPath stringByAppendingPathComponent: @"libraries/TextDevices/libsimpletext"];
-    commandLine = [commandLine stringByAppendingString: libsimpletext];
-    
-    commandLine = [commandLine stringByAppendingString: @" -L "];
-    NSString *libsimpletext_cmm = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools/cmm/"];
-    commandLine = [commandLine stringByAppendingString: libsimpletext_cmm];
-    
-    commandLine = [commandLine stringByAppendingString: @" -I "];
-    NSString *libsimplei2c = [sandboxPath stringByAppendingPathComponent: @"libraries/Protocol/libsimplei2c"];
-    commandLine = [commandLine stringByAppendingString: libsimplei2c];
-    
-    commandLine = [commandLine stringByAppendingString: @" -L "];
-    NSString *libsimplei2c_cmm = [sandboxPath stringByAppendingPathComponent: @"libraries/Protocol/libsimplei2c/cmm/"];
-    commandLine = [commandLine stringByAppendingString: libsimplei2c_cmm];
-    
-    commandLine = [commandLine stringByAppendingString: @"\" -o "];
-    NSString *outfile = [sandboxPath stringByAppendingPathComponent: @"cmm/Hello_Message.elf"];
-    commandLine = [commandLine stringByAppendingString: outfile];
-
-    commandLine = [commandLine stringByAppendingString: @" -Os -mcmm -m32bit-doubles -fno-exceptions -std=c99 "];
-    NSString *source = [sandboxPath stringByAppendingPathComponent: @"Hello_Message.c"];
-    commandLine = [commandLine stringByAppendingString: source];
-    
-    commandLine = [commandLine stringByAppendingString: @" -lm -lsimpletools -lsimpletext -lsimplei2c -lm -lsimpletools -lsimpletext -lm -lsimpletools -lm"];
-    
-    args = [self commandLineArgumentsFor: [commandLine UTF8String] count: &count];
-    for (int i = 0; i < count; ++i) printf("%2d: %s\n", i, args[i]);
-    maingcc(count, args);
-    free(args);
+- (void) deleteProjectAction: (id) sender {
+    // TODO: Implement deleteProjectAction.
 }
 
-/*
- * Update the buttons on the button bar to match the ones selected in visibleButtons.
+/*!
+ * Handle a hit on the New Project button.
+ *
+ * @param sender		The button that triggered this action.
  */
 
-- (void) updateButtons {
-    // Build and show the new button bar.
-    NSArray *barItems = [NSArray array];
-    // TODO: Handle programs button    if (programsButton != nil)
-    //        barItems = [barItems arrayByAddingObject: programsButton];
-    for (int i = 0; i < buttonCount; ++i)
-        if (barButtons[i] != nil)
-            barItems = [barItems arrayByAddingObject: barButtons[i]];
-    if (barItems.count > 0)
-        [self.tbToolbar setItems: barItems animated: NO];
-    self.navigationItem.titleView = self.tbToolbar;
-    self.navigationItem.leftBarButtonItem = nil;
+- (void) newProjectAction: (id) sender {
+    // TODO: Implement newProjectAction.
 }
 
+/*!
+ * Handle a hit on the Open Project button.
+ *
+ * @param sender		The button that triggered this action.
+ */
+
+- (void) openProjectAction: (id) sender {
+    // Collect the available projects.
+    projects = [[NSMutableArray alloc] init];
+    
+    NSString *sandBoxPath = [Common sandbox];
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSArray *files = [manager contentsOfDirectoryAtPath: sandBoxPath error: nil];
+    for (NSString *projectName in files) {
+        NSString *fullPath = [sandBoxPath stringByAppendingPathComponent: projectName];
+        BOOL isDirectory;
+        if ([manager fileExistsAtPath: fullPath isDirectory: &isDirectory] && isDirectory) {
+            NSString *projectPath = [fullPath stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"side"]];
+            if ([manager fileExistsAtPath: projectPath])
+                [projects addObject: projectName];
+        }
+    }
+    
+    // Present the project selection view.
+    [self pickerAction: tagOpenProject prompt: @"Open a Project" elements: projects button: sender index: 0];
+}
+
+/*!
+ * Handle a hit on the Rename Project button.
+ *
+ * @param sender		The button that triggered this action.
+ */
+
+- (void) renameProjectAction: (id) sender {
+    // TODO: Implement renameProjectAction.
+}
+
+/*!
+ * Handle a hit on the Run Project button.
+ *
+ * @param sender		The button that triggered this action.
+ */
+
+- (void) runProjectAction {
+    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateRunProject:)])
+        [delegate detailViewControllerDelegateRunProject: runButton];
+}
+
+/*!
+ * Handle a hit on the XBee button.
+ *
+ * @param sender		The button that triggered this action.
+ */
+
+- (void) xbeeAction {
+    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateXBeeProject:)])
+        [delegate detailViewControllerDelegateXBeeProject: xbeeButton];
+}
+
+#pragma mark - View Maintenance
+
+/*!
+ * Called after the controller’s view is loaded into memory.
+ */
+
+- (void) viewDidLoad {
+    [super viewDidLoad];
+    
+    // Record our ingleton instance.
+    this = self;
+}
+
+/*!
+ * Notifies the view controller that its view is about to be added to a view hierarchy.
+ *
+ * @param animated		If YES, the view is being added to the window using an animation.
+ */
 
 - (void) viewWillAppear: (BOOL) animated {
     if (!initialized) {
@@ -231,51 +263,110 @@ typedef enum buttons {                                  // Indexes for the butto
         
         // Create the default button bar items.
         
-        // Make the content view controller the root view for the navigation item.
-        self.tbToolbar = [[NavToolBar alloc] initWithFrame: CGRectMake(0, 0, 1024, 30)];
-        if ([self.tbToolbar respondsToSelector: @selector(setBarTintColor:)]) {
-            self.tbToolbar.barTintColor = [UIColor clearColor];
-        }
-        self.navigationItem.titleView = tbToolbar;
+        // Create the button view.
+        float toolBarHeight = self.navigationController.navigationBar.frame.size.height;
+        float toolBarWidth = self.navigationController.navigationBar.frame.size.width;
+        self.toolBarView = [[UIView alloc] initWithFrame: CGRectMake(0, 0, toolBarWidth, toolBarHeight)];
+        toolBarView.backgroundColor = [UIColor clearColor];
+        
+        // Add the buttons to the button view.
+        float x = 0;
+        [self addButtonWithImageNamed: @"new.png" x: &x action: @selector(newProjectAction:)];
+        x += 10;
+        [self addButtonWithImageNamed: @"openproj.png" x: &x action: @selector(openProjectAction:)];
+        x += 10;
+        [self addButtonWithImageNamed: @"rename.png" x: &x action: @selector(renameProjectAction:)];
+        x += 10;
+        [self addButtonWithImageNamed: @"delete.png" x: &x action: @selector(deleteProjectAction:)];
+        x += 10;
+        [self addButtonWithImageNamed: @"build.png" x: &x action: @selector(buildProjectAction)];
+        x += 10;
+        xbeeButton = [self addButtonWithImageNamed: @"xbee.png" x: &x action: @selector(xbeeAction)];
+        x += 10;
+        runButton = [self addButtonWithImageNamed: @"run.png" x: &x action: @selector(runProjectAction)];
+        
+        // Use our button view as the navigation title view.
         self.navigationItem.leftBarButtonItem = nil;
+        self.navigationItem.titleView = self.toolBarView;
         if ([self respondsToSelector: @selector(setEdgesForExtendedLayout:)]) {
             self.edgesForExtendedLayout = UIRectEdgeNone;
         }
         
-        // Add the bar buttons.
-//        barButtons[newIndex] = [[UIBarButtonItem alloc] initWithImage: [UIImage imageNamed: @"newfile.png"]
-//                                                                style: UIBarButtonItemStylePlain
-//                                                               target: self
-//                                                               action: @selector(newButtonAction)];
-        barButtons[runIndex] = [[UIBarButtonItem alloc] initWithImage: [UIImage imageNamed: @"run_ipad.png"]
-                                                                style: UIBarButtonItemStylePlain
-                                                               target: self
-                                                               action: @selector(runProgramAction)];
-        
         initialized = YES;
     }
-    
-    // Miscellaneous setup.
-    [self updateButtons];
     
     // Call super.
     [super viewWillAppear: animated];
 }
 
-#pragma mark - Split view
+#pragma mark - PopoverController Delegate Methods
 
-- (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
-{
-    barButtonItem.title = NSLocalizedString(@"Master", @"Master");
-    [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
-    self.masterPopoverController = popoverController;
+/*!
+ * Tells the delegate that the popover was dismissed.
+ *
+ * Parameters:
+ *  popoverController: The popover controller that was dismissed.
+ */
+
+- (void) popoverControllerDidDismissPopover: (UIPopoverController *) popoverController {
+    if (popoverController == pickerPopoverController)
+        self.pickerPopoverController = nil;
 }
 
-- (void)splitViewController:(UISplitViewController *)splitController willShowViewController:(UIViewController *)viewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
+#pragma mark - OpenProjectViewControllerDelegate
+
+/*!
+ * Called if the user taps Open or Cancel, this method passes the index of the selected project file.
+ *
+ * @param picker		The picker object that made this call.
+ * @param row			The newly selected row, or -1 if Cancel was selected.
+ */
+
+- (void) openProjectViewController: (OpenProjectViewController *) picker didSelectProject: (int) row {
+    switch (picker.tag) {
+        case tagOpenProject:
+            [pickerPopoverController dismissPopoverAnimated: YES];
+            
+            if (row >= 0) {
+                // Open the selected project.
+                if ([delegate respondsToSelector: @selector(detailViewControllerDelegateOpenProject:)])
+	                [delegate detailViewControllerDelegateOpenProject: projects[row]];
+            }
+            break;
+    }
+}
+
+#pragma mark - UISplitViewControllerDelegate
+
+/*!
+ * Tells the delegate that the display mode for the split view controller is about to change.
+ *
+ * The split view controller calls this method when its display mode is about to change. Because 
+ * changing the display mode usually means hiding or showing one of the child view controllers, 
+ * you can implement this method and use it to add or remove the controls for showing the primary 
+ * view controller.
+ *
+ * @param svc			The split view controller whose display mode is changing.
+ * @param displayMode	The new display mode that is about to be applied to the split view controller.
+ */
+
+- (void) splitViewController: (UISplitViewController *) svc
+     willChangeToDisplayMode: (UISplitViewControllerDisplayMode) displayMode
 {
-    // Called when the view is shown again in the split view, invalidating the button and popover controller.
-    [self.navigationItem setLeftBarButtonItem:nil animated:YES];
-    self.masterPopoverController = nil;
+    UIBarButtonItem *barButtonItem = svc.displayModeButtonItem;
+    [self.navigationItem setLeftBarButtonItem: barButtonItem animated: YES];
+}
+
+- (void) splitViewController: (UISplitViewController *) splitController 
+      willHideViewController: (UIViewController *) viewController 
+           withBarButtonItem: (UIBarButtonItem *) barButtonItem 
+        forPopoverController: (UIPopoverController *) popoverController
+{
+    // TODO: This method was deprecated in iOS 8. Test under iOS 7 to make sure all is OK.
+    if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
+        barButtonItem.title = NSLocalizedString(@"Project", @"Project");
+        [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
+    }
 }
 
 @end

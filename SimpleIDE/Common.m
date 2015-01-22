@@ -2,7 +2,7 @@
 //  Common.m
 //  SimpleIDE
 //
-//  Created by Mike Westerfield on 4/30/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html ).
+//  Created by Mike Westerfield on 4/30/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html).
 //  Copyright (c) 2014 Parallax. All rights reserved.
 //
 
@@ -15,7 +15,7 @@
  *
  * The path name is terminated with a / character.
  *
- * @return		The full path of the sandbox directory.
+ * @return			The full path of the sandbox directory.
  */
 
 + (const char *) csandbox {
@@ -26,9 +26,29 @@
 }
 
 /*!
+ * Universal entry point for reporting NSError errors tot he user.
+ *
+ * @param error		The error to report.
+ */
+
++ (void) reportError: (NSError *) error {
+    NSString *message = error.localizedDescription;
+    if (error.localizedFailureReason)
+        message = [NSString stringWithFormat: @"%@\n\n%@", message, error.localizedFailureReason];
+    if (error.localizedRecoverySuggestion)
+        message = [NSString stringWithFormat: @"%@\n\n%@", message, error.localizedRecoverySuggestion];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Error"
+                                                    message: message
+                                                   delegate: nil
+                                          cancelButtonTitle: @"OK"
+                                          otherButtonTitles: nil];
+    [alert show];
+}
+
+/*!
  * Get the path name of the sandbox.
  *
- * @return		The full path of the sandbox directory.
+ * @return			The full path of the sandbox directory.
  */
 
 + (NSString *) sandbox {
@@ -39,7 +59,7 @@
 /*!
  * Get the prefered font for text in the console and source views.
  *
- * Returns: The font.
+ * @return			The font.
  */
 
 + (UIFont *) textFont {

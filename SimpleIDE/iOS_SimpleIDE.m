@@ -7,7 +7,7 @@
 //	directly, and the internal calls to execute the files have been redirected through these files to allow the iOS
 //	app to call those programs.
 //
-//  Created by Mike Westerfield on 11/7/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html ).
+//  Created by Mike Westerfield on 11/7/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html).
 //  Copyright (c) 2014 Parallax. All rights reserved.
 //
 
@@ -149,30 +149,30 @@ extern const char *ios_ex_run (struct pex_obj *obj, int flags,
     if (strcmp(executable, "cc1") == 0) {
         // The compiler is calling cc1. Redirect this call to toplev_main, the gcc-defined alternate
         // entry point for cc1. (See propgcc/gcc/gcc/main.c.)
-        toplev_main (argc, argv);
+// TODO:        toplev_main (argc, argv);
     } else if (strcmp(executable, "as") == 0) {
         // The compiler is calling gas. Redirect this call to toplev_as_main, the alternate
         // entry point for gas. (See propgcc/binutils/gas/as.c and propgcc/binutils/gas/toplev_as_main.c.)
-        toplev_as_main (argc, argv);
+// TODO:        toplev_as_main (argc, argv);
     } else if (strcmp(executable, "ld") == 0) {
         // The compiler is calling ld. Redirect this call to toplev_ldmain, the alternate
         // entry point for ld. (See propgcc/binutils/gas/toplev_ldmain.c.)
         
-        char **argv4 = (char **) malloc(sizeof(char *)*(argc + 2));
-        for (int i = 0; i < argc; ++i)
-            argv4[i] = argv[i];
-        argv4[argc++] = "-o";
-        char *outname = "a.out";
-        char *out = (char *) malloc(sizeof(char)*(strlen([Common csandbox]) + strlen(outname) + 1));
-        strcpy(out, [Common csandbox]);
-        strcat(out, outname);
-        argv4[argc++] = out;
-        printf("     added -o %s\n", out); // TODO: Remove
-        
-        toplev_ldmain (argc, argv4);
-        
-        free(argv4);
-        free(out);
+// TODO:        char **argv4 = (char **) malloc(sizeof(char *)*(argc + 2));
+//        for (int i = 0; i < argc; ++i)
+//            argv4[i] = argv[i];
+//        argv4[argc++] = "-o";
+//        char *outname = "a.out";
+//        char *out = (char *) malloc(sizeof(char)*(strlen([Common csandbox]) + strlen(outname) + 1));
+//        strcpy(out, [Common csandbox]);
+//        strcat(out, outname);
+//        argv4[argc++] = out;
+//        printf("     added -o %s\n", out); // TODO: Remove
+//        
+//        toplev_ldmain (argc, argv4);
+//        
+//        free(argv4);
+//        free(out);
     }
     
     // TODO: Remove the following debug code.

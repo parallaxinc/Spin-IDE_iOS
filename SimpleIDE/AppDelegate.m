@@ -2,7 +2,7 @@
 //  AppDelegate.m
 //  SimpleIDE
 //
-//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html ).
+//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html).
 //  Copyright (c) 2014 Parallax. All rights reserved.
 //
 
@@ -14,68 +14,41 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Place compiler files in the sandbox.
+    // Create projects for the various sample files.
+    NSArray *sources = [[NSBundle mainBundle] pathsForResourcesOfType: @"spin" inDirectory: nil];
     NSString *sandboxPath = [Common sandbox];
+    NSFileManager *manager = [NSFileManager defaultManager];
+    for (NSString *path in sources) {
+        NSError *error;
+        NSString *projectName = [[path lastPathComponent] stringByDeletingPathExtension];
+        NSString *destFolder = [sandboxPath stringByAppendingPathComponent: projectName];
+        if (![manager fileExistsAtPath: destFolder]) {
+            if ([manager createDirectoryAtPath: destFolder withIntermediateDirectories: YES attributes: nil error: &error]) {
+                NSString *destinationPath = [destFolder stringByAppendingPathComponent: [path lastPathComponent]];
+                [manager copyItemAtPath: path toPath: destinationPath error: &error];
+                
+                NSString *sideFile = [NSString stringWithFormat: @"%@\n>compiler=SPIN\n", [path lastPathComponent]];
+                destinationPath = [destFolder stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"side"]];
+                [sideFile writeToFile: destinationPath atomically: NO encoding: NSUTF8StringEncoding error: &error];
+            }
+        }
+    }
 
-    NSArray *files = [[NSArray alloc] initWithObjects: @"Hello_Message", nil];
-    for (int i = 0; i < [files count]; ++i) {
-        NSString *name  = [files objectAtIndex: i];
-        NSString *sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"c"];
-        NSString *destinationPath = [sandboxPath stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"c"]];
-        [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
-        [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
+    sources = [[NSBundle mainBundle] pathsForResourcesOfType: @"c" inDirectory: nil];
+    for (NSString *path in sources) {
+        NSString *projectName = [[path lastPathComponent] stringByDeletingPathExtension];
+        NSString *destFolder = [sandboxPath stringByAppendingPathComponent: projectName];
+        if (![manager fileExistsAtPath: destFolder]) {
+            if ([manager createDirectoryAtPath: destFolder withIntermediateDirectories: YES attributes: nil error: nil]) {
+                NSString *destinationPath = [destFolder stringByAppendingPathComponent: [path lastPathComponent]];
+                [manager copyItemAtPath: path toPath: destinationPath error: nil];
+                
+                NSString *sideFile = [NSString stringWithFormat: @"%@\n>compiler=C\n", [path lastPathComponent]];
+                destinationPath = [destFolder stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"side"]];
+                [sideFile writeToFile: destinationPath atomically: NO encoding: NSUTF8StringEncoding error: nil];
+            }
+        }
     }
-    
-    NSString *folder = [sandboxPath stringByAppendingPathComponent: @"libraries/Protocol/libsimplei2c/cmm"];
-    [[NSFileManager defaultManager] createDirectoryAtPath: folder
-                              withIntermediateDirectories: YES
-                                               attributes: nil
-                                                    error: nil];
-    NSString *name  = @"simplei2c";
-    NSString *sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"h"];
-    NSString *destinationPath = [[folder stringByDeletingLastPathComponent] stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"h"]];
-    [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
-    [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
-    name  = @"libsimplei2c";
-    sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"a"];
-    destinationPath = [folder stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"a"]];
-    [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
-    [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
-    
-    folder = [sandboxPath stringByAppendingPathComponent: @"libraries/TextDevices/libsimpletext/cmm"];
-    [[NSFileManager defaultManager] createDirectoryAtPath: folder
-                              withIntermediateDirectories: YES
-                                               attributes: nil
-                                                    error: nil];
-    files = [[NSArray alloc] initWithObjects: @"serial", @"simpletext", nil];
-    for (int i = 0; i < [files count]; ++i) {
-        NSString *name  = [files objectAtIndex: i];
-        NSString *sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"h"];
-        NSString *destinationPath = [[folder stringByDeletingLastPathComponent] stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"h"]];
-        [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
-        [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
-    }
-    name  = @"libsimpletext";
-    sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"a"];
-    destinationPath = [folder stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"a"]];
-    [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
-    [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
-    
-    folder = [sandboxPath stringByAppendingPathComponent: @"libraries/Utility/libsimpletools/cmm"];
-    [[NSFileManager defaultManager] createDirectoryAtPath: folder
-                              withIntermediateDirectories: YES
-                                               attributes: nil
-                                                    error: nil];
-    name  = @"simpletools";
-    sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"h"];
-    destinationPath = [[folder stringByDeletingLastPathComponent] stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"h"]];
-    [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
-    [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
-    name  = @"libsimpletools";
-    sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"a"];
-    destinationPath = [folder stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"a"]];
-    [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
-    [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
 
     // Set up the split view controller.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;

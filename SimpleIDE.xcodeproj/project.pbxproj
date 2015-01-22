@@ -7,23 +7,48 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2709085E19FABD84002429FB /* Hello_Message.c in Resources */ = {isa = PBXBuildFile; fileRef = 2709085C19FABA5A002429FB /* Hello_Message.c */; };
-		2709087619FACBC1002429FB /* libsimplei2c.a in Resources */ = {isa = PBXBuildFile; fileRef = 2709087319FAC4F3002429FB /* libsimplei2c.a */; };
-		2709087719FACBC1002429FB /* simplei2c.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709087419FAC4F3002429FB /* simplei2c.h */; };
-		2709087819FACBC1002429FB /* libsimpletext.a in Resources */ = {isa = PBXBuildFile; fileRef = 2709086C19FAC48E002429FB /* libsimpletext.a */; };
-		2709087919FACBC1002429FB /* serial.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086D19FAC48E002429FB /* serial.h */; };
-		2709087A19FACBC1002429FB /* simpletext.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086E19FAC48E002429FB /* simpletext.h */; };
-		2709087B19FACBC1002429FB /* simpletools.h in Resources */ = {isa = PBXBuildFile; fileRef = 2709086619FAC3AA002429FB /* simpletools.h */; };
-		2709087C19FACBC1002429FB /* libsimpletools.a in Resources */ = {isa = PBXBuildFile; fileRef = 2709086719FAC3AF002429FB /* libsimpletools.a */; };
-		270E489B19F97AC200318268 /* libcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489A19F97AC200318268 /* libcpp.a */; };
 		270E489D19F97AEF00318268 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489C19F97AEF00318268 /* libiberty.a */; };
-		270E489F19F97AFC00318268 /* libdecnumber.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 270E489E19F97AFC00318268 /* libdecnumber.a */; };
-		2722FAFB1918505B00B17227 /* newfile.png in Resources */ = {isa = PBXBuildFile; fileRef = 2722FAFA1918505B00B17227 /* newfile.png */; };
+		271BE0A61A5F3EC300D38EF9 /* BlockNestStackRoutines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0981A5F3EC300D38EF9 /* BlockNestStackRoutines.cpp */; };
+		271BE0A71A5F3EC300D38EF9 /* CompileDatBlocks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0991A5F3EC300D38EF9 /* CompileDatBlocks.cpp */; };
+		271BE0A81A5F3EC300D38EF9 /* CompileExpression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE09A1A5F3EC300D38EF9 /* CompileExpression.cpp */; };
+		271BE0A91A5F3EC300D38EF9 /* CompileInstruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE09B1A5F3EC300D38EF9 /* CompileInstruction.cpp */; };
+		271BE0AA1A5F3EC300D38EF9 /* CompileUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE09C1A5F3EC300D38EF9 /* CompileUtilities.cpp */; };
+		271BE0AB1A5F3EC300D38EF9 /* DistillObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE09D1A5F3EC300D38EF9 /* DistillObjects.cpp */; };
+		271BE0AC1A5F3EC300D38EF9 /* Elementizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE09E1A5F3EC300D38EF9 /* Elementizer.cpp */; };
+		271BE0AD1A5F3EC300D38EF9 /* ErrorStrings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE09F1A5F3EC300D38EF9 /* ErrorStrings.cpp */; };
+		271BE0AE1A5F3EC300D38EF9 /* ExpressionResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0A01A5F3EC300D38EF9 /* ExpressionResolver.cpp */; };
+		271BE0AF1A5F3EC300D38EF9 /* InstructionBlockCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0A11A5F3EC300D38EF9 /* InstructionBlockCompiler.cpp */; };
+		271BE0B01A5F3EC300D38EF9 /* PropellerCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0A21A5F3EC300D38EF9 /* PropellerCompiler.cpp */; };
+		271BE0B11A5F3EC300D38EF9 /* StringConstantRoutines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0A31A5F3EC300D38EF9 /* StringConstantRoutines.cpp */; };
+		271BE0B21A5F3EC300D38EF9 /* SymbolEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0A41A5F3EC300D38EF9 /* SymbolEngine.cpp */; };
+		271BE0B31A5F3EC300D38EF9 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0A51A5F3EC300D38EF9 /* Utilities.cpp */; };
+		271BE0BF1A5F3ED600D38EF9 /* flexbuf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0B91A5F3ED600D38EF9 /* flexbuf.cpp */; };
+		271BE0C01A5F3ED600D38EF9 /* preprocess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0BA1A5F3ED600D38EF9 /* preprocess.cpp */; };
+		271BE0C11A5F3ED600D38EF9 /* objectheap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0BB1A5F3ED600D38EF9 /* objectheap.cpp */; };
+		271BE0C21A5F3ED600D38EF9 /* openspin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0BC1A5F3ED600D38EF9 /* openspin.cpp */; };
+		271BE0C31A5F3ED600D38EF9 /* pathentry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0BD1A5F3ED600D38EF9 /* pathentry.cpp */; };
+		271BE0C41A5F3ED600D38EF9 /* textconvert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0BE1A5F3ED600D38EF9 /* textconvert.cpp */; };
+		271BE0C81A5F55DE00D38EF9 /* SpinCompilerOptionsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0C71A5F55DE00D38EF9 /* SpinCompilerOptionsView.m */; };
+		271BE0CB1A5FE17200D38EF9 /* Project.m in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0CA1A5FE17200D38EF9 /* Project.m */; };
+		271BE0CD1A5FF39F00D38EF9 /* openproj.png in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0CC1A5FF39F00D38EF9 /* openproj.png */; };
+		271BE0CF1A5FFF2400D38EF9 /* build.png in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0CE1A5FFF2400D38EF9 /* build.png */; };
+		271BE0E01A6046C600D38EF9 /* Blank.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0D71A6046C600D38EF9 /* Blank.spin */; };
+		271BE0E11A6046C600D38EF9 /* Blink16-23.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0D81A6046C600D38EF9 /* Blink16-23.spin */; };
+		271BE0E21A6046C600D38EF9 /* Blink16.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0D91A6046C600D38EF9 /* Blink16.spin */; };
+		271BE0E31A6046C600D38EF9 /* Clock.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0DA1A6046C600D38EF9 /* Clock.spin */; };
+		271BE0E41A6046C600D38EF9 /* ClockDemo.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0DB1A6046C600D38EF9 /* ClockDemo.spin */; };
+		271BE0E51A6046C600D38EF9 /* Float-Blink_Demo.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0DC1A6046C600D38EF9 /* Float-Blink_Demo.spin */; };
+		271BE0E61A6046C600D38EF9 /* FloatMath.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0DD1A6046C600D38EF9 /* FloatMath.spin */; };
+		271BE0E71A6046C600D38EF9 /* FloatString.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0DE1A6046C600D38EF9 /* FloatString.spin */; };
+		271BE0E81A6046C600D38EF9 /* LargeSpinCode.spin in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0DF1A6046C600D38EF9 /* LargeSpinCode.spin */; };
+		271BE0EA1A60472D00D38EF9 /* Hello_Message.c in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0E91A60472D00D38EF9 /* Hello_Message.c */; };
+		271BE0EE1A607AC600D38EF9 /* OpenProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 271BE0EC1A607AC600D38EF9 /* OpenProjectViewController.m */; };
+		271BE0EF1A607AC600D38EF9 /* OpenProjectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 271BE0ED1A607AC600D38EF9 /* OpenProjectViewController.xib */; };
 		2722FAFE1918528800B17227 /* DetailViewNavigationControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */; };
+		27323B251A69AF5C00401E41 /* SpinBackgroundHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27323B241A69AF5C00401E41 /* SpinBackgroundHighlighter.m */; };
 		2738F4C619182B1900DF7352 /* SpinHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738F4C519182B1900DF7352 /* SpinHighlighter.m */; };
 		273E31C81A1AC03B0076F6BF /* libopcodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31C71A1AC03B0076F6BF /* libopcodes.a */; };
 		273E31D01A1AC52E0076F6BF /* libgas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31CF1A1AC52E0076F6BF /* libgas.a */; };
-		273E31D21A1AC84A0076F6BF /* libpropeller-elf-cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31D11A1AC84A0076F6BF /* libpropeller-elf-cpp.a */; };
 		2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067C1910310900FA7E5D /* Foundation.framework */; };
 		2742067F1910310900FA7E5D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067E1910310900FA7E5D /* CoreGraphics.framework */; };
 		274206811910310900FA7E5D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 274206801910310900FA7E5D /* UIKit.framework */; };
@@ -44,25 +69,34 @@
 		274206C31910682E00FA7E5D /* PickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 274206C11910682E00FA7E5D /* PickerViewController.m */; };
 		274206C41910682E00FA7E5D /* PickerViewController_7.xib in Resources */ = {isa = PBXBuildFile; fileRef = 274206C21910682E00FA7E5D /* PickerViewController_7.xib */; };
 		2751D04819EF10D300C37FA1 /* NavToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2751D04719EF10D300C37FA1 /* NavToolBar.m */; };
-		275B26D01A02A99D0011B72E /* libbackend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26CF1A02A99D0011B72E /* libbackend.a */; };
-		275B26D21A02A9B80011B72E /* libcc1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275B26D11A02A9B80011B72E /* libcc1.a */; };
 		275BB9821913046500F0F020 /* HighlighterRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 275BB9811913046500F0F020 /* HighlighterRule.m */; };
-		275CC6951A1D5FFC00C40731 /* libld.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275CC6941A1D5FFC00C40731 /* libld.a */; };
 		2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.m in Sources */ = {isa = PBXBuildFile; fileRef = 2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.m */; };
 		27680F881A04004300D66F02 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27680F871A04004300D66F02 /* libiconv.dylib */; };
-		277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D561A02D292008130E9 /* libmpfr.a */; };
-		277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D581A02D7C4008130E9 /* libmpn.a */; };
-		277E6D5B1A02D86D008130E9 /* libmpz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D5A1A02D86D008130E9 /* libmpz.a */; };
-		277E6D5D1A02D8A3008130E9 /* libgmp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D5C1A02D8A3008130E9 /* libgmp.a */; };
-		277E6D5F1A02D8E8008130E9 /* libmpc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277E6D5E1A02D8E8008130E9 /* libmpc.a */; };
-		279EB67119E47C92007AD8B3 /* run_ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 279EB66F19E47C92007AD8B3 /* run_ipad.png */; };
-		279EB67219E47C92007AD8B3 /* run_ipad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 279EB67019E47C92007AD8B3 /* run_ipad@2x.png */; };
+		276F61E51A6EDD2A006704E0 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F61E41A6EDD2A006704E0 /* GCDAsyncUdpSocket.m */; };
+		276F61E91A6EF2C4006704E0 /* Loader.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F61E81A6EF2C4006704E0 /* Loader.m */; };
+		276F61EC1A6EF2E1006704E0 /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F61EB1A6EF2E1006704E0 /* ConfigurationViewController.m */; };
+		276F61F11A6EF3A1006704E0 /* ConfigurationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276F61EF1A6EF3A1006704E0 /* ConfigurationViewController.xib */; };
+		276F61F81A6EF689006704E0 /* LoadImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F61F61A6EF689006704E0 /* LoadImageViewController.m */; };
+		276F61F91A6EF689006704E0 /* LoadImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276F61F71A6EF689006704E0 /* LoadImageViewController.xib */; };
+		276F61FC1A6EF937006704E0 /* TXBee.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F61FB1A6EF937006704E0 /* TXBee.m */; };
+		276F61FF1A6EFAED006704E0 /* ProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F61FE1A6EFAED006704E0 /* ProgressView.m */; };
+		276F62021A6EFB64006704E0 /* XBeeCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F62011A6EFB64006704E0 /* XBeeCommon.m */; };
+		276F62051A6EFBE0006704E0 /* UDPDataBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F62041A6EFBE0006704E0 /* UDPDataBuffer.m */; };
+		276F62071A6F1B23006704E0 /* xbee.png in Resources */ = {isa = PBXBuildFile; fileRef = 276F62061A6F1B23006704E0 /* xbee.png */; };
+		27BBADA11A707A8F009E1311 /* delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 27BBAD9E1A707A8F009E1311 /* delete.png */; };
+		27BBADA21A707A8F009E1311 /* new.png in Resources */ = {isa = PBXBuildFile; fileRef = 27BBAD9F1A707A8F009E1311 /* new.png */; };
+		27BBADA31A707A8F009E1311 /* rename.png in Resources */ = {isa = PBXBuildFile; fileRef = 27BBADA01A707A8F009E1311 /* rename.png */; };
+		27BDDE751A44EAC70049272D /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BDDE741A44EAC70049272D /* libz.a */; };
 		27BFBB071911856A0091F183 /* SourceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB061911856A0091F183 /* SourceView.m */; };
 		27BFBB0A191186AC0091F183 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB09191186AC0091F183 /* Common.m */; };
 		27BFBB0D1911AD100091F183 /* Highlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB0C1911AD100091F183 /* Highlighter.m */; };
 		27BFBB101911B3880091F183 /* CHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BFBB0F1911B3880091F183 /* CHighlighter.m */; };
+		27CE41DF1A64803F002B4EE9 /* SplitViewControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41DE1A64803F002B4EE9 /* SplitViewControl.m */; };
+		27CE41E21A648067002B4EE9 /* SplitArrows.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E11A648067002B4EE9 /* SplitArrows.m */; };
+		27CE41E51A64812D002B4EE9 /* SplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E41A64812D002B4EE9 /* SplitView.m */; };
+		27CE41E81A648478002B4EE9 /* SourceConsoleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E71A648478002B4EE9 /* SourceConsoleSplitView.m */; };
 		27D8CD9A1A32517400B8FA36 /* libbfd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8CD991A32517400B8FA36 /* libbfd.a */; };
-		27DCC28F1A16C6E500F0D3D7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27DCC28E1A16C6E500F0D3D7 /* libz.a */; };
+		27E1F2FA1A6DC87400B30331 /* run.png in Resources */ = {isa = PBXBuildFile; fileRef = 27E1F2F91A6DC87400B30331 /* run.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,25 +110,67 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2709085C19FABA5A002429FB /* Hello_Message.c */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; name = Hello_Message.c; path = Samples/Hello_Message.c; sourceTree = "<group>"; };
-		2709086619FAC3AA002429FB /* simpletools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = simpletools.h; path = libraries/Utility/libsimpletools/simpletools.h; sourceTree = "<group>"; };
-		2709086719FAC3AF002429FB /* libsimpletools.a */ = {isa = PBXFileReference; explicitFileType = text; name = libsimpletools.a; path = libraries/Utility/libsimpletools/cmm/libsimpletools.a; sourceTree = "<group>"; };
-		2709086C19FAC48E002429FB /* libsimpletext.a */ = {isa = PBXFileReference; explicitFileType = text; path = libsimpletext.a; sourceTree = "<group>"; };
-		2709086D19FAC48E002429FB /* serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = serial.h; path = libraries/TextDevices/libsimpletext/serial.h; sourceTree = "<group>"; };
-		2709086E19FAC48E002429FB /* simpletext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = simpletext.h; path = libraries/TextDevices/libsimpletext/simpletext.h; sourceTree = "<group>"; };
-		2709087319FAC4F3002429FB /* libsimplei2c.a */ = {isa = PBXFileReference; explicitFileType = text; path = libsimplei2c.a; sourceTree = "<group>"; };
-		2709087419FAC4F3002429FB /* simplei2c.h */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = simplei2c.h; sourceTree = "<group>"; };
-		270E489A19F97AC200318268 /* libcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcpp.a; sourceTree = "<group>"; };
 		270E489C19F97AEF00318268 /* libiberty.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiberty.a; sourceTree = "<group>"; };
-		270E489E19F97AFC00318268 /* libdecnumber.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libdecnumber.a; sourceTree = "<group>"; };
-		2722FAFA1918505B00B17227 /* newfile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newfile.png; sourceTree = "<group>"; };
+		271BE0911A5F3EC300D38EF9 /* CompileUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileUtilities.h; path = PropellerCompiler/CompileUtilities.h; sourceTree = "<group>"; };
+		271BE0921A5F3EC300D38EF9 /* Elementizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Elementizer.h; path = PropellerCompiler/Elementizer.h; sourceTree = "<group>"; };
+		271BE0931A5F3EC300D38EF9 /* ErrorStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ErrorStrings.h; path = PropellerCompiler/ErrorStrings.h; sourceTree = "<group>"; };
+		271BE0941A5F3EC300D38EF9 /* PropellerCompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropellerCompiler.h; path = PropellerCompiler/PropellerCompiler.h; sourceTree = "<group>"; };
+		271BE0951A5F3EC300D38EF9 /* PropellerCompilerInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropellerCompilerInternal.h; path = PropellerCompiler/PropellerCompilerInternal.h; sourceTree = "<group>"; };
+		271BE0961A5F3EC300D38EF9 /* SymbolEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SymbolEngine.h; path = PropellerCompiler/SymbolEngine.h; sourceTree = "<group>"; };
+		271BE0971A5F3EC300D38EF9 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utilities.h; path = PropellerCompiler/Utilities.h; sourceTree = "<group>"; };
+		271BE0981A5F3EC300D38EF9 /* BlockNestStackRoutines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockNestStackRoutines.cpp; path = PropellerCompiler/BlockNestStackRoutines.cpp; sourceTree = "<group>"; };
+		271BE0991A5F3EC300D38EF9 /* CompileDatBlocks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileDatBlocks.cpp; path = PropellerCompiler/CompileDatBlocks.cpp; sourceTree = "<group>"; };
+		271BE09A1A5F3EC300D38EF9 /* CompileExpression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileExpression.cpp; path = PropellerCompiler/CompileExpression.cpp; sourceTree = "<group>"; };
+		271BE09B1A5F3EC300D38EF9 /* CompileInstruction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileInstruction.cpp; path = PropellerCompiler/CompileInstruction.cpp; sourceTree = "<group>"; };
+		271BE09C1A5F3EC300D38EF9 /* CompileUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileUtilities.cpp; path = PropellerCompiler/CompileUtilities.cpp; sourceTree = "<group>"; };
+		271BE09D1A5F3EC300D38EF9 /* DistillObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DistillObjects.cpp; path = PropellerCompiler/DistillObjects.cpp; sourceTree = "<group>"; };
+		271BE09E1A5F3EC300D38EF9 /* Elementizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Elementizer.cpp; path = PropellerCompiler/Elementizer.cpp; sourceTree = "<group>"; };
+		271BE09F1A5F3EC300D38EF9 /* ErrorStrings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ErrorStrings.cpp; path = PropellerCompiler/ErrorStrings.cpp; sourceTree = "<group>"; };
+		271BE0A01A5F3EC300D38EF9 /* ExpressionResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExpressionResolver.cpp; path = PropellerCompiler/ExpressionResolver.cpp; sourceTree = "<group>"; };
+		271BE0A11A5F3EC300D38EF9 /* InstructionBlockCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionBlockCompiler.cpp; path = PropellerCompiler/InstructionBlockCompiler.cpp; sourceTree = "<group>"; };
+		271BE0A21A5F3EC300D38EF9 /* PropellerCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropellerCompiler.cpp; path = PropellerCompiler/PropellerCompiler.cpp; sourceTree = "<group>"; };
+		271BE0A31A5F3EC300D38EF9 /* StringConstantRoutines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringConstantRoutines.cpp; path = PropellerCompiler/StringConstantRoutines.cpp; sourceTree = "<group>"; };
+		271BE0A41A5F3EC300D38EF9 /* SymbolEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SymbolEngine.cpp; path = PropellerCompiler/SymbolEngine.cpp; sourceTree = "<group>"; };
+		271BE0A51A5F3EC300D38EF9 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utilities.cpp; path = PropellerCompiler/Utilities.cpp; sourceTree = "<group>"; };
+		271BE0B41A5F3ED600D38EF9 /* flexbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = flexbuf.h; path = SpinSource/flexbuf.h; sourceTree = "<group>"; };
+		271BE0B51A5F3ED600D38EF9 /* objectheap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = objectheap.h; path = SpinSource/objectheap.h; sourceTree = "<group>"; };
+		271BE0B61A5F3ED600D38EF9 /* pathentry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pathentry.h; path = SpinSource/pathentry.h; sourceTree = "<group>"; };
+		271BE0B71A5F3ED600D38EF9 /* preprocess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = preprocess.h; path = SpinSource/preprocess.h; sourceTree = "<group>"; };
+		271BE0B81A5F3ED600D38EF9 /* textconvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textconvert.h; path = SpinSource/textconvert.h; sourceTree = "<group>"; };
+		271BE0B91A5F3ED600D38EF9 /* flexbuf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = flexbuf.cpp; path = SpinSource/flexbuf.cpp; sourceTree = "<group>"; };
+		271BE0BA1A5F3ED600D38EF9 /* preprocess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = preprocess.cpp; path = SpinSource/preprocess.cpp; sourceTree = "<group>"; };
+		271BE0BB1A5F3ED600D38EF9 /* objectheap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = objectheap.cpp; path = SpinSource/objectheap.cpp; sourceTree = "<group>"; };
+		271BE0BC1A5F3ED600D38EF9 /* openspin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = openspin.cpp; path = SpinSource/openspin.cpp; sourceTree = "<group>"; };
+		271BE0BD1A5F3ED600D38EF9 /* pathentry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pathentry.cpp; path = SpinSource/pathentry.cpp; sourceTree = "<group>"; };
+		271BE0BE1A5F3ED600D38EF9 /* textconvert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = textconvert.cpp; path = SpinSource/textconvert.cpp; sourceTree = "<group>"; };
+		271BE0C51A5F3F0200D38EF9 /* openspin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = openspin.h; path = SpinSource/openspin.h; sourceTree = "<group>"; };
+		271BE0C61A5F55DE00D38EF9 /* SpinCompilerOptionsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpinCompilerOptionsView.h; sourceTree = "<group>"; };
+		271BE0C71A5F55DE00D38EF9 /* SpinCompilerOptionsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpinCompilerOptionsView.m; sourceTree = "<group>"; };
+		271BE0C91A5FE17200D38EF9 /* Project.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Project.h; sourceTree = "<group>"; };
+		271BE0CA1A5FE17200D38EF9 /* Project.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Project.m; sourceTree = "<group>"; };
+		271BE0CC1A5FF39F00D38EF9 /* openproj.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = openproj.png; path = Art/openproj.png; sourceTree = SOURCE_ROOT; };
+		271BE0CE1A5FFF2400D38EF9 /* build.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = build.png; path = Art/build.png; sourceTree = SOURCE_ROOT; };
+		271BE0D71A6046C600D38EF9 /* Blank.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Blank.spin; path = Samples/Blank.spin; sourceTree = SOURCE_ROOT; };
+		271BE0D81A6046C600D38EF9 /* Blink16-23.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Blink16-23.spin"; path = "Samples/Blink16-23.spin"; sourceTree = SOURCE_ROOT; };
+		271BE0D91A6046C600D38EF9 /* Blink16.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Blink16.spin; path = Samples/Blink16.spin; sourceTree = SOURCE_ROOT; };
+		271BE0DA1A6046C600D38EF9 /* Clock.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Clock.spin; path = Samples/Clock.spin; sourceTree = SOURCE_ROOT; };
+		271BE0DB1A6046C600D38EF9 /* ClockDemo.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClockDemo.spin; path = Samples/ClockDemo.spin; sourceTree = SOURCE_ROOT; };
+		271BE0DC1A6046C600D38EF9 /* Float-Blink_Demo.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Float-Blink_Demo.spin"; path = "Samples/Float-Blink_Demo.spin"; sourceTree = SOURCE_ROOT; };
+		271BE0DD1A6046C600D38EF9 /* FloatMath.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FloatMath.spin; path = Samples/FloatMath.spin; sourceTree = SOURCE_ROOT; };
+		271BE0DE1A6046C600D38EF9 /* FloatString.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FloatString.spin; path = Samples/FloatString.spin; sourceTree = SOURCE_ROOT; };
+		271BE0DF1A6046C600D38EF9 /* LargeSpinCode.spin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LargeSpinCode.spin; path = Samples/LargeSpinCode.spin; sourceTree = SOURCE_ROOT; };
+		271BE0E91A60472D00D38EF9 /* Hello_Message.c */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; name = Hello_Message.c; path = Samples/Hello_Message.c; sourceTree = SOURCE_ROOT; };
+		271BE0EB1A607AC600D38EF9 /* OpenProjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenProjectViewController.h; sourceTree = "<group>"; };
+		271BE0EC1A607AC600D38EF9 /* OpenProjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenProjectViewController.m; sourceTree = "<group>"; };
+		271BE0ED1A607AC600D38EF9 /* OpenProjectViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OpenProjectViewController.xib; sourceTree = "<group>"; };
 		2722FAFC1918528800B17227 /* DetailViewNavigationControllerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewNavigationControllerViewController.h; sourceTree = "<group>"; };
 		2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewNavigationControllerViewController.m; sourceTree = "<group>"; };
+		27323B231A69AF5C00401E41 /* SpinBackgroundHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpinBackgroundHighlighter.h; sourceTree = "<group>"; };
+		27323B241A69AF5C00401E41 /* SpinBackgroundHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpinBackgroundHighlighter.m; sourceTree = "<group>"; };
 		2738F4C419182B1900DF7352 /* SpinHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpinHighlighter.h; sourceTree = "<group>"; };
 		2738F4C519182B1900DF7352 /* SpinHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpinHighlighter.m; sourceTree = "<group>"; };
 		273E31C71A1AC03B0076F6BF /* libopcodes.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopcodes.a; sourceTree = "<group>"; };
 		273E31CF1A1AC52E0076F6BF /* libgas.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgas.a; sourceTree = "<group>"; };
-		273E31D11A1AC84A0076F6BF /* libpropeller-elf-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libpropeller-elf-cpp.a"; sourceTree = "<group>"; };
 		274206791910310900FA7E5D /* SimpleIDE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleIDE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2742067C1910310900FA7E5D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2742067E1910310900FA7E5D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -126,11 +202,8 @@
 		274206C21910682E00FA7E5D /* PickerViewController_7.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PickerViewController_7.xib; sourceTree = "<group>"; };
 		2751D04619EF10D300C37FA1 /* NavToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavToolBar.h; sourceTree = "<group>"; };
 		2751D04719EF10D300C37FA1 /* NavToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavToolBar.m; sourceTree = "<group>"; };
-		275B26CF1A02A99D0011B72E /* libbackend.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbackend.a; sourceTree = "<group>"; };
-		275B26D11A02A9B80011B72E /* libcc1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcc1.a; sourceTree = "<group>"; };
 		275BB9801913046500F0F020 /* HighlighterRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlighterRule.h; sourceTree = "<group>"; };
 		275BB9811913046500F0F020 /* HighlighterRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlighterRule.m; sourceTree = "<group>"; };
-		275CC6941A1D5FFC00C40731 /* libld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libld.a; sourceTree = "<group>"; };
 		2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iOS_SimpleIDE.m; sourceTree = "<group>"; };
 		2765F5051A0D40FC006B32F4 /* iOS_SimpleIDE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iOS_SimpleIDE.h; sourceTree = "<group>"; };
 		2765F5071A0D433A006B32F4 /* pex-common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "pex-common.h"; sourceTree = "<group>"; };
@@ -139,14 +212,30 @@
 		2765F50C1A0D765B006B32F4 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		2765F50D1A0D766E006B32F4 /* auto-host.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "auto-host.h"; sourceTree = "<group>"; };
 		27680F871A04004300D66F02 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
-		277E6D561A02D292008130E9 /* libmpfr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpfr.a; sourceTree = "<group>"; };
-		277E6D581A02D7C4008130E9 /* libmpn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpn.a; sourceTree = "<group>"; };
-		277E6D5A1A02D86D008130E9 /* libmpz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpz.a; sourceTree = "<group>"; };
-		277E6D5C1A02D8A3008130E9 /* libgmp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgmp.a; sourceTree = "<group>"; };
-		277E6D5E1A02D8E8008130E9 /* libmpc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmpc.a; sourceTree = "<group>"; };
-		279EB66F19E47C92007AD8B3 /* run_ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run_ipad.png; sourceTree = "<group>"; };
-		279EB67019E47C92007AD8B3 /* run_ipad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "run_ipad@2x.png"; sourceTree = "<group>"; };
+		276F61E31A6EDD2A006704E0 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
+		276F61E41A6EDD2A006704E0 /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
+		276F61E71A6EF2C4006704E0 /* Loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Loader.h; sourceTree = "<group>"; };
+		276F61E81A6EF2C4006704E0 /* Loader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Loader.m; sourceTree = "<group>"; };
+		276F61EA1A6EF2E1006704E0 /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
+		276F61EB1A6EF2E1006704E0 /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
+		276F61EF1A6EF3A1006704E0 /* ConfigurationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConfigurationViewController.xib; sourceTree = "<group>"; };
+		276F61F51A6EF689006704E0 /* LoadImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadImageViewController.h; sourceTree = "<group>"; };
+		276F61F61A6EF689006704E0 /* LoadImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadImageViewController.m; sourceTree = "<group>"; };
+		276F61F71A6EF689006704E0 /* LoadImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadImageViewController.xib; sourceTree = "<group>"; };
+		276F61FA1A6EF937006704E0 /* TXBee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXBee.h; sourceTree = "<group>"; };
+		276F61FB1A6EF937006704E0 /* TXBee.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXBee.m; sourceTree = "<group>"; };
+		276F61FD1A6EFAED006704E0 /* ProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressView.h; sourceTree = "<group>"; };
+		276F61FE1A6EFAED006704E0 /* ProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressView.m; sourceTree = "<group>"; };
+		276F62001A6EFB64006704E0 /* XBeeCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBeeCommon.h; sourceTree = "<group>"; };
+		276F62011A6EFB64006704E0 /* XBeeCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBeeCommon.m; sourceTree = "<group>"; };
+		276F62031A6EFBE0006704E0 /* UDPDataBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UDPDataBuffer.h; sourceTree = "<group>"; };
+		276F62041A6EFBE0006704E0 /* UDPDataBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UDPDataBuffer.m; sourceTree = "<group>"; };
+		276F62061A6F1B23006704E0 /* xbee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = xbee.png; path = Art/xbee.png; sourceTree = SOURCE_ROOT; };
 		279EB67319E49BEE007AD8B3 /* libpropeller-elf-cpp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libpropeller-elf-cpp.h"; sourceTree = "<group>"; };
+		27BBAD9E1A707A8F009E1311 /* delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = delete.png; path = Art/delete.png; sourceTree = SOURCE_ROOT; };
+		27BBAD9F1A707A8F009E1311 /* new.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = new.png; path = Art/new.png; sourceTree = SOURCE_ROOT; };
+		27BBADA01A707A8F009E1311 /* rename.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rename.png; path = Art/rename.png; sourceTree = SOURCE_ROOT; };
+		27BDDE741A44EAC70049272D /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		27BFBB051911856A0091F183 /* SourceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceView.h; sourceTree = "<group>"; };
 		27BFBB061911856A0091F183 /* SourceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceView.m; sourceTree = "<group>"; };
 		27BFBB08191186AC0091F183 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
@@ -155,8 +244,16 @@
 		27BFBB0C1911AD100091F183 /* Highlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Highlighter.m; sourceTree = "<group>"; };
 		27BFBB0E1911B3880091F183 /* CHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHighlighter.h; sourceTree = "<group>"; };
 		27BFBB0F1911B3880091F183 /* CHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHighlighter.m; sourceTree = "<group>"; };
+		27CE41DD1A64803F002B4EE9 /* SplitViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewControl.h; sourceTree = "<group>"; };
+		27CE41DE1A64803F002B4EE9 /* SplitViewControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitViewControl.m; sourceTree = "<group>"; };
+		27CE41E01A648067002B4EE9 /* SplitArrows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitArrows.h; sourceTree = "<group>"; };
+		27CE41E11A648067002B4EE9 /* SplitArrows.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitArrows.m; sourceTree = "<group>"; };
+		27CE41E31A64812D002B4EE9 /* SplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitView.h; sourceTree = "<group>"; };
+		27CE41E41A64812D002B4EE9 /* SplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitView.m; sourceTree = "<group>"; };
+		27CE41E61A648478002B4EE9 /* SourceConsoleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceConsoleSplitView.h; sourceTree = "<group>"; };
+		27CE41E71A648478002B4EE9 /* SourceConsoleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceConsoleSplitView.m; sourceTree = "<group>"; };
 		27D8CD991A32517400B8FA36 /* libbfd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbfd.a; sourceTree = "<group>"; };
-		27DCC28E1A16C6E500F0D3D7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
+		27E1F2F91A6DC87400B30331 /* run.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = run.png; path = Art/run.png; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,26 +261,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27BDDE751A44EAC70049272D /* libz.a in Frameworks */,
 				27680F881A04004300D66F02 /* libiconv.dylib in Frameworks */,
-				277E6D5F1A02D8E8008130E9 /* libmpc.a in Frameworks */,
 				2742067F1910310900FA7E5D /* CoreGraphics.framework in Frameworks */,
-				27DCC28F1A16C6E500F0D3D7 /* libz.a in Frameworks */,
-				277E6D5D1A02D8A3008130E9 /* libgmp.a in Frameworks */,
 				273E31C81A1AC03B0076F6BF /* libopcodes.a in Frameworks */,
 				270E489D19F97AEF00318268 /* libiberty.a in Frameworks */,
-				277E6D571A02D292008130E9 /* libmpfr.a in Frameworks */,
-				275CC6951A1D5FFC00C40731 /* libld.a in Frameworks */,
-				277E6D591A02D7C4008130E9 /* libmpn.a in Frameworks */,
 				274206811910310900FA7E5D /* UIKit.framework in Frameworks */,
 				2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */,
 				273E31D01A1AC52E0076F6BF /* libgas.a in Frameworks */,
-				277E6D5B1A02D86D008130E9 /* libmpz.a in Frameworks */,
-				270E489B19F97AC200318268 /* libcpp.a in Frameworks */,
-				275B26D21A02A9B80011B72E /* libcc1.a in Frameworks */,
-				273E31D21A1AC84A0076F6BF /* libpropeller-elf-cpp.a in Frameworks */,
-				275B26D01A02A99D0011B72E /* libbackend.a in Frameworks */,
 				27D8CD9A1A32517400B8FA36 /* libbfd.a in Frameworks */,
-				270E489F19F97AFC00318268 /* libdecnumber.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,105 +288,121 @@
 		2709085B19FABA18002429FB /* Samples */ = {
 			isa = PBXGroup;
 			children = (
-				2709085C19FABA5A002429FB /* Hello_Message.c */,
+				271BE0D71A6046C600D38EF9 /* Blank.spin */,
+				271BE0D81A6046C600D38EF9 /* Blink16-23.spin */,
+				271BE0D91A6046C600D38EF9 /* Blink16.spin */,
+				271BE0DA1A6046C600D38EF9 /* Clock.spin */,
+				271BE0DB1A6046C600D38EF9 /* ClockDemo.spin */,
+				271BE0DC1A6046C600D38EF9 /* Float-Blink_Demo.spin */,
+				271BE0DD1A6046C600D38EF9 /* FloatMath.spin */,
+				271BE0DE1A6046C600D38EF9 /* FloatString.spin */,
+				271BE0DF1A6046C600D38EF9 /* LargeSpinCode.spin */,
+				271BE0E91A60472D00D38EF9 /* Hello_Message.c */,
 			);
 			name = Samples;
 			sourceTree = "<group>";
 		};
-		2709085F19FAC18E002429FB /* libraries */ = {
+		271BE0541A5DAA7B00D38EF9 /* SpinSource */ = {
 			isa = PBXGroup;
 			children = (
-				2709087019FAC4F3002429FB /* Protocol */,
-				2709086919FAC3EB002429FB /* TextDevices */,
-				2709086519FAC367002429FB /* Utility */,
+				271BE0B41A5F3ED600D38EF9 /* flexbuf.h */,
+				271BE0B91A5F3ED600D38EF9 /* flexbuf.cpp */,
+				271BE0B51A5F3ED600D38EF9 /* objectheap.h */,
+				271BE0BB1A5F3ED600D38EF9 /* objectheap.cpp */,
+				271BE0B61A5F3ED600D38EF9 /* pathentry.h */,
+				271BE0BD1A5F3ED600D38EF9 /* pathentry.cpp */,
+				271BE0B71A5F3ED600D38EF9 /* preprocess.h */,
+				271BE0BA1A5F3ED600D38EF9 /* preprocess.cpp */,
+				271BE0C51A5F3F0200D38EF9 /* openspin.h */,
+				271BE0BC1A5F3ED600D38EF9 /* openspin.cpp */,
+				271BE0B81A5F3ED600D38EF9 /* textconvert.h */,
+				271BE0BE1A5F3ED600D38EF9 /* textconvert.cpp */,
 			);
-			name = libraries;
+			name = SpinSource;
 			sourceTree = "<group>";
 		};
-		2709086019FAC296002429FB /* libsimpletools */ = {
+		271BE0661A5DAABB00D38EF9 /* PropellerCompiler */ = {
 			isa = PBXGroup;
 			children = (
-				2709086619FAC3AA002429FB /* simpletools.h */,
-				2709086119FAC2A3002429FB /* cmm */,
+				271BE0981A5F3EC300D38EF9 /* BlockNestStackRoutines.cpp */,
+				271BE0991A5F3EC300D38EF9 /* CompileDatBlocks.cpp */,
+				271BE09A1A5F3EC300D38EF9 /* CompileExpression.cpp */,
+				271BE09B1A5F3EC300D38EF9 /* CompileInstruction.cpp */,
+				271BE0911A5F3EC300D38EF9 /* CompileUtilities.h */,
+				271BE09C1A5F3EC300D38EF9 /* CompileUtilities.cpp */,
+				271BE09D1A5F3EC300D38EF9 /* DistillObjects.cpp */,
+				271BE0921A5F3EC300D38EF9 /* Elementizer.h */,
+				271BE09E1A5F3EC300D38EF9 /* Elementizer.cpp */,
+				271BE0931A5F3EC300D38EF9 /* ErrorStrings.h */,
+				271BE09F1A5F3EC300D38EF9 /* ErrorStrings.cpp */,
+				271BE0A01A5F3EC300D38EF9 /* ExpressionResolver.cpp */,
+				271BE0A11A5F3EC300D38EF9 /* InstructionBlockCompiler.cpp */,
+				271BE0941A5F3EC300D38EF9 /* PropellerCompiler.h */,
+				271BE0A21A5F3EC300D38EF9 /* PropellerCompiler.cpp */,
+				271BE0951A5F3EC300D38EF9 /* PropellerCompilerInternal.h */,
+				271BE0A31A5F3EC300D38EF9 /* StringConstantRoutines.cpp */,
+				271BE0961A5F3EC300D38EF9 /* SymbolEngine.h */,
+				271BE0A41A5F3EC300D38EF9 /* SymbolEngine.cpp */,
+				271BE0971A5F3EC300D38EF9 /* Utilities.h */,
+				271BE0A51A5F3EC300D38EF9 /* Utilities.cpp */,
 			);
-			name = libsimpletools;
+			name = PropellerCompiler;
 			sourceTree = "<group>";
 		};
-		2709086119FAC2A3002429FB /* cmm */ = {
+		271BE0D01A60052200D38EF9 /* Utility Views */ = {
 			isa = PBXGroup;
 			children = (
-				2709086719FAC3AF002429FB /* libsimpletools.a */,
+				274206BA191039CF00FA7E5D /* CompilerOptionsView.h */,
+				274206BB191039CF00FA7E5D /* CompilerOptionsView.m */,
+				274206BD191039E000FA7E5D /* LinkerOptionsView.h */,
+				274206BE191039E000FA7E5D /* LinkerOptionsView.m */,
+				271BE0EB1A607AC600D38EF9 /* OpenProjectViewController.h */,
+				271BE0EC1A607AC600D38EF9 /* OpenProjectViewController.m */,
+				271BE0ED1A607AC600D38EF9 /* OpenProjectViewController.xib */,
+				274206C01910682E00FA7E5D /* PickerViewController.h */,
+				274206C11910682E00FA7E5D /* PickerViewController.m */,
+				274206C21910682E00FA7E5D /* PickerViewController_7.xib */,
+				274206B7191039B500FA7E5D /* ProjectOptionsView.h */,
+				274206B8191039B500FA7E5D /* ProjectOptionsView.m */,
+				271BE0C61A5F55DE00D38EF9 /* SpinCompilerOptionsView.h */,
+				271BE0C71A5F55DE00D38EF9 /* SpinCompilerOptionsView.m */,
+				27CE41E01A648067002B4EE9 /* SplitArrows.h */,
+				27CE41E11A648067002B4EE9 /* SplitArrows.m */,
+				27CE41E31A64812D002B4EE9 /* SplitView.h */,
+				27CE41E41A64812D002B4EE9 /* SplitView.m */,
+				27CE41DD1A64803F002B4EE9 /* SplitViewControl.h */,
+				27CE41DE1A64803F002B4EE9 /* SplitViewControl.m */,
 			);
-			name = cmm;
+			name = "Utility Views";
 			sourceTree = "<group>";
 		};
-		2709086519FAC367002429FB /* Utility */ = {
+		271BE0D11A60055100D38EF9 /* Text Highlighting */ = {
 			isa = PBXGroup;
 			children = (
-				2709086019FAC296002429FB /* libsimpletools */,
+				27BFBB0E1911B3880091F183 /* CHighlighter.h */,
+				27BFBB0F1911B3880091F183 /* CHighlighter.m */,
+				27BFBB0B1911AD100091F183 /* Highlighter.h */,
+				27BFBB0C1911AD100091F183 /* Highlighter.m */,
+				275BB9801913046500F0F020 /* HighlighterRule.h */,
+				275BB9811913046500F0F020 /* HighlighterRule.m */,
+				2738F4C419182B1900DF7352 /* SpinHighlighter.h */,
+				2738F4C519182B1900DF7352 /* SpinHighlighter.m */,
+				27323B231A69AF5C00401E41 /* SpinBackgroundHighlighter.h */,
+				27323B241A69AF5C00401E41 /* SpinBackgroundHighlighter.m */,
 			);
-			name = Utility;
-			sourceTree = "<group>";
-		};
-		2709086919FAC3EB002429FB /* TextDevices */ = {
-			isa = PBXGroup;
-			children = (
-				2709086A19FAC423002429FB /* libsimpletext */,
-			);
-			name = TextDevices;
-			sourceTree = "<group>";
-		};
-		2709086A19FAC423002429FB /* libsimpletext */ = {
-			isa = PBXGroup;
-			children = (
-				2709086B19FAC48E002429FB /* cmm */,
-				2709086D19FAC48E002429FB /* serial.h */,
-				2709086E19FAC48E002429FB /* simpletext.h */,
-			);
-			name = libsimpletext;
-			sourceTree = "<group>";
-		};
-		2709086B19FAC48E002429FB /* cmm */ = {
-			isa = PBXGroup;
-			children = (
-				2709086C19FAC48E002429FB /* libsimpletext.a */,
-			);
-			name = cmm;
-			path = libraries/TextDevices/libsimpletext/cmm;
-			sourceTree = "<group>";
-		};
-		2709087019FAC4F3002429FB /* Protocol */ = {
-			isa = PBXGroup;
-			children = (
-				2709087119FAC4F3002429FB /* libsimplei2c */,
-			);
-			name = Protocol;
-			path = libraries/Protocol;
-			sourceTree = "<group>";
-		};
-		2709087119FAC4F3002429FB /* libsimplei2c */ = {
-			isa = PBXGroup;
-			children = (
-				2709087219FAC4F3002429FB /* cmm */,
-				2709087419FAC4F3002429FB /* simplei2c.h */,
-			);
-			path = libsimplei2c;
-			sourceTree = "<group>";
-		};
-		2709087219FAC4F3002429FB /* cmm */ = {
-			isa = PBXGroup;
-			children = (
-				2709087319FAC4F3002429FB /* libsimplei2c.a */,
-			);
-			path = cmm;
+			name = "Text Highlighting";
 			sourceTree = "<group>";
 		};
 		2722FAF91918504900B17227 /* Art */ = {
 			isa = PBXGroup;
 			children = (
-				2722FAFA1918505B00B17227 /* newfile.png */,
-				279EB66F19E47C92007AD8B3 /* run_ipad.png */,
-				279EB67019E47C92007AD8B3 /* run_ipad@2x.png */,
+				271BE0CE1A5FFF2400D38EF9 /* build.png */,
+				27BBAD9E1A707A8F009E1311 /* delete.png */,
+				27BBAD9F1A707A8F009E1311 /* new.png */,
+				271BE0CC1A5FF39F00D38EF9 /* openproj.png */,
+				27BBADA01A707A8F009E1311 /* rename.png */,
+				27E1F2F91A6DC87400B30331 /* run.png */,
+				276F62061A6F1B23006704E0 /* xbee.png */,
 			);
 			name = Art;
 			sourceTree = "<group>";
@@ -338,20 +440,17 @@
 		274206821910310900FA7E5D /* SimpleIDE */ = {
 			isa = PBXGroup;
 			children = (
+				2765F5061A0D42ED006B32F4 /* gcc_interface */,
+				271BE0661A5DAABB00D38EF9 /* PropellerCompiler */,
+				271BE0541A5DAA7B00D38EF9 /* SpinSource */,
+				271BE0D11A60055100D38EF9 /* Text Highlighting */,
+				276F61E21A6EDD19006704E0 /* UDP */,
+				271BE0D01A60052200D38EF9 /* Utility Views */,
+				276F61E61A6EF2B2006704E0 /* XBee Loader */,
 				2742068B1910310900FA7E5D /* AppDelegate.h */,
 				2742068C1910310900FA7E5D /* AppDelegate.m */,
-				27BFBB0E1911B3880091F183 /* CHighlighter.h */,
-				27BFBB0F1911B3880091F183 /* CHighlighter.m */,
 				27BFBB08191186AC0091F183 /* Common.h */,
 				27BFBB09191186AC0091F183 /* Common.m */,
-				274206BA191039CF00FA7E5D /* CompilerOptionsView.h */,
-				274206BB191039CF00FA7E5D /* CompilerOptionsView.m */,
-				27BFBB0B1911AD100091F183 /* Highlighter.h */,
-				27BFBB0C1911AD100091F183 /* Highlighter.m */,
-				275BB9801913046500F0F020 /* HighlighterRule.h */,
-				275BB9811913046500F0F020 /* HighlighterRule.m */,
-				274206BD191039E000FA7E5D /* LinkerOptionsView.h */,
-				274206BE191039E000FA7E5D /* LinkerOptionsView.m */,
 				2742068E1910310900FA7E5D /* Main.storyboard */,
 				274206941910310900FA7E5D /* DetailViewController.h */,
 				274206951910310900FA7E5D /* DetailViewController.m */,
@@ -359,19 +458,15 @@
 				2722FAFD1918528800B17227 /* DetailViewNavigationControllerViewController.m */,
 				2751D04619EF10D300C37FA1 /* NavToolBar.h */,
 				2751D04719EF10D300C37FA1 /* NavToolBar.m */,
-				274206C01910682E00FA7E5D /* PickerViewController.h */,
-				274206C11910682E00FA7E5D /* PickerViewController.m */,
-				274206C21910682E00FA7E5D /* PickerViewController_7.xib */,
-				274206B7191039B500FA7E5D /* ProjectOptionsView.h */,
-				274206B8191039B500FA7E5D /* ProjectOptionsView.m */,
+				271BE0C91A5FE17200D38EF9 /* Project.h */,
+				271BE0CA1A5FE17200D38EF9 /* Project.m */,
 				274206B41910349D00FA7E5D /* ProjectViewController.h */,
 				274206B51910349D00FA7E5D /* ProjectViewController.m */,
+				27CE41E61A648478002B4EE9 /* SourceConsoleSplitView.h */,
+				27CE41E71A648478002B4EE9 /* SourceConsoleSplitView.m */,
 				27BFBB051911856A0091F183 /* SourceView.h */,
 				27BFBB061911856A0091F183 /* SourceView.m */,
-				2738F4C419182B1900DF7352 /* SpinHighlighter.h */,
-				2738F4C519182B1900DF7352 /* SpinHighlighter.m */,
 				274206971910310900FA7E5D /* Images.xcassets */,
-				2765F5061A0D42ED006B32F4 /* gcc_interface */,
 				274206831910310900FA7E5D /* Supporting Files */,
 			);
 			path = SimpleIDE;
@@ -380,26 +475,14 @@
 		274206831910310900FA7E5D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				2709085F19FAC18E002429FB /* libraries */,
+				2722FAF91918504900B17227 /* Art */,
 				2709085B19FABA18002429FB /* Samples */,
-				273E31D11A1AC84A0076F6BF /* libpropeller-elf-cpp.a */,
-				275B26D11A02A9B80011B72E /* libcc1.a */,
-				270E489A19F97AC200318268 /* libcpp.a */,
-				270E489E19F97AFC00318268 /* libdecnumber.a */,
 				270E489C19F97AEF00318268 /* libiberty.a */,
-				275B26CF1A02A99D0011B72E /* libbackend.a */,
 				273E31CF1A1AC52E0076F6BF /* libgas.a */,
 				273E31C71A1AC03B0076F6BF /* libopcodes.a */,
-				277E6D5C1A02D8A3008130E9 /* libgmp.a */,
-				277E6D5E1A02D8E8008130E9 /* libmpc.a */,
-				277E6D561A02D292008130E9 /* libmpfr.a */,
-				277E6D581A02D7C4008130E9 /* libmpn.a */,
-				277E6D5A1A02D86D008130E9 /* libmpz.a */,
-				27DCC28E1A16C6E500F0D3D7 /* libz.a */,
-				275CC6941A1D5FFC00C40731 /* libld.a */,
 				27D8CD991A32517400B8FA36 /* libbfd.a */,
+				27BDDE741A44EAC70049272D /* libz.a */,
 				279EB67319E49BEE007AD8B3 /* libpropeller-elf-cpp.h */,
-				2722FAF91918504900B17227 /* Art */,
 				274206841910310900FA7E5D /* SimpleIDE-Info.plist */,
 				274206851910310900FA7E5D /* InfoPlist.strings */,
 				274206881910310900FA7E5D /* main.m */,
@@ -440,6 +523,38 @@
 			name = gcc_interface;
 			sourceTree = "<group>";
 		};
+		276F61E21A6EDD19006704E0 /* UDP */ = {
+			isa = PBXGroup;
+			children = (
+				276F61E31A6EDD2A006704E0 /* GCDAsyncUdpSocket.h */,
+				276F61E41A6EDD2A006704E0 /* GCDAsyncUdpSocket.m */,
+			);
+			name = UDP;
+			sourceTree = "<group>";
+		};
+		276F61E61A6EF2B2006704E0 /* XBee Loader */ = {
+			isa = PBXGroup;
+			children = (
+				276F61EA1A6EF2E1006704E0 /* ConfigurationViewController.h */,
+				276F61EB1A6EF2E1006704E0 /* ConfigurationViewController.m */,
+				276F61EF1A6EF3A1006704E0 /* ConfigurationViewController.xib */,
+				276F61F51A6EF689006704E0 /* LoadImageViewController.h */,
+				276F61F61A6EF689006704E0 /* LoadImageViewController.m */,
+				276F61F71A6EF689006704E0 /* LoadImageViewController.xib */,
+				276F61E71A6EF2C4006704E0 /* Loader.h */,
+				276F61E81A6EF2C4006704E0 /* Loader.m */,
+				276F61FD1A6EFAED006704E0 /* ProgressView.h */,
+				276F61FE1A6EFAED006704E0 /* ProgressView.m */,
+				276F61FA1A6EF937006704E0 /* TXBee.h */,
+				276F61FB1A6EF937006704E0 /* TXBee.m */,
+				276F62031A6EFBE0006704E0 /* UDPDataBuffer.h */,
+				276F62041A6EFBE0006704E0 /* UDPDataBuffer.m */,
+				276F62001A6EFB64006704E0 /* XBeeCommon.h */,
+				276F62011A6EFB64006704E0 /* XBeeCommon.m */,
+			);
+			name = "XBee Loader";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -450,6 +565,7 @@
 				274206751910310900FA7E5D /* Sources */,
 				274206761910310900FA7E5D /* Frameworks */,
 				274206771910310900FA7E5D /* Resources */,
+				27CE41DC1A642FD9002B4EE9 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -516,20 +632,28 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2709087619FACBC1002429FB /* libsimplei2c.a in Resources */,
-				2709087719FACBC1002429FB /* simplei2c.h in Resources */,
-				2709087819FACBC1002429FB /* libsimpletext.a in Resources */,
-				2709087919FACBC1002429FB /* serial.h in Resources */,
-				2709087A19FACBC1002429FB /* simpletext.h in Resources */,
-				2709087B19FACBC1002429FB /* simpletools.h in Resources */,
-				2709087C19FACBC1002429FB /* libsimpletools.a in Resources */,
-				2709085E19FABD84002429FB /* Hello_Message.c in Resources */,
-				2722FAFB1918505B00B17227 /* newfile.png in Resources */,
-				279EB67119E47C92007AD8B3 /* run_ipad.png in Resources */,
-				279EB67219E47C92007AD8B3 /* run_ipad@2x.png in Resources */,
+				271BE0EF1A607AC600D38EF9 /* OpenProjectViewController.xib in Resources */,
+				271BE0E41A6046C600D38EF9 /* ClockDemo.spin in Resources */,
+				271BE0E31A6046C600D38EF9 /* Clock.spin in Resources */,
+				271BE0E71A6046C600D38EF9 /* FloatString.spin in Resources */,
+				271BE0E01A6046C600D38EF9 /* Blank.spin in Resources */,
+				271BE0E51A6046C600D38EF9 /* Float-Blink_Demo.spin in Resources */,
+				27BBADA21A707A8F009E1311 /* new.png in Resources */,
+				276F61F91A6EF689006704E0 /* LoadImageViewController.xib in Resources */,
+				271BE0E81A6046C600D38EF9 /* LargeSpinCode.spin in Resources */,
+				271BE0E61A6046C600D38EF9 /* FloatMath.spin in Resources */,
+				271BE0E11A6046C600D38EF9 /* Blink16-23.spin in Resources */,
+				27E1F2FA1A6DC87400B30331 /* run.png in Resources */,
+				276F62071A6F1B23006704E0 /* xbee.png in Resources */,
+				271BE0CD1A5FF39F00D38EF9 /* openproj.png in Resources */,
 				274206981910310900FA7E5D /* Images.xcassets in Resources */,
+				271BE0E21A6046C600D38EF9 /* Blink16.spin in Resources */,
+				271BE0CF1A5FFF2400D38EF9 /* build.png in Resources */,
+				27BBADA31A707A8F009E1311 /* rename.png in Resources */,
 				274206871910310900FA7E5D /* InfoPlist.strings in Resources */,
 				274206C41910682E00FA7E5D /* PickerViewController_7.xib in Resources */,
+				27BBADA11A707A8F009E1311 /* delete.png in Resources */,
+				276F61F11A6EF3A1006704E0 /* ConfigurationViewController.xib in Resources */,
 				274206901910310900FA7E5D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -544,28 +668,81 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		27CE41DC1A642FD9002B4EE9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "KEYWORDS=\"TODO:|\\?\\?\\?:|\\!\\!\\!:\"\nfind ${SRCROOT} \\( -name \"*.h\" -or -name \"*.m\" -or -name \"*.mm\" -or -name \"*.c\" \\) -print0 | \\\nxargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | \\\nperl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		274206751910310900FA7E5D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				271BE0AA1A5F3EC300D38EF9 /* CompileUtilities.cpp in Sources */,
+				271BE0AD1A5F3EC300D38EF9 /* ErrorStrings.cpp in Sources */,
 				27BFBB0A191186AC0091F183 /* Common.m in Sources */,
 				2742068D1910310900FA7E5D /* AppDelegate.m in Sources */,
+				271BE0C81A5F55DE00D38EF9 /* SpinCompilerOptionsView.m in Sources */,
 				274206BF191039E000FA7E5D /* LinkerOptionsView.m in Sources */,
+				271BE0AC1A5F3EC300D38EF9 /* Elementizer.cpp in Sources */,
+				271BE0BF1A5F3ED600D38EF9 /* flexbuf.cpp in Sources */,
+				276F61F81A6EF689006704E0 /* LoadImageViewController.m in Sources */,
+				271BE0EE1A607AC600D38EF9 /* OpenProjectViewController.m in Sources */,
+				27CE41DF1A64803F002B4EE9 /* SplitViewControl.m in Sources */,
+				276F61E91A6EF2C4006704E0 /* Loader.m in Sources */,
 				274206891910310900FA7E5D /* main.m in Sources */,
+				271BE0AF1A5F3EC300D38EF9 /* InstructionBlockCompiler.cpp in Sources */,
 				275BB9821913046500F0F020 /* HighlighterRule.m in Sources */,
 				274206C31910682E00FA7E5D /* PickerViewController.m in Sources */,
+				271BE0A71A5F3EC300D38EF9 /* CompileDatBlocks.cpp in Sources */,
+				271BE0A81A5F3EC300D38EF9 /* CompileExpression.cpp in Sources */,
+				271BE0A91A5F3EC300D38EF9 /* CompileInstruction.cpp in Sources */,
+				271BE0C11A5F3ED600D38EF9 /* objectheap.cpp in Sources */,
+				276F62021A6EFB64006704E0 /* XBeeCommon.m in Sources */,
 				274206BC191039CF00FA7E5D /* CompilerOptionsView.m in Sources */,
+				27CE41E81A648478002B4EE9 /* SourceConsoleSplitView.m in Sources */,
+				271BE0A61A5F3EC300D38EF9 /* BlockNestStackRoutines.cpp in Sources */,
+				27323B251A69AF5C00401E41 /* SpinBackgroundHighlighter.m in Sources */,
+				271BE0AB1A5F3EC300D38EF9 /* DistillObjects.cpp in Sources */,
+				276F61FF1A6EFAED006704E0 /* ProgressView.m in Sources */,
 				2738F4C619182B1900DF7352 /* SpinHighlighter.m in Sources */,
 				274206961910310900FA7E5D /* DetailViewController.m in Sources */,
 				2722FAFE1918528800B17227 /* DetailViewNavigationControllerViewController.m in Sources */,
+				271BE0C41A5F3ED600D38EF9 /* textconvert.cpp in Sources */,
+				27CE41E51A64812D002B4EE9 /* SplitView.m in Sources */,
+				271BE0C01A5F3ED600D38EF9 /* preprocess.cpp in Sources */,
+				271BE0EA1A60472D00D38EF9 /* Hello_Message.c in Sources */,
 				274206B61910349D00FA7E5D /* ProjectViewController.m in Sources */,
+				271BE0AE1A5F3EC300D38EF9 /* ExpressionResolver.cpp in Sources */,
+				276F61E51A6EDD2A006704E0 /* GCDAsyncUdpSocket.m in Sources */,
+				271BE0C21A5F3ED600D38EF9 /* openspin.cpp in Sources */,
+				271BE0C31A5F3ED600D38EF9 /* pathentry.cpp in Sources */,
 				274206B9191039B500FA7E5D /* ProjectOptionsView.m in Sources */,
 				27BFBB071911856A0091F183 /* SourceView.m in Sources */,
+				276F61FC1A6EF937006704E0 /* TXBee.m in Sources */,
+				276F61EC1A6EF2E1006704E0 /* ConfigurationViewController.m in Sources */,
+				276F62051A6EFBE0006704E0 /* UDPDataBuffer.m in Sources */,
 				2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.m in Sources */,
 				27BFBB101911B3880091F183 /* CHighlighter.m in Sources */,
 				27BFBB0D1911AD100091F183 /* Highlighter.m in Sources */,
+				271BE0B31A5F3EC300D38EF9 /* Utilities.cpp in Sources */,
+				271BE0B01A5F3EC300D38EF9 /* PropellerCompiler.cpp in Sources */,
+				271BE0B21A5F3EC300D38EF9 /* SymbolEngine.cpp in Sources */,
+				271BE0CB1A5FE17200D38EF9 /* Project.m in Sources */,
 				2751D04819EF10D300C37FA1 /* NavToolBar.m in Sources */,
+				271BE0B11A5F3EC300D38EF9 /* StringConstantRoutines.cpp in Sources */,
+				27CE41E21A648067002B4EE9 /* SplitArrows.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -631,6 +808,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -686,6 +864,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;

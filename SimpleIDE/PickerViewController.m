@@ -2,7 +2,7 @@
 //  PickerViewController.m
 //  SimpleIDE
 //
-//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html ).
+//  Created by Mike Westerfield on 4/29/14 at the Byte Works, Inc (http://www.byteworks.us/Byte_Works/Consulting.html).
 //  Copyright (c) 2014 Parallax. All rights reserved.
 //
 
@@ -63,7 +63,7 @@
  *							numbered left-to-right.
  */
 
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+- (NSInteger)pickerView: (UIPickerView *) pickerView numberOfRowsInComponent: (NSInteger) component {
     return pickerElements.count;
 }
 
@@ -79,7 +79,7 @@
  */
 
 - (void) pickerView: (UIPickerView *) pickerView didSelectRow: (NSInteger) row inComponent: (NSInteger) component {
-    if ([delegate respondsToSelector: @selector(pickerViewController:didSelectRow:)])
+    if ([delegate respondsToSelector: @selector(pickerViewController: didSelectRow:)])
         [delegate pickerViewController: self didSelectRow: row];
 }
 
