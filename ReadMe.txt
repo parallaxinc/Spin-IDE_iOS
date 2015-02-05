@@ -1,4 +1,4 @@
-SimpleIDE 1.0.0.3
+SimpleIDE 1.0.0.4
 -----------------
 
 This project implements an IDE on iPads for programming Propeller based boards using an XBee radio to move the project binaries from the iPad to the Propeller board.
@@ -7,9 +7,16 @@ The current build of the IDE supports opening a small number of sample projects,
 
 You can create new projects, open samples, and delete or rename existing projects.
 
-You can open fies from other projects and copy them into the current project, or duplicate files in the current project. That said, the current build mechanism only supports one file, and it must have the same name as the project.
+You can open fies from other projects and copy them into the current project, or duplicate files in the current project.
 
 You can build a project locally, or connect to a configured XBee radio and run the project in RAM.
+
+Changes in this release
+-----------------------
+
+1. You can now compile spin projects with multiple files.
+
+2. Spin projects that have spaced in the file names work, now.
 
 Other features and fixes needed for alpha
 -----------------------------------------
@@ -22,13 +29,11 @@ Other features and fixes needed for alpha
 
 4. Support a standard library of spin objects.
 
-5. Handle projects with multiple spin files.
+5. Add cut/copy/paste/undo/redo. (These are available now as keyboard shortcuts on Bluetooth keyboards.)
 
-6. Add cut/copy/paste/undo/redo. (These are available now as keyboard shortcuts on Bluetooth keyboards.)
+6. Add find/replace.
 
-7. Add find/replace.
-
-8. Final code clean up.
+7. Final code clean up.
 
 Other features and fixes needed for a solid release
 ---------------------------------------------------

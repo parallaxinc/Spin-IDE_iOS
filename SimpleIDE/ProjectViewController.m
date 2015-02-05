@@ -14,7 +14,7 @@
 #import "PickerViewController.h"
 
 
-#define DEBUG_SPEW NO
+#define DEBUG_SPEW 1
 
 
 typedef enum {tagBoardType, tagCompilerType, tagMemoryModel, tagOptimization} pickerTags;
@@ -27,9 +27,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
 // TODO: Blink16.spin not highlighted on the last row.
 // TODO: When opening a file, restore the original selection and view.
 // TODO: Temporarily hide the ability to create C projects.
+// TODO: Add a check on rename to warn when the project file is renamed.
 
 // TODO: Use libraries.
-// TODO: Compile multiple spin files if they appear in the project.
 // TODO: Add a terminal
 
 // TODO: Add undo, redo, cut, copy, paste
@@ -236,83 +236,85 @@ static ProjectViewController *this;						// This singleton instance of this clas
     
     if (project.files && project.files.count > 0) {
         if (project.language == languageSpin) {
-            // Compile the files in this project.
-            for (NSString *file in project.files) {
-                // Build the command line.
-                NSString *commandLine = @"openspin";
-                
-                NSString *stdoutPath = [project.path stringByAppendingPathComponent: @"stdout.txt"];
-                commandLine = [NSString stringWithFormat: @"%@ -r %@", commandLine, stdoutPath];
-                
-                NSString *stderrPath = [project.path stringByAppendingPathComponent: @"stderr.txt"];
-                commandLine = [NSString stringWithFormat: @"%@ -R %@", commandLine, stderrPath];
-                
-                NSString *path = [project.path stringByAppendingPathComponent: file];
-                commandLine = [NSString stringWithFormat: @"%@ %@", commandLine, path];
-                
-                // Compile the program.
-                int count;
-                char **args = [self commandLineArgumentsFor: [commandLine UTF8String] count: &count];
+            // Compile the project file.
+            NSString *file = [project.name stringByAppendingPathExtension: @"spin"];
+            
+            // Build the command line.
+            NSString *commandLine = @"openspin";
+            
+            NSString *stdoutPath = [project.path stringByAppendingPathComponent: @"stdout.txt"];
+            commandLine = [NSString stringWithFormat: @"%@ -r %@", commandLine, [self escape: stdoutPath]];
+            
+            NSString *stderrPath = [project.path stringByAppendingPathComponent: @"stderr.txt"];
+            commandLine = [NSString stringWithFormat: @"%@ -R %@", commandLine, [self escape: stderrPath]];
+            
+            commandLine = [NSString stringWithFormat: @"%@ -L %@", commandLine, [self escape: project.path]];
+            
+            NSString *path = [project.path stringByAppendingPathComponent: file];
+            commandLine = [NSString stringWithFormat: @"%@ %@", commandLine, [self escape: path]];
+            
+            // Compile the program.
+            int count;
+            char **args = [self commandLineArgumentsFor: [commandLine UTF8String] count: &count];
 #if DEBUG_SPEW
-                for (int i = 0; i < count; ++i) 
-                    printf("%2d: %s\n", i, args[i]);
+            for (int i = 0; i < count; ++i) 
+                printf("%2d: %s\n", i, args[i]);
 #endif
-                mainOpenSpin(count, args);
-                free(args);
-                
-                // Display the standard and error out streams to the console.
-                NSFileManager *manager = [NSFileManager defaultManager];
-                NSString *console = @"";
-                if ([manager fileExistsAtPath: stdoutPath])
-                    console = [NSString stringWithContentsOfFile: stdoutPath encoding: NSUTF8StringEncoding error: nil];
-                if ([manager fileExistsAtPath: stderrPath])
-                    console = [NSString stringWithFormat: @"%@\n%@", console, [NSString stringWithContentsOfFile: stderrPath encoding: NSUTF8StringEncoding error: nil]];
-                detailViewController.sourceConsoleSplitView.consoleView.text = console;
-                
-                // Record the binary file name for use by the loader.
-                binaryFile = [[path stringByDeletingPathExtension] stringByAppendingPathExtension: @"binary"];
-                
-                // Check for an error. If one is found, display it. Return the result.
-                NSString *out = [NSString stringWithContentsOfFile: stdoutPath encoding: NSUTF8StringEncoding error: nil];
-                if ([out rangeOfString: @"Done"].location != NSNotFound && [out rangeOfString: @"Program size is "].location != NSNotFound) {
-                    result = YES;
-                } else {
-                    NSArray *lines = [out componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
-                    NSString *message = @"See the console for details about the error.";
-                    NSString *file = nil;
-                    int lineNumber = -1;
-                    int offset = -1;
-                    for (NSString *line in lines) {
-                        NSRange range = [line rangeOfString: @" : error : "];
-                        if (range.location != NSNotFound) {
-                            message = [line substringFromIndex: range.location + range.length];
-                            file = [line substringToIndex: range.location];
-                            int index = line.length - 1;
-                            while (index > -1 && [line characterAtIndex: index] != '(')
-                                --index;
-                            if (index > -1) {
-                                NSString *str = [file substringFromIndex: index + 1];
-                                file = [file substringToIndex: index];
-                                lineNumber = [str intValue];
-                                while (str.length > 0 && [str characterAtIndex: 0] != ':')
-                                    str = [str substringFromIndex: 1];
-                                if (str.length > 1) {
-                                    str = [str substringFromIndex: 1];
-                                    offset = [str intValue];
-                                }
+            mainOpenSpin(count, args);
+            free(args);
+            
+            // Display the standard and error out streams to the console.
+            NSFileManager *manager = [NSFileManager defaultManager];
+            NSString *console = @"";
+            if ([manager fileExistsAtPath: stdoutPath])
+                console = [NSString stringWithContentsOfFile: stdoutPath encoding: NSUTF8StringEncoding error: nil];
+            if ([manager fileExistsAtPath: stderrPath])
+                console = [NSString stringWithFormat: @"%@\n%@", console, [NSString stringWithContentsOfFile: stderrPath encoding: NSUTF8StringEncoding error: nil]];
+            detailViewController.sourceConsoleSplitView.consoleView.text = console;
+            
+            // Record the binary file name for use by the loader.
+            binaryFile = [[path stringByDeletingPathExtension] stringByAppendingPathExtension: @"binary"];
+            
+            // Check for an error. If one is found, display it. Return the result.
+            NSString *out = [NSString stringWithContentsOfFile: stdoutPath encoding: NSUTF8StringEncoding error: nil];
+            if ([out rangeOfString: @"Done"].location != NSNotFound && [out rangeOfString: @"Program size is "].location != NSNotFound) {
+                result = YES;
+            } else {
+                NSArray *lines = [out componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
+                NSString *message = @"See the console for details about the error.";
+                NSString *file = nil;
+                int lineNumber = -1;
+                int offset = -1;
+                for (NSString *line in lines) {
+                    NSRange range = [line rangeOfString: @" : error : "];
+                    if (range.location != NSNotFound) {
+                        message = [line substringFromIndex: range.location + range.length];
+                        file = [line substringToIndex: range.location];
+                        int index = line.length - 1;
+                        while (index > -1 && [line characterAtIndex: index] != '(')
+                            --index;
+                        if (index > -1) {
+                            NSString *str = [file substringFromIndex: index + 1];
+                            file = [file substringToIndex: index];
+                            lineNumber = [str intValue];
+                            while (str.length > 0 && [str characterAtIndex: 0] != ':')
+                                str = [str substringFromIndex: 1];
+                            if (str.length > 1) {
+                                str = [str substringFromIndex: 1];
+                                offset = [str intValue];
                             }
-                            break;
                         }
+                        break;
                     }
-                    [self reportError: message inFile: file line: lineNumber offset: offset];
                 }
-                
-                // Remove the temporary files.
-                if ([manager fileExistsAtPath: stdoutPath])
-                    [manager removeItemAtPath: stdoutPath error: nil];
-                if ([manager fileExistsAtPath: stderrPath])
-                    [manager removeItemAtPath: stderrPath error: nil];
+                [self reportError: message inFile: file line: lineNumber offset: offset];
             }
+            
+            // Remove the temporary files.
+            if ([manager fileExistsAtPath: stdoutPath])
+                [manager removeItemAtPath: stdoutPath error: nil];
+            if ([manager fileExistsAtPath: stderrPath])
+                [manager removeItemAtPath: stderrPath error: nil];
         } else if (project.language == languageC) {
             NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
                                   @"C is not yet supported.", NSLocalizedDescriptionKey,
@@ -407,9 +409,18 @@ static ProjectViewController *this;						// This singleton instance of this clas
 - (char **) commandLineArgumentsFor: (const char *) line count: (int *) count {
     // Break the line up into an array of space delimited NSStrings.
     NSString *nsline = [NSString stringWithUTF8String: line];
-    NSArray *nsargs = [nsline componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+    NSArray *preliminary_args = [nsline componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
     
-    // Setthe number of arguments.
+    // Combine escaped spaces.
+    NSMutableArray *nsargs = [[NSMutableArray alloc] init];
+    for (int i = 0; i < preliminary_args.count; ++i) {
+        NSString *arg = preliminary_args[i];
+        while (i < preliminary_args.count && [arg characterAtIndex: arg.length - 1] == '\\')
+            arg = [NSString stringWithFormat: @"%@ %@", [arg substringToIndex: arg.length - 1], preliminary_args[++i]];
+        [nsargs addObject: arg];
+    }
+    
+    // Set the number of arguments.
     *count = nsargs.count;
     
     // Form the array of arguments.
@@ -494,6 +505,20 @@ static ProjectViewController *this;						// This singleton instance of this clas
         // Update the button state.
         [detailViewController checkButtonState];
 	}
+}
+
+/*!
+ * Add escape characters to a path name.
+ *
+ * This method converts spaces to "\ " so they can be used as command line arguemnts.
+ *
+ * @param path			The path name to escape.
+ *
+ * @return				The escaped name.
+ */
+
+- (NSString *) escape: (NSString *) path {
+    return [path stringByReplacingOccurrencesOfString: @" " withString: @"\\ "];
 }
 
 /*!
