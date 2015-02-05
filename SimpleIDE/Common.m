@@ -76,4 +76,33 @@
     return [UIFont fontWithName: @"Courier" size: size];
 }
 
+/*!
+ * Return a list of the file extensions that are valid in projects and the editor.
+ *
+ * @return			An array of NSString objects with the valid file extensions.
+ */
+
++ (NSArray *) validExtensions {
+    NSMutableArray *extensions = [[NSMutableArray alloc] init];
+    
+    NSString *sandbox = [Common sandbox];
+    NSString *path = [sandbox stringByAppendingPathComponent: @"extensions.txt"];
+    NSError *error = nil;
+    NSString *extensionsString = [NSString stringWithContentsOfFile: path encoding: NSUTF8StringEncoding error: &error];
+    
+    if (!error && extensionsString != nil) {
+        NSArray *extensionPrototypes = [extensionsString componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
+        for (NSString *extension in extensionPrototypes) {
+            NSString *trimmed = [extension stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            if (trimmed && trimmed.length > 0)
+                [extensions addObject: trimmed];
+        }
+    }
+    
+    if (extensions.count == 0)
+        [extensions addObjectsFromArray: [NSArray arrayWithObjects: @"spin", @"c", @"cpp", @"h", nil]];
+    
+    return extensions;
+}
+
 @end

@@ -17,36 +17,34 @@
 #define DEBUG_SPEW NO
 
 
-typedef enum {tagBoardType, tagCompilerType, tagMemoryModel, tagOptimization} alertTags;
+typedef enum {tagBoardType, tagCompilerType, tagMemoryModel, tagOptimization} pickerTags;
+typedef enum {alertDeleteFile, alertDeleteProject} alertTags;
+
 
 static ProjectViewController *this;						// This singleton instance of this class.
 
 
-// TODO: New project
-// TODO: Delete project
-// TODO: Rename project
-
-// TODO: Open file (not in project)
-// TODO: New file (in project)
-// TODO: Close a file (not in project)
-// TODO: Delete a file (in project or not, must be open)
-// TODO: Save as (save to other projects?
-// TODO: Copy file to project
-// TODO: Allow multiple files in a project.
-// TODO: Rename file
+// TODO: Blink16.spin not highlighted on the last row.
+// TODO: When opening a file, restore the original selection and view.
+// TODO: Temporarily hide the ability to create C projects.
 
 // TODO: Use libraries.
-// TODO: Display errors in a user fiendly way.
+// TODO: Compile multiple spin files if they appear in the project.
+// TODO: Add a terminal
 
+// TODO: Add undo, redo, cut, copy, paste
+// TODO: Add find/replace
+// TODO: Add Print
+// TODO: Need final artwork.
+
+// TODO: Display errors in a user fiendly way.
 // TODO: EPROM Support
 // TODO: Navigation control does not show up on main view until the program rotates to landscape once
 // TODO: Use the user supplied compiler flags
-// TODO: Opening a file takes a long time
+// TODO: Opening a large file takes a long time
 // TODO: Collapse the side panel in landscape view
 // TODO: Allow pinch zoom in the editor.
-// TODO: Temporarily hide the ability to create C projects.
 // TODO: Turn the loader into a library.
-// TODO: Add a terminal
 // TODO: Share zipped files.
 
 
@@ -59,7 +57,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
     int selectedOptimizationPickerElementIndex;			// The index of the selected Optimization picker element.
 }
 
-@property (nonatomic, retain) NSString *binaryFile;		// The most recently compiled binary file.
+@property (nonatomic, retain) UIAlertView *alert;			// The current alert.
+@property (nonatomic, retain) NSString *binaryFile;			// The most recently compiled binary file.
 @property (nonatomic, retain) NSArray *boardTypePickerElements;
 @property (nonatomic, retain) NSArray *compilerTypePickerElements;
 @property (nonatomic, retain) UIPopoverController *loadImagePopoverController;
@@ -73,6 +72,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 @implementation ProjectViewController
 
+@synthesize alert;
 @synthesize binaryFile;
 @synthesize boardTypeButton;
 @synthesize boardTypePickerElements;
@@ -86,6 +86,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize memoryModelButton;
 @synthesize memoryModelPickerElements;
 @synthesize namesTableView;
+@synthesize openFiles;
 @synthesize optimizationButton;
 @synthesize optimizationPickerElements;
 @synthesize optionsSegmentedControl;
@@ -97,6 +98,74 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize xbeePopoverController;
 
 #pragma mark - Misc
+
+/*!
+ * Add a file to the current project. Te file should already exist in the roject folder.
+ *
+ * @param name			The name for the new file.
+ */
+
+- (void) addFileToProject: (NSString *) name {
+    // Add the file to the list of files in the project.
+    [project.files addObject: name];
+    [project.files sortUsingComparator: ^NSComparisonResult (NSString *obj1, NSString *obj2) {
+        return [obj1 compare: obj2];
+    }];
+    
+    // Add the file to the list of files in the .side file.
+    NSError *error = nil;
+    [self updateSideFile: &error];
+    
+    if (!error) {
+        // Update the file list.
+        [namesTableView reloadData];
+        
+        // Select the file in the file list.
+        int row = [project.files indexOfObject: name];
+        if (row >= 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow: row inSection: 0];
+            [namesTableView selectRowAtIndexPath: indexPath animated: YES scrollPosition: UITableViewScrollPositionNone];
+        }
+        
+        // Open the file.
+        [self openFile: [project.name stringByAppendingPathComponent: name]];
+        
+        // Update the button state.
+        [[DetailViewController defaultDetailViewController] checkButtonState];
+    }
+    
+    // Report any errors.
+    if (error)
+        [Common reportError: error];
+}
+
+/*!
+ * Handle a click on an alert button.
+ *
+ * @param alertView		The alert view containing the button.
+ * @param buttonIndex	The index of the button that was clicked. The button indices start at 0.
+ */
+
+- (void) alertClicked: (UIAlertView *) alertView clickedButtonAtIndex: (NSInteger) buttonIndex {
+    if (alert != nil) {
+        switch ((alertTags) alertView.tag) {
+            case alertDeleteFile: {
+                if (buttonIndex == 1) { // Yes Button
+                    [self deleteFile];
+                }
+                break;
+            }
+                
+            case alertDeleteProject: {
+                if (buttonIndex == 1) { // Yes Button
+                    [self deleteProject];
+                }
+                break;
+            }
+        }
+        alert = nil;
+    }
+}
 
 /*!
  * Build the currently open project.
@@ -367,7 +436,68 @@ static ProjectViewController *this;						// This singleton instance of this clas
 }
 
 /*!
- * Hide or show th elinker option in optionsSegmentedControl.
+ * Delete the open file. The file must be in the current project. It is assumed the file is not 
+ * the only file in the project.
+ */
+
+- (void) deleteFile {
+    // Get the file to delete.
+    NSString *path = [DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView.path;
+    
+    // Remove the file from permanent store.
+    [[NSFileManager defaultManager] removeItemAtPath: path error: nil];
+    
+    // Remove the file from the list of files in the project and file list.
+    [project.files removeObject: [path lastPathComponent]];
+    [namesTableView reloadData];
+    
+    // Remove the file from the .side file.
+    NSError *error = nil;
+    [self updateSideFile: &error];
+    if (error)
+        [Common reportError: error];
+    
+    // Open the first file in the project.
+    [self openFile: [project.name stringByAppendingPathComponent: project.files[0]]];
+    
+    // Select the file.
+    [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: 0 inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+    
+    // Update the button state.
+    [[DetailViewController defaultDetailViewController] checkButtonState];
+}
+
+/*!
+ * Delete the current project.
+ */
+
+- (void) deleteProject {
+    if (project.name) {
+        // Delete the project files.
+        NSError *error = nil;
+        [[NSFileManager defaultManager] removeItemAtPath: [[Common sandbox] stringByAppendingPathComponent: project.name] error: &error];
+        
+        // Remove the project from the list of projects.
+        [[DetailViewController defaultDetailViewController] removeProject: project.name];
+
+        // Reset the UI for no project.
+        // TODO: Only wipe the currently open file if it was in the project.
+        DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
+        [detailViewController.sourceConsoleSplitView.sourceView setSource: @"" forPath: nil];
+        
+        project.files = nil;
+        project.name = nil;
+        project.path = nil;
+        project.sidePath = nil;
+        [namesTableView reloadData];
+        
+        // Update the button state.
+        [detailViewController checkButtonState];
+	}
+}
+
+/*!
+ * Hide or show the linker option in optionsSegmentedControl.
  *
  * @param hide			YES to hide this option, or NO to show it.
  */
@@ -377,6 +507,44 @@ static ProjectViewController *this;						// This singleton instance of this clas
         [optionsSegmentedControl removeSegmentAtIndex: 2 animated: YES];
     else if (optionsSegmentedControl.numberOfSegments < 3)
         [optionsSegmentedControl insertSegmentWithTitle: @"Linker" atIndex: 2 animated: YES];
+}
+
+/*!
+ * Open a file.
+ *
+ * This method saves the changes to the currently open file (if any),then opens the indicated file 
+ * in the editing view. It does not select the file in the file list.
+ *
+ * @param name			The partial path name of the file to open. The path is relative to the sandbox.
+ */
+
+- (void) openFile: partialPath {
+    // Set the language. Clear the text first so reformatting is skipped.
+    DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
+    [detailViewController.sourceConsoleSplitView.sourceView setSource: @"" forPath: nil];
+    languageType language = languageSpin;
+    NSString *extension = [[partialPath pathExtension] lowercaseString];
+    if ([extension isEqualToString: @"c"])
+        language = languageC;
+    else if ([extension isEqualToString: @"h"])
+        language = languageC;
+    else if ([extension isEqualToString: @"cpp"])
+        language = languageCPP;
+    detailViewController.sourceConsoleSplitView.sourceView.language = language;
+
+    // Open the new file.
+    NSString *path = [[Common sandbox] stringByAppendingPathComponent: partialPath];
+    NSError *error = nil;
+    NSStringEncoding encoding = 0;
+    NSString *source = [NSString stringWithContentsOfFile: path usedEncoding: &encoding error: &error];
+    if (error) {
+        [Common reportError: error];
+    } else {
+        [[DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView setSource: source forPath: path];
+    }
+    
+    // Update the button state.
+    [[DetailViewController defaultDetailViewController] checkButtonState];
 }
 
 /*!
@@ -390,7 +558,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param index			The index of the initially selected row.
  */
 
-- (void) pickerAction: (alertTags) tag
+- (void) pickerAction: (pickerTags) tag
                prompt: (NSString *) prompt
              elements: (NSArray *) elements
                button: (UIButton *) button
@@ -445,6 +613,22 @@ static ProjectViewController *this;						// This singleton instance of this clas
                                           cancelButtonTitle: @"OK"
                                           otherButtonTitles: nil];
     [alert show];
+}
+
+/*!
+ * Write an updated .side file based on the current project settings.
+ *
+ * @param error			Pointer to the error; this is set if an error occurred updating the file.
+ */
+
+- (void) updateSideFile: (NSError **) error {
+    NSString *sideFile = @"";
+    for (NSString *projectFile in project.files)
+        sideFile = [NSString stringWithFormat: @"%@%@\n", sideFile, projectFile];
+    // TODO: Update once C projects are supported.
+    // TODO: Update once command line arguments are supported.
+    [NSString stringWithFormat: @"%@>compiler=SPIN\n", sideFile];
+    [sideFile writeToFile: project.sidePath atomically: YES encoding: NSUTF8StringEncoding error: error];
 }
 
 #pragma mark - Actions
@@ -647,7 +831,6 @@ static ProjectViewController *this;						// This singleton instance of this clas
     [super viewDidLoad];
     
     // Set up an initial project object.
-    // TODO: This should be replaced by a mechanism to open the previously used project or create a new one. Most of the stuff in this view should be disabled until that happens.
     self.project = [[Project alloc] init];
     [self changeLanguage: languageSpin];
     
@@ -656,7 +839,10 @@ static ProjectViewController *this;						// This singleton instance of this clas
     DetailViewController *detailViewController = (DetailViewController *) navigationController.topViewController;
     detailViewController.delegate = self;
     
-    // Record our ingleton instance.
+    // Create an object for the list of open files.
+    self.openFiles = [[NSMutableArray alloc] init];
+    
+    // Record our singleton instance.
     this = self;
 }
 
@@ -771,6 +957,42 @@ static ProjectViewController *this;						// This singleton instance of this clas
     self.loadImagePopoverController = nil;
 }
 
+#pragma mark - UIAlertViewDelegate
+
+/*!
+ * Sent to the delegate when the user clicks a button on an alert view.
+ *
+ * The receiver is automatically dismissed after this method is invoked.
+ *
+ * @param alertView		The alert view containing the button.
+ * @param buttonIndex	The index of the button that was clicked. The button indices start at 0.
+ */
+
+- (void) alertView: (UIAlertView *) alertView clickedButtonAtIndex: (NSInteger) buttonIndex {
+    // Make sure the alert is still active before handling the press. This prevents a problem in some version of the OS where
+    // alertView:clickedButtonAtIndex: and alertView:didDismissWithButtonIndex: are both called for a button tap, while in 
+    // others only one is called.
+    if (alert == alertView)
+        [self alertClicked: alertView clickedButtonAtIndex: buttonIndex];
+}
+
+/*!
+ * Sent to the delegate when the alert view is dismissed programatically.
+ *
+ * This method is invoked after the animation ends and the view is hidden.
+ *
+ * @param alertView		The alert view containing the button.
+ * @param buttonIndex	The index of the button that was clicked. The button indices start at 0.
+ */
+
+- (void) alertView: (UIAlertView *) alertView didDismissWithButtonIndex: (NSInteger) buttonIndex {
+    // Make sure the alert is still active before handling the press. This prevents a problem in some version of the OS where
+    // alertView:clickedButtonAtIndex: and alertView:didDismissWithButtonIndex: are both called for a button tap, while in 
+    // others only one is called.
+    if (alert == alertView)
+        [self alertClicked: alertView clickedButtonAtIndex: buttonIndex];
+}
+
 #pragma mark - DetailViewControllerDelegate
 
 /*!
@@ -781,6 +1003,124 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 - (void) detailViewControllerDelegateBuildProject {
     [self build];
+}
+
+/*!
+ * Close the open file.
+ *
+ * Passes the user's request to delete the current file to the delegate.
+ */
+
+- (void) detailViewControllerDelegateCloseFile {
+	// Make sure the open file is a file that is not in the open project. This should not happen, so no error is needed.
+    NSString *path = [DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView.path;
+    NSString *projectName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+    if (project && ![project.name isEqualToString: projectName]) {
+        // Remove the file form the open files list.
+        NSString *partialPath = [projectName stringByAppendingPathComponent: [path lastPathComponent]];
+        [openFiles removeObject: partialPath];
+        [namesTableView reloadData];
+        
+        // Open a different file.
+        if (project && project.files && project.files.count > 0) {
+            [self openFile: [project.name stringByAppendingPathComponent: project.files[0]]];
+            [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: 0 inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+        } else if (openFiles.count > 0) {
+            [self openFile: openFiles[0]];
+            [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: 0 inSection: 1] animated: YES scrollPosition: UITableViewScrollPositionNone];
+        } else {
+            [[DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView setSource: @"" forPath: nil];
+        }
+        
+        // Check the button states.
+        [[DetailViewController defaultDetailViewController] checkButtonState];
+    }
+}
+
+/*!
+ * Copy a file to the currently open project.
+ *
+ * The new file name is garanteed not to exist in the current project. The source file may, however,
+ * be in the current project (although toFileName will differ in that case).
+ *
+ * @param fromPath		The full path of the file to copy.
+ * @param toFileName	The file name for the file in the project.
+ */
+
+- (void) detailViewControllerDelegateCopyFrom: (NSString *) fromPath to: (NSString *) toFileName {
+    if (project && project.files && project.files.count > 0) {
+        // Copy the file to the new location.
+        NSString *toPath = [project.path stringByAppendingPathComponent: toFileName];
+        NSError *error = nil;
+        [[NSFileManager defaultManager] copyItemAtPath: fromPath toPath: toPath error: &error];
+        if (error) {
+            [Common reportError: error];
+        } else {
+            [self addFileToProject: toFileName];
+        }
+    }
+}
+
+/*!
+ * Delete the open file.
+ *
+ * Passes the user's request to delete the current file to the delegate.
+ */
+
+- (void) detailViewControllerDelegateDeleteFile {
+    DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
+    NSString *path = detailViewController.sourceConsoleSplitView.sourceView.path;
+    NSString *fileName = [path lastPathComponent];
+    NSString *projectName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+    
+    if ([projectName isEqualToString: project.name]) {
+        if (project.files.count == 1)
+            [self detailViewControllerDelegateDeleteProject];
+        else {
+            NSString *message = [NSString stringWithFormat: @"Are you sure you want to delete the file %@? This operation cannot be undone.", fileName];
+            self.alert = [[UIAlertView alloc] initWithTitle: @"Delete?"
+                                                    message: message
+                                                   delegate: self
+                                          cancelButtonTitle: @"No"
+                                          otherButtonTitles: @"Yes", nil];
+            alert.tag = alertDeleteFile;
+            [alert show];
+        }
+    }
+}
+
+/*!
+ * Delete the open project.
+ *
+ * Passes the user's request to delete the current project to the delegate.
+ */
+
+- (void) detailViewControllerDelegateDeleteProject {
+    NSString *message = [NSString stringWithFormat: @"Are you sure you want to delete the project %@? This operation cannot be undone.", project.name];
+    self.alert = [[UIAlertView alloc] initWithTitle: @"Delete?"
+                                            message: message
+                                           delegate: self
+                                  cancelButtonTitle: @"No"
+                                  otherButtonTitles: @"Yes", nil];
+    alert.tag = alertDeleteProject;
+    [alert show];
+}
+
+/*!
+ * Open a new file in the current project. The file name should have already been verified.
+ *
+ * @param name		The name for the new file.
+ */
+
+- (void) detailViewControllerDelegateNewFile: (NSString *) name {
+	// Create the file.
+    NSString *path = [project.path stringByAppendingPathComponent: name];
+    NSError *error = nil;
+    [@"" writeToFile: path atomically: NO encoding: NSUTF8StringEncoding error: &error];
+    if (error)
+        [Common reportError: error];
+    else
+        [self addFileToProject: name];
 }
 
 /*!
@@ -826,31 +1166,162 @@ static ProjectViewController *this;						// This singleton instance of this clas
         }
     }
     
-    // Remove old text. This keeps setting the language from taking a long time, and also clears the console.
+    // Clear the console.
     DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
-    [detailViewController.sourceConsoleSplitView.sourceView setSource: @"" forPath: nil];
-
     detailViewController.sourceConsoleSplitView.consoleView.text = @"";
     
     // Set the language in the UI.
     [self changeLanguage: project.language];
-        
-    // Select and open the initial file.
-    detailViewController.sourceConsoleSplitView.sourceView.language = project.language;
-    if (project.files.count > 0) {
-        NSString *path = [project.path stringByAppendingPathComponent: project.files[0]];
-        NSError *error = nil;
-        NSStringEncoding encoding = 0;
-        NSString *source = [NSString stringWithContentsOfFile: path usedEncoding: &encoding error: &error];
-        if (error) {
-            [Common reportError: error];
-        } else {
-            [detailViewController.sourceConsoleSplitView.sourceView setSource: source forPath: path];
-        }
+    
+    
+    // If there are files in the "Other open files" list that are in this project, remove them from that list.
+    NSMutableArray *openFiles2 = [[NSMutableArray alloc] init];
+    for (NSString *file in openFiles) {
+        NSString *projectName = [file pathComponents][0];
+        if (![projectName isEqualToString: project.name])
+            [openFiles2 addObject: file];
     }
+    self.openFiles = openFiles2;
     
     // Repaint the table with the new file list.
     [namesTableView reloadData];
+        
+    // Select and open the initial file.
+    if (project.files.count > 0) {
+        NSString *partialPath = [project.name stringByAppendingPathComponent: project.files[0]];
+        [self openFile: partialPath];
+        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: 0 inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+    }
+    
+    // Update the button state.
+    [detailViewController checkButtonState];
+}
+
+/*!
+ * Open a file.
+ *
+ * The project must be in a project in the sandbox.
+ *
+ * @param projectName	The name of the project containing the file.
+ * @param file			The the name of the file (with extension) in the project.
+ */
+
+- (void) detailViewControllerDelegateOpenProject: (NSString *) projectName file: (NSString *) file {
+    // Form the path name for the file.
+    NSString *partialPath = [projectName stringByAppendingPathComponent: file];
+    
+    // Add the file to the list of non-project files.
+    int row = -1;
+    for (int i = 0; i < openFiles.count; ++i) {
+        NSString *existingPath = openFiles[i];
+        if ([existingPath isEqualToString: partialPath]) {
+            row = i;
+            break;
+        }
+    }
+    if (project && project.name && [projectName isEqualToString: project.name]) {
+        // The file is in the current project. Open it there.
+        for (int i = 0; i < project.files.count; ++i)
+            if ([project.files[i] isEqualToString: file]) {
+                [self openFile: partialPath];
+                [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: i inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+            }
+    } else if (row == -1) {
+        // The file is not in the open files list. Add it.
+        [openFiles addObject: partialPath];
+        
+        // Sort the file list.
+        [openFiles sortUsingComparator: ^NSComparisonResult (NSString *obj1, NSString *obj2) {
+            return [obj1 compare: obj2];
+        }];
+        
+        // Select the new file.
+        [namesTableView reloadData];
+        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: [openFiles indexOfObject: partialPath] inSection: 1] 
+                                    animated: YES 
+                              scrollPosition: UITableViewScrollPositionNone];
+        
+        // Open the file.
+        [self openFile: partialPath];
+    } else {
+        // The file is already in the open list. Select it and open it in the edit view.
+        [self openFile: partialPath];
+        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: row inSection: 1] animated: YES scrollPosition: UITableViewScrollPositionNone];
+    }
+}
+
+/*!
+ * Rename a file in the current project.
+ *
+ * The name is garanteed not to already exist as a project.
+ *
+ * @param oldName		The current name of the file.
+ * @param newName		The new name of the file.
+ */
+
+- (void) detailViewControllerDelegateRenameFile: (NSString *) oldName newName: (NSString *) newName {
+    // Form full path names.
+    NSString *oldPath = [project.path stringByAppendingPathComponent: oldName];
+    NSString *newPath = [project.path stringByAppendingPathComponent: newName];
+    
+    // Save the contents of hte current file.
+    [[DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView save];
+    
+    // Rename the physical file.
+    NSError *error = nil;
+    [[NSFileManager defaultManager] moveItemAtPath: oldPath toPath: newPath error: &error];
+    if (error)
+        [Common reportError: error];
+    else {
+        // Change the name in the project's list of files.
+        [project.files removeObject: oldName];
+        [project.files addObject: newName];
+        [project.files sortUsingComparator: ^NSComparisonResult (NSString *obj1, NSString *obj2) {
+            return [obj1 compare: obj2];
+        }];
+        
+        // Update the file list.
+        [namesTableView reloadData];
+        
+        // Select the correct project.
+        int index = [project.files indexOfObject: newName];
+        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: index inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+        
+        // Open the renamed file.
+        [self openFile: [project.name stringByAppendingPathComponent: newName]];
+    }
+}
+
+/*!
+ * Rename a project.
+ *
+ * The current project is renamed. The new name is passed. The name is garanteed not to already exist as a project.
+ *
+ * @param name		The new name of the project.
+ */
+
+- (void) detailViewControllerDelegateRenameProject: (NSString *) name {
+    if (project.name) {
+        // Get the various updated paths.
+        NSString *newName = name;
+        NSString *newPath = [[Common sandbox] stringByAppendingPathComponent: name];
+        NSString *newSidePath = [project.path stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"side"]];
+        
+        // Rename the project files.
+        NSError *error = nil;
+        [[NSFileManager defaultManager] moveItemAtPath: project.sidePath toPath: newSidePath error: &error];
+        if (!error) {
+            [[NSFileManager defaultManager] moveItemAtPath: project.path toPath: newPath error: &error];
+            
+            // Reset the UI.
+            project.name = newName;
+            [namesTableView reloadData];
+        }
+        
+        // Report any errors.
+        if (error)
+            [Common reportError: error];
+    }
 }
 
 /*!
@@ -944,18 +1415,20 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (UITableViewCell *) tableView: (UITableView *) tableView cellForRowAtIndexPath: (NSIndexPath *) indexPath {
-    NSString *tableID = @"SimpleIDE_Names";
+    NSUInteger section = [indexPath section];
+    NSString *tableID = section == 0 ? @"SimpleIDE_Names" : @"SimpleIDE_Names2";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier: tableID];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault 
+        cell = [[UITableViewCell alloc] initWithStyle: section == 0 ? UITableViewCellStyleDefault : UITableViewCellStyleSubtitle
                                       reuseIdentifier: tableID];
     }
-    NSUInteger section = [indexPath section];
     NSUInteger row = [indexPath row];
     if (section == 0) {
         cell.textLabel.text = [@"   " stringByAppendingString: project.files[row]];
-    } else
-        cell.textLabel.text = @""; // TODO: Once we have other files, return the name of the file here.
+    } else {
+        cell.textLabel.text = [@"   " stringByAppendingString: [openFiles[row] pathComponents][1]];
+        cell.detailTextLabel.text = [@"    " stringByAppendingString: [openFiles[row] pathComponents][0]];
+    }
     return cell;
 }
 
@@ -973,7 +1446,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     if (section == 0 && project)
         count = project.files.count;
     else if (section == 1)
-        count = 0; // TODO: Once we can load files, put the number of files loaded here.
+        count = openFiles.count;
     return count;
 }
 
@@ -985,7 +1458,12 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (void) tableView: (UITableView *) tableView didSelectRowAtIndexPath: (NSIndexPath *) indexPath {
-//    environmentAddEvent(event_cellSelected, 0, NULL, CFAbsoluteTimeGetCurrent(), tableObject, 0, 0, NULL);
+    NSString *path = nil;
+    if (indexPath.section == 0)
+        path = [project.name stringByAppendingPathComponent: project.files[indexPath.row]];
+    else
+        path = openFiles[indexPath.row];
+    [self openFile: path];
 }
 
 /*!

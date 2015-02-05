@@ -33,5 +33,6 @@ typedef enum {languageC, languageCPP, languageSpin} languageType;
 + (void) reportError: (NSError *) error;
 + (NSString *) sandbox;
 + (UIFont *) textFont;
++ (NSArray *) validExtensions;
 
 @end

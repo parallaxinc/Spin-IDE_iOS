@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "NewFileOrProjectViewController.h"
+#import "OpenFileViewController.h"
 #import "OpenProjectViewController.h"
-#include "SourceConsoleSplitView.h"
+#import "RenameFileOrProjectViewController.h"
+#import "SourceConsoleSplitView.h"
 
 @protocol DetailViewControllerDelegate <NSObject>
 
@@ -20,6 +23,50 @@
  */
 
 - (void) detailViewControllerDelegateBuildProject;
+
+/*!
+ * Close the open file.
+ *
+ * Passes the user's request to delete the current file to the delegate.
+ */
+
+- (void) detailViewControllerDelegateCloseFile;
+
+/*!
+ * Copy a file to the currently open project.
+ *
+ * The new file name is garanteed not to exist in the current project. The source file may, however,
+ * be in the current project (although toFileName will differ in that case).
+ *
+ * @param fromPath		The full path of the file to copy.
+ * @param toFileName	The file name for the file in the project.
+ */
+
+- (void) detailViewControllerDelegateCopyFrom: (NSString *) fromPath to: (NSString *) toFileName;
+
+/*!
+ * Delete the open file.
+ *
+ * Passes the user's request to delete the current file to the delegate.
+ */
+
+- (void) detailViewControllerDelegateDeleteFile;
+
+/*!
+ * Delete the open project.
+ *
+ * Passes the user's request to delete the current project to the delegate.
+ */
+
+- (void) detailViewControllerDelegateDeleteProject;
+
+/*!
+ * Open a new file in the current project.
+ *
+ * @param name		The name for the new file.
+ */
+
+- (void) detailViewControllerDelegateNewFile: (NSString *) name;
 
 /*!
  * Open a project.
@@ -33,6 +80,38 @@
  */
 
 - (void) detailViewControllerDelegateOpenProject: (NSString *) name;
+
+/*!
+ * Open a file.
+ *
+ * The project must be in a project in the sandbox.
+ *
+ * @param project	The name of the project containing the file.
+ * @param file		The the name of the file (with extension) in the project.
+ */
+
+- (void) detailViewControllerDelegateOpenProject: (NSString *) project file: (NSString *) file;
+
+/*!
+ * Rename a file in the current project.
+ *
+ * The name is garanteed not to already exist as a project.
+ *
+ * @param oldName		The current name of the file.
+ * @param newName		The new name of the file.
+ */
+
+- (void) detailViewControllerDelegateRenameFile: (NSString *) oldName newName: (NSString *) newName;
+
+/*!
+ * Rename a project.
+ *
+ * The current project is renamed. The new name is passed. The name is garanteed not to already exist as a project.
+ *
+ * @param name		The new name of the project.
+ */
+
+- (void) detailViewControllerDelegateRenameProject: (NSString *) name;
 
 /*!
  * Run the currently open project.
@@ -57,15 +136,21 @@
 @end
 
 
-@interface DetailViewController : UIViewController <OpenProjectViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate>
+typedef enum {stateNothingOpen, stateOpenProject, stateOpenFiles, stateOpenProjectAndFilesEditingProjectFile, stateOpenProjectAndFilesEditingNonProjectFile} buttonStates;
 
+
+@interface DetailViewController : UIViewController <NewFileOrProjectViewControllerDelegate, OpenFileViewControllerDelegate, OpenProjectViewControllerDelegate, RenameFileOrProjectViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate>
+
+@property (nonatomic) buttonStates buttonState;
 @property (weak, nonatomic) id<DetailViewControllerDelegate> delegate;
 @property (strong, nonatomic) id detailItem;
 @property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 @property (nonatomic, retain) IBOutlet SourceConsoleSplitView *sourceConsoleSplitView;
 @property (nonatomic, retain) IBOutlet UINavigationItem *sourceNavigationItem;
 
+- (void) checkButtonState;
 + (DetailViewController *) defaultDetailViewController;
+- (void) removeProject: (NSString *) name;
 - (void) splitViewController: (UISplitViewController *) svc
      willChangeToDisplayMode: (UISplitViewControllerDisplayMode) displayMode;
 

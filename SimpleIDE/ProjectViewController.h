@@ -17,7 +17,7 @@
 #include "PickerViewController.h"
 #include "SpinCompilerOptionsView.h"
 
-@interface ProjectViewController : UIViewController <DetailViewControllerDelegate, PickerViewControllerDelegate, LoadImageViewControllerDelegate, UITableViewDataSource, UIPopoverControllerDelegate>
+@interface ProjectViewController : UIViewController <DetailViewControllerDelegate, PickerViewControllerDelegate, LoadImageViewControllerDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIAlertViewDelegate>
 
 @property (nonatomic, retain) IBOutlet UIButton *boardTypeButton;
 @property (nonatomic, retain) IBOutlet UITextField *compilerOptionsTextField;
@@ -27,6 +27,7 @@
 @property (nonatomic, retain) IBOutlet LinkerOptionsView *linkerOptionsView;
 @property (nonatomic, retain) IBOutlet UIButton *memoryModelButton;
 @property (nonatomic, retain) IBOutlet UITableView *namesTableView;
+@property (nonatomic, retain) NSMutableArray *openFiles;							// Open non-project files.
 @property (nonatomic, retain) IBOutlet UIButton *optimizationButton;
 @property (nonatomic, retain) IBOutlet UISegmentedControl *optionsSegmentedControl;
 @property (nonatomic, retain) IBOutlet UIView *optionsView;

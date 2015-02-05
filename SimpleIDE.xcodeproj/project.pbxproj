@@ -49,6 +49,8 @@
 		2738F4C619182B1900DF7352 /* SpinHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738F4C519182B1900DF7352 /* SpinHighlighter.m */; };
 		273E31C81A1AC03B0076F6BF /* libopcodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31C71A1AC03B0076F6BF /* libopcodes.a */; };
 		273E31D01A1AC52E0076F6BF /* libgas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 273E31CF1A1AC52E0076F6BF /* libgas.a */; };
+		273F61901A80285200EB2B9F /* RenameFileOrProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 273F618E1A80285200EB2B9F /* RenameFileOrProjectViewController.m */; };
+		273F61911A80285200EB2B9F /* RenameFileOrProjectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 273F618F1A80285200EB2B9F /* RenameFileOrProjectViewController.xib */; };
 		2742067D1910310900FA7E5D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067C1910310900FA7E5D /* Foundation.framework */; };
 		2742067F1910310900FA7E5D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742067E1910310900FA7E5D /* CoreGraphics.framework */; };
 		274206811910310900FA7E5D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 274206801910310900FA7E5D /* UIKit.framework */; };
@@ -70,6 +72,11 @@
 		274206C41910682E00FA7E5D /* PickerViewController_7.xib in Resources */ = {isa = PBXBuildFile; fileRef = 274206C21910682E00FA7E5D /* PickerViewController_7.xib */; };
 		2751D04819EF10D300C37FA1 /* NavToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2751D04719EF10D300C37FA1 /* NavToolBar.m */; };
 		275BB9821913046500F0F020 /* HighlighterRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 275BB9811913046500F0F020 /* HighlighterRule.m */; };
+		27608B401A81430A000AD4C1 /* build_caption.png in Resources */ = {isa = PBXBuildFile; fileRef = 27608B3D1A81430A000AD4C1 /* build_caption.png */; };
+		27608B411A81430A000AD4C1 /* file.png in Resources */ = {isa = PBXBuildFile; fileRef = 27608B3E1A81430A000AD4C1 /* file.png */; };
+		27608B421A81430A000AD4C1 /* project.png in Resources */ = {isa = PBXBuildFile; fileRef = 27608B3F1A81430A000AD4C1 /* project.png */; };
+		27608B461A814713000AD4C1 /* OpenFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27608B441A814713000AD4C1 /* OpenFileViewController.m */; };
+		27608B471A814713000AD4C1 /* OpenFileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27608B451A814713000AD4C1 /* OpenFileViewController.xib */; };
 		2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.m in Sources */ = {isa = PBXBuildFile; fileRef = 2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.m */; };
 		27680F881A04004300D66F02 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27680F871A04004300D66F02 /* libiconv.dylib */; };
 		276F61E51A6EDD2A006704E0 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F61E41A6EDD2A006704E0 /* GCDAsyncUdpSocket.m */; };
@@ -83,6 +90,9 @@
 		276F62021A6EFB64006704E0 /* XBeeCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F62011A6EFB64006704E0 /* XBeeCommon.m */; };
 		276F62051A6EFBE0006704E0 /* UDPDataBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 276F62041A6EFBE0006704E0 /* UDPDataBuffer.m */; };
 		276F62071A6F1B23006704E0 /* xbee.png in Resources */ = {isa = PBXBuildFile; fileRef = 276F62061A6F1B23006704E0 /* xbee.png */; };
+		27706A151A82D0E400767B59 /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = 27706A131A82D0E400767B59 /* close.png */; };
+		27706A161A82D0E400767B59 /* copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 27706A141A82D0E400767B59 /* copy.png */; };
+		27706A181A82FED400767B59 /* ReadMe.txt in Resources */ = {isa = PBXBuildFile; fileRef = 27706A171A82FED400767B59 /* ReadMe.txt */; };
 		27BBADA11A707A8F009E1311 /* delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 27BBAD9E1A707A8F009E1311 /* delete.png */; };
 		27BBADA21A707A8F009E1311 /* new.png in Resources */ = {isa = PBXBuildFile; fileRef = 27BBAD9F1A707A8F009E1311 /* new.png */; };
 		27BBADA31A707A8F009E1311 /* rename.png in Resources */ = {isa = PBXBuildFile; fileRef = 27BBADA01A707A8F009E1311 /* rename.png */; };
@@ -96,6 +106,8 @@
 		27CE41E51A64812D002B4EE9 /* SplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E41A64812D002B4EE9 /* SplitView.m */; };
 		27CE41E81A648478002B4EE9 /* SourceConsoleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E71A648478002B4EE9 /* SourceConsoleSplitView.m */; };
 		27D8CD9A1A32517400B8FA36 /* libbfd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8CD991A32517400B8FA36 /* libbfd.a */; };
+		27DC02D41A76B28A000AE018 /* NewFileOrProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DC02D21A76B28A000AE018 /* NewFileOrProjectViewController.m */; };
+		27DC02D51A76B28A000AE018 /* NewFileOrProjectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27DC02D31A76B28A000AE018 /* NewFileOrProjectViewController.xib */; };
 		27E1F2FA1A6DC87400B30331 /* run.png in Resources */ = {isa = PBXBuildFile; fileRef = 27E1F2F91A6DC87400B30331 /* run.png */; };
 /* End PBXBuildFile section */
 
@@ -171,6 +183,9 @@
 		2738F4C519182B1900DF7352 /* SpinHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpinHighlighter.m; sourceTree = "<group>"; };
 		273E31C71A1AC03B0076F6BF /* libopcodes.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopcodes.a; sourceTree = "<group>"; };
 		273E31CF1A1AC52E0076F6BF /* libgas.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgas.a; sourceTree = "<group>"; };
+		273F618D1A80285200EB2B9F /* RenameFileOrProjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenameFileOrProjectViewController.h; sourceTree = "<group>"; };
+		273F618E1A80285200EB2B9F /* RenameFileOrProjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RenameFileOrProjectViewController.m; sourceTree = "<group>"; };
+		273F618F1A80285200EB2B9F /* RenameFileOrProjectViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RenameFileOrProjectViewController.xib; sourceTree = "<group>"; };
 		274206791910310900FA7E5D /* SimpleIDE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleIDE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2742067C1910310900FA7E5D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2742067E1910310900FA7E5D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -204,6 +219,12 @@
 		2751D04719EF10D300C37FA1 /* NavToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavToolBar.m; sourceTree = "<group>"; };
 		275BB9801913046500F0F020 /* HighlighterRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlighterRule.h; sourceTree = "<group>"; };
 		275BB9811913046500F0F020 /* HighlighterRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlighterRule.m; sourceTree = "<group>"; };
+		27608B3D1A81430A000AD4C1 /* build_caption.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = build_caption.png; path = Art/build_caption.png; sourceTree = SOURCE_ROOT; };
+		27608B3E1A81430A000AD4C1 /* file.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = file.png; path = Art/file.png; sourceTree = SOURCE_ROOT; };
+		27608B3F1A81430A000AD4C1 /* project.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = project.png; path = Art/project.png; sourceTree = SOURCE_ROOT; };
+		27608B431A814713000AD4C1 /* OpenFileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenFileViewController.h; sourceTree = "<group>"; };
+		27608B441A814713000AD4C1 /* OpenFileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenFileViewController.m; sourceTree = "<group>"; };
+		27608B451A814713000AD4C1 /* OpenFileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OpenFileViewController.xib; sourceTree = "<group>"; };
 		2765F5031A0D3F9B006B32F4 /* iOS_SimpleIDE.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iOS_SimpleIDE.m; sourceTree = "<group>"; };
 		2765F5051A0D40FC006B32F4 /* iOS_SimpleIDE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iOS_SimpleIDE.h; sourceTree = "<group>"; };
 		2765F5071A0D433A006B32F4 /* pex-common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "pex-common.h"; sourceTree = "<group>"; };
@@ -231,6 +252,9 @@
 		276F62031A6EFBE0006704E0 /* UDPDataBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UDPDataBuffer.h; sourceTree = "<group>"; };
 		276F62041A6EFBE0006704E0 /* UDPDataBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UDPDataBuffer.m; sourceTree = "<group>"; };
 		276F62061A6F1B23006704E0 /* xbee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = xbee.png; path = Art/xbee.png; sourceTree = SOURCE_ROOT; };
+		27706A131A82D0E400767B59 /* close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = close.png; path = Art/close.png; sourceTree = SOURCE_ROOT; };
+		27706A141A82D0E400767B59 /* copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = copy.png; path = Art/copy.png; sourceTree = SOURCE_ROOT; };
+		27706A171A82FED400767B59 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = SOURCE_ROOT; };
 		279EB67319E49BEE007AD8B3 /* libpropeller-elf-cpp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libpropeller-elf-cpp.h"; sourceTree = "<group>"; };
 		27BBAD9E1A707A8F009E1311 /* delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = delete.png; path = Art/delete.png; sourceTree = SOURCE_ROOT; };
 		27BBAD9F1A707A8F009E1311 /* new.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = new.png; path = Art/new.png; sourceTree = SOURCE_ROOT; };
@@ -253,6 +277,9 @@
 		27CE41E61A648478002B4EE9 /* SourceConsoleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceConsoleSplitView.h; sourceTree = "<group>"; };
 		27CE41E71A648478002B4EE9 /* SourceConsoleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceConsoleSplitView.m; sourceTree = "<group>"; };
 		27D8CD991A32517400B8FA36 /* libbfd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbfd.a; sourceTree = "<group>"; };
+		27DC02D11A76B28A000AE018 /* NewFileOrProjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewFileOrProjectViewController.h; sourceTree = "<group>"; };
+		27DC02D21A76B28A000AE018 /* NewFileOrProjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewFileOrProjectViewController.m; sourceTree = "<group>"; };
+		27DC02D31A76B28A000AE018 /* NewFileOrProjectViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewFileOrProjectViewController.xib; sourceTree = "<group>"; };
 		27E1F2F91A6DC87400B30331 /* run.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = run.png; path = Art/run.png; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -356,6 +383,12 @@
 				274206BB191039CF00FA7E5D /* CompilerOptionsView.m */,
 				274206BD191039E000FA7E5D /* LinkerOptionsView.h */,
 				274206BE191039E000FA7E5D /* LinkerOptionsView.m */,
+				27DC02D11A76B28A000AE018 /* NewFileOrProjectViewController.h */,
+				27DC02D21A76B28A000AE018 /* NewFileOrProjectViewController.m */,
+				27DC02D31A76B28A000AE018 /* NewFileOrProjectViewController.xib */,
+				27608B431A814713000AD4C1 /* OpenFileViewController.h */,
+				27608B441A814713000AD4C1 /* OpenFileViewController.m */,
+				27608B451A814713000AD4C1 /* OpenFileViewController.xib */,
 				271BE0EB1A607AC600D38EF9 /* OpenProjectViewController.h */,
 				271BE0EC1A607AC600D38EF9 /* OpenProjectViewController.m */,
 				271BE0ED1A607AC600D38EF9 /* OpenProjectViewController.xib */,
@@ -364,6 +397,9 @@
 				274206C21910682E00FA7E5D /* PickerViewController_7.xib */,
 				274206B7191039B500FA7E5D /* ProjectOptionsView.h */,
 				274206B8191039B500FA7E5D /* ProjectOptionsView.m */,
+				273F618D1A80285200EB2B9F /* RenameFileOrProjectViewController.h */,
+				273F618E1A80285200EB2B9F /* RenameFileOrProjectViewController.m */,
+				273F618F1A80285200EB2B9F /* RenameFileOrProjectViewController.xib */,
 				271BE0C61A5F55DE00D38EF9 /* SpinCompilerOptionsView.h */,
 				271BE0C71A5F55DE00D38EF9 /* SpinCompilerOptionsView.m */,
 				27CE41E01A648067002B4EE9 /* SplitArrows.h */,
@@ -397,9 +433,14 @@
 			isa = PBXGroup;
 			children = (
 				271BE0CE1A5FFF2400D38EF9 /* build.png */,
+				27608B3D1A81430A000AD4C1 /* build_caption.png */,
+				27706A131A82D0E400767B59 /* close.png */,
+				27706A141A82D0E400767B59 /* copy.png */,
 				27BBAD9E1A707A8F009E1311 /* delete.png */,
+				27608B3E1A81430A000AD4C1 /* file.png */,
 				27BBAD9F1A707A8F009E1311 /* new.png */,
 				271BE0CC1A5FF39F00D38EF9 /* openproj.png */,
+				27608B3F1A81430A000AD4C1 /* project.png */,
 				27BBADA01A707A8F009E1311 /* rename.png */,
 				27E1F2F91A6DC87400B30331 /* run.png */,
 				276F62061A6F1B23006704E0 /* xbee.png */,
@@ -487,6 +528,7 @@
 				274206851910310900FA7E5D /* InfoPlist.strings */,
 				274206881910310900FA7E5D /* main.m */,
 				2742068A1910310900FA7E5D /* SimpleIDE-Prefix.pch */,
+				27706A171A82FED400767B59 /* ReadMe.txt */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -634,27 +676,36 @@
 			files = (
 				271BE0EF1A607AC600D38EF9 /* OpenProjectViewController.xib in Resources */,
 				271BE0E41A6046C600D38EF9 /* ClockDemo.spin in Resources */,
+				27608B411A81430A000AD4C1 /* file.png in Resources */,
 				271BE0E31A6046C600D38EF9 /* Clock.spin in Resources */,
 				271BE0E71A6046C600D38EF9 /* FloatString.spin in Resources */,
 				271BE0E01A6046C600D38EF9 /* Blank.spin in Resources */,
 				271BE0E51A6046C600D38EF9 /* Float-Blink_Demo.spin in Resources */,
+				27608B471A814713000AD4C1 /* OpenFileViewController.xib in Resources */,
 				27BBADA21A707A8F009E1311 /* new.png in Resources */,
 				276F61F91A6EF689006704E0 /* LoadImageViewController.xib in Resources */,
+				27706A161A82D0E400767B59 /* copy.png in Resources */,
 				271BE0E81A6046C600D38EF9 /* LargeSpinCode.spin in Resources */,
 				271BE0E61A6046C600D38EF9 /* FloatMath.spin in Resources */,
 				271BE0E11A6046C600D38EF9 /* Blink16-23.spin in Resources */,
 				27E1F2FA1A6DC87400B30331 /* run.png in Resources */,
+				27608B421A81430A000AD4C1 /* project.png in Resources */,
 				276F62071A6F1B23006704E0 /* xbee.png in Resources */,
+				27DC02D51A76B28A000AE018 /* NewFileOrProjectViewController.xib in Resources */,
 				271BE0CD1A5FF39F00D38EF9 /* openproj.png in Resources */,
+				27706A151A82D0E400767B59 /* close.png in Resources */,
 				274206981910310900FA7E5D /* Images.xcassets in Resources */,
+				273F61911A80285200EB2B9F /* RenameFileOrProjectViewController.xib in Resources */,
 				271BE0E21A6046C600D38EF9 /* Blink16.spin in Resources */,
 				271BE0CF1A5FFF2400D38EF9 /* build.png in Resources */,
 				27BBADA31A707A8F009E1311 /* rename.png in Resources */,
 				274206871910310900FA7E5D /* InfoPlist.strings in Resources */,
 				274206C41910682E00FA7E5D /* PickerViewController_7.xib in Resources */,
+				27706A181A82FED400767B59 /* ReadMe.txt in Resources */,
 				27BBADA11A707A8F009E1311 /* delete.png in Resources */,
 				276F61F11A6EF3A1006704E0 /* ConfigurationViewController.xib in Resources */,
 				274206901910310900FA7E5D /* Main.storyboard in Resources */,
+				27608B401A81430A000AD4C1 /* build_caption.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -703,6 +754,7 @@
 				276F61E91A6EF2C4006704E0 /* Loader.m in Sources */,
 				274206891910310900FA7E5D /* main.m in Sources */,
 				271BE0AF1A5F3EC300D38EF9 /* InstructionBlockCompiler.cpp in Sources */,
+				273F61901A80285200EB2B9F /* RenameFileOrProjectViewController.m in Sources */,
 				275BB9821913046500F0F020 /* HighlighterRule.m in Sources */,
 				274206C31910682E00FA7E5D /* PickerViewController.m in Sources */,
 				271BE0A71A5F3EC300D38EF9 /* CompileDatBlocks.cpp in Sources */,
@@ -721,6 +773,7 @@
 				2722FAFE1918528800B17227 /* DetailViewNavigationControllerViewController.m in Sources */,
 				271BE0C41A5F3ED600D38EF9 /* textconvert.cpp in Sources */,
 				27CE41E51A64812D002B4EE9 /* SplitView.m in Sources */,
+				27608B461A814713000AD4C1 /* OpenFileViewController.m in Sources */,
 				271BE0C01A5F3ED600D38EF9 /* preprocess.cpp in Sources */,
 				271BE0EA1A60472D00D38EF9 /* Hello_Message.c in Sources */,
 				274206B61910349D00FA7E5D /* ProjectViewController.m in Sources */,
@@ -736,6 +789,7 @@
 				2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.m in Sources */,
 				27BFBB101911B3880091F183 /* CHighlighter.m in Sources */,
 				27BFBB0D1911AD100091F183 /* Highlighter.m in Sources */,
+				27DC02D41A76B28A000AE018 /* NewFileOrProjectViewController.m in Sources */,
 				271BE0B31A5F3EC300D38EF9 /* Utilities.cpp in Sources */,
 				271BE0B01A5F3EC300D38EF9 /* PropellerCompiler.cpp in Sources */,
 				271BE0B21A5F3EC300D38EF9 /* SymbolEngine.cpp in Sources */,

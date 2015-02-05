@@ -12,8 +12,6 @@
 
 @implementation Project
 
-// TODO: Wire this to the project options dialog, and save it with the project.
-
 @synthesize language;
 @synthesize files;
 @synthesize name;

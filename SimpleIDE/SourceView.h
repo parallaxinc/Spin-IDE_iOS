@@ -12,7 +12,8 @@
 
 @interface SourceView : UITextView <UITextViewDelegate>
 
-@property (nonatomic) languageType language;
+@property (nonatomic) languageType language;				// The language type (used for syntax highloghting).
+@property (nonatomic, retain) NSString *path;				// The full path of the file being edited.
 
 - (void) save;
 - (void) setSource: (NSString *) text forPath: (NSString *) thePath;

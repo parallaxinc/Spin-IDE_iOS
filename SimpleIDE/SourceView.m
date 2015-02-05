@@ -19,7 +19,6 @@
 }
 
 @property (nonatomic, retain) Highlighter *highlighter;		// The highlighter to use for the current file.
-@property (nonatomic, retain) NSString *path;				// The full path of hte file being edited.
 
 @end
 
