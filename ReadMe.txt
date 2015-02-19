@@ -1,5 +1,5 @@
-SimpleIDE 1.0.0.5
------------------
+Spin IDE 1.0.0.5
+----------------
 
 This project implements an IDE on iPads for programming Propeller based boards using an XBee radio to move the project binaries from the iPad to the Propeller board.
 
@@ -42,26 +42,28 @@ Changes in this release
 
 14. Project and file names that differ only by case can no longer be created using the IDE.
 
+15. Added Jen's new artwork--looks great!
+
 Other features and fixes needed for a solid release
 ---------------------------------------------------
 
 1. Support a terminal.
 
-2. Get final artwork.
+2. Display errors in a more friendly way.
 
-3. Display errors in a more friendly way.
+3. Support download to EPROM, not just RAM.
 
-4. Support download to EPROM, not just RAM.
+4. The navigation control does not show up on main view until the program rotates to landscape once.
 
-5. The navigation control does not show up on main view until the program rotates to landscape once.
+5. Opening and editing large files takes too long due to syntax coloring.
 
-6. Opening and editing large files takes too long due to syntax coloring.
+6. Support collapsing the side panel in landscape view.
 
-7. Support collapsing the side panel in landscape view.
+7. Support different font sizes in the editor.
 
-8. Support different font sizes in the editor.
+8. Allow emailing (in and out) of zipped spin projects.
 
-9. Allow emailing (in and out) of zipped spin projects.
+9. Sumbit iOS Changes to the Spin comopiler as a repository branch.
 
 Other features and fixes that would be nice someday
 ---------------------------------------------------
