@@ -17,13 +17,19 @@
 
 #define IS_4_INCH_IPHONE ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && [UIScreen mainScreen].bounds.size.height == 568.0)
 
-// Supported languages
+// Supported languages.
 #define SUPPORT_SPIN YES
-#define SUPPORT_C YES
-#define SUPPORT_CPP YES
+#define SUPPORT_C NO
+#define SUPPORT_CPP NO
 
 // The domain for locally generated NSError objects.
 #define simpleIDEDomain @"SimpleIDE"
+
+// The name of the Spin library folder.
+#define SPIN_LIBRARY @"SpinLibrary"
+
+// The name for the spin libary folder as it appears in the file picker.
+#define SPIN_LIBRARY_PICKER_NAME @"(Spin Library)"
 
 typedef enum {languageC, languageCPP, languageSpin} languageType;
 

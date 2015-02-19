@@ -15,11 +15,15 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Create projects for the various sample files.
-    NSArray *sources = [[NSBundle mainBundle] pathsForResourcesOfType: @"spin" inDirectory: nil];
+    NSArray *samples = [NSArray arrayWithObjects: @"Blank", @"Blink16-23", @"Blink16", @"Clock", @"ClockDemo", @"Float-Blink_Demo", 
+                        @"FloatMath", @"FloatString", @"LargeSpinCode", nil];
+    NSMutableArray *sources = [[NSMutableArray alloc] init];
+    for (NSString *name in samples)
+        [sources addObject: [[NSBundle mainBundle] pathForResource: name ofType: @"spin"]];
     NSString *sandboxPath = [Common sandbox];
     NSFileManager *manager = [NSFileManager defaultManager];
+    NSError *error;
     for (NSString *path in sources) {
-        NSError *error;
         NSString *projectName = [[path lastPathComponent] stringByDeletingPathExtension];
         NSString *destFolder = [sandboxPath stringByAppendingPathComponent: projectName];
         if (![manager fileExistsAtPath: destFolder]) {
@@ -34,7 +38,7 @@
         }
     }
 
-    sources = [[NSBundle mainBundle] pathsForResourcesOfType: @"c" inDirectory: nil];
+    sources = [NSMutableArray arrayWithArray: [[NSBundle mainBundle] pathsForResourcesOfType: @"c" inDirectory: nil]];
     for (NSString *path in sources) {
         NSString *projectName = [[path lastPathComponent] stringByDeletingPathExtension];
         NSString *destFolder = [sandboxPath stringByAppendingPathComponent: projectName];
@@ -49,7 +53,29 @@
             }
         }
     }
-
+    
+    // Create the library folder.
+    NSArray *libraries = [NSArray arrayWithObjects: @"4x4 Keypad Reader", @"AD8803", @"ADC", @"COILREAD", @"CTR", @"Clock", 
+                          @"Debug_Lcd", @"Float32", @"Float32A", @"Float32Full", @"FloatMath", @"FloatString", @"FullDuplexSerial", 
+                          @"Graphics", @"H48C Tri-Axis Accelerometer", @"HM55B Compass Module Asm", @"Inductor", @"Keyboard", 
+                          @"License", @"MCP3208", @"MXD2125 Simple", @"MXD2125", @"Memsic2125_v1.2", @"Monitor", @"Mouse", 
+                          @"Numbers", @"Parallax Serial Terminal", @"Ping", @"PropellerLoader", @"PropellerRTC_Emulator", 
+                          @"Quadrature Encoder", @"RCTIME", @"RealRandom", 
+                          @"SPI_Asm", @"SPI_Spin", @"Serial_Lcd", @"Servo32_Ramp_v2", @"Servo32v7", @"SimpleDebug", 
+                          @"Simple_Numbers", @"Simple_Serial", @"Stack Length", @"StereoSpatializer", @"Synth", 
+                          @"TV", @"TV_Terminal", @"TV_Text", 
+                          @"VGA", @"VGA_512x384_Bitmap", @"VGA_HiRes_Text", @"VGA_Text", @"VocalTract", @"tsl230", 
+                          @"vga_1280x1024_tile_driver_with_cursor", @"vga_1600x1200_tile_driver_with_cursor", nil];
+    NSString *destinationFolder = [sandboxPath stringByAppendingPathComponent: SPIN_LIBRARY];
+    if ([manager createDirectoryAtPath: destinationFolder withIntermediateDirectories: YES attributes: nil error: &error]) {
+        for (NSString *name in libraries) {
+            NSString *sourcePath = [[NSBundle mainBundle] pathForResource: name ofType: @"spin"];
+            NSString *destinationPath = [destinationFolder stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"spin"]];
+            [[NSFileManager defaultManager] removeItemAtPath: destinationPath error: nil];
+            [[NSFileManager defaultManager] copyItemAtPath: sourcePath toPath: destinationPath error: nil];
+        }
+    }
+    
     // Set up the split view controller.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];

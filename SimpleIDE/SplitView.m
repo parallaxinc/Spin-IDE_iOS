@@ -226,8 +226,8 @@
  */
 
 - (void) setBounds: (CGRect) bounds {
-    [super setBounds: bounds];
     [self layoutSplitViews: bounds];
+    [super setBounds: bounds];
 }
 
 /*!
@@ -237,8 +237,8 @@
  */
 
 - (void) setFrame: (CGRect) frame {
-	[super setFrame: frame];
     [self layoutSplitViews: frame];
+	[super setFrame: frame];
 }
 
 /*!

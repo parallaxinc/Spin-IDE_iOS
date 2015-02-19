@@ -75,7 +75,7 @@
 
 - (BOOL) exists: (NSString *) name {
     for (NSString *currentName in currentNames) {
-        if ([currentName isEqualToString: name])
+        if ([currentName caseInsensitiveCompare: name] == NSOrderedSame)
             return YES;
     }
     return NO;
@@ -104,20 +104,22 @@
     }
     
     // If we are renaming a file, and the new name is missing a file extension or it is invalid, use the old file extension.
-    NSString *extension = [name pathExtension];
-    BOOL goodExtension = NO;
-    if (extension && extension.length > 0) {
-        for (NSString *validExtension in [Common validExtensions])
-            if ([extension isEqualToString: validExtension]) {
-                goodExtension = YES;
-                break;
-            }
-    }
-    if (!goodExtension) {
-        extension = [oldFileName pathExtension];
-        if (!extension || extension.length == 0)
-            extension = @"spin";
-        name = [[name stringByDeletingPathExtension] stringByAppendingPathExtension: extension];
+    if (!renamingProject) {
+        NSString *extension = [name pathExtension];
+        BOOL goodExtension = NO;
+        if (extension && extension.length > 0) {
+            for (NSString *validExtension in [Common validExtensions])
+                if ([extension caseInsensitiveCompare: validExtension] == NSOrderedSame) {
+                    goodExtension = YES;
+                    break;
+                }
+        }
+        if (!goodExtension) {
+            extension = [oldFileName pathExtension];
+            if (!extension || extension.length == 0)
+                extension = @"spin";
+            name = [[name stringByDeletingPathExtension] stringByAppendingPathExtension: extension];
+        }
     }
     
     // Check for duplicate names.
@@ -151,7 +153,7 @@
         }
     }
     
-    // Tell the delegate to create the project.
+    // Tell the delegate to rename the project.
     if (goodName && [delegate respondsToSelector: @selector(renameFileOrProjectViewControllerRename:name:oldName:isProject:)])
         [delegate renameFileOrProjectViewControllerRename: self name: name oldName: oldFileName isProject: renamingProject];
 }

@@ -10,8 +10,20 @@
 
 #import "Common.h"
 
+@protocol SourceViewDelegate <NSObject>
+
+/*!
+ * Notify the delegate that the text has changed in some way.
+ */
+
+- (void) sourceViewTextChanged;
+
+@end
+
+
 @interface SourceView : UITextView <UITextViewDelegate>
 
+@property (weak, nonatomic) id<SourceViewDelegate> sourceViewDelegate;
 @property (nonatomic) languageType language;				// The language type (used for syntax highloghting).
 @property (nonatomic, retain) NSString *path;				// The full path of the file being edited.
 

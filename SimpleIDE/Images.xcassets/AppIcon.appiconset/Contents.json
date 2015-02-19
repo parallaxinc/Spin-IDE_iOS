@@ -3,37 +3,37 @@
     {
       "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "icon29.png",
+      "filename" : "ProgramIcon29.png",
       "scale" : "1x"
     },
     {
       "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "icon58.png",
+      "filename" : "ProgramIcon58.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "icon40.png",
+      "filename" : "ProgramIcon40.png",
       "scale" : "1x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "icon80.png",
+      "filename" : "ProgramIcon80.png",
       "scale" : "2x"
     },
     {
       "size" : "76x76",
       "idiom" : "ipad",
-      "filename" : "icon76.png",
+      "filename" : "ProgramIcon76.png",
       "scale" : "1x"
     },
     {
       "size" : "76x76",
       "idiom" : "ipad",
-      "filename" : "icon152.png",
+      "filename" : "ProgramIcon152.png",
       "scale" : "2x"
     }
   ],

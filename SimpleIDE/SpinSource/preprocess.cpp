@@ -39,6 +39,7 @@
 #include "flexbuf.h"
 #include "preprocess.h"
 #include "pathentry.h"
+#include "Utilities.h"
 
 #ifdef _MSC_VER
 #define strdup _strdup
@@ -189,9 +190,9 @@ static void default_errfunc(void *dummy, const char *filename, int line, const c
 {
     const char *level = (const char *)dummy;
 
-    fprintf(stderr, "%s:%d: %s: ", filename, line, level);
-    fprintf(stderr, "%s", msg);
-    fprintf(stderr, "\n");
+    fprintf(GetStderr(), "%s:%d: %s: ", filename, line, level);
+    fprintf(GetStderr(), "%s", msg);
+    fprintf(GetStderr(), "\n");
 }
 
 static void

@@ -99,7 +99,7 @@
 
 - (void) setSelectedElement: (NSString *) theSelectedElement {
     for (int i = 0; i < pickerElements.count; ++i) {
-        if ([theSelectedElement isEqualToString: pickerElements[i]]) {
+        if ([theSelectedElement caseInsensitiveCompare: pickerElements[i]] == NSOrderedSame) {
             selectedRow = i;
             [picker selectRow: i inComponent: 0 animated: YES];
             selectedElement = theSelectedElement;

@@ -72,7 +72,7 @@
 }
 
 /*!
- * See if a name is the same as the name of an existing project.
+ * See if a name is the same as the name of an existing file or project.
  *
  * @param name		The name to check.
  *
@@ -81,7 +81,7 @@
 
 - (BOOL) exists: (NSString *) name {
     for (NSString *project in projects) {
-        if ([project isEqualToString: name])
+        if ([project caseInsensitiveCompare: name] == NSOrderedSame)
             return YES;
     }
     return NO;
@@ -114,7 +114,7 @@
         NSString *extension = [name pathExtension];
         goodName = NO;
         for (NSString *validExtension in [Common validExtensions])
-            if ([validExtension isEqualToString: extension]) {
+            if ([validExtension caseInsensitiveCompare: extension] == NSOrderedSame) {
                 goodName = YES;
                 break;
             }

@@ -14,33 +14,21 @@
 #import "PickerViewController.h"
 
 
-#define DEBUG_SPEW 1
+#define DEBUG_SPEW 0
 
 
 typedef enum {tagBoardType, tagCompilerType, tagMemoryModel, tagOptimization} pickerTags;
-typedef enum {alertDeleteFile, alertDeleteProject} alertTags;
+typedef enum {alertDeleteFile, alertDeleteProject, alertWarning} alertTags;
 
 
 static ProjectViewController *this;						// This singleton instance of this class.
 
 
-// TODO: Blink16.spin not highlighted on the last row.
-// TODO: When opening a file, restore the original selection and view.
-// TODO: Temporarily hide the ability to create C projects.
-// TODO: Add a check on rename to warn when the project file is renamed.
-
-// TODO: Use libraries.
 // TODO: Add a terminal
-
-// TODO: Add undo, redo, cut, copy, paste
-// TODO: Add find/replace
-// TODO: Add Print
-// TODO: Need final artwork.
 
 // TODO: Display errors in a user fiendly way.
 // TODO: EPROM Support
 // TODO: Navigation control does not show up on main view until the program rotates to landscape once
-// TODO: Use the user supplied compiler flags
 // TODO: Opening a large file takes a long time
 // TODO: Collapse the side panel in landscape view
 // TODO: Allow pinch zoom in the editor.
@@ -94,8 +82,15 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize pickerPopoverController;
 @synthesize project;
 @synthesize projectOptionsView;
+@synthesize simpleIDEOptionsView;
+@synthesize spinOptionsView;
 @synthesize spinCompilerOptionsView;
+@synthesize spinCompilerOptionsTextField;
 @synthesize xbeePopoverController;
+
+@synthesize spinSimpleIDEOptionsHeightConstraint;
+@synthesize spinOptionsHeightConstraint;
+@synthesize simpleIDEOptionsHeightConstraint;
 
 #pragma mark - Misc
 
@@ -114,7 +109,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     
     // Add the file to the list of files in the .side file.
     NSError *error = nil;
-    [self updateSideFile: &error];
+    [project writeSideFile: &error];
     
     if (!error) {
         // Update the file list.
@@ -162,6 +157,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
                 }
                 break;
             }
+                
+            case alertWarning:
+                break;
         }
         alert = nil;
     }
@@ -180,7 +178,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
     DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
     [detailViewController.sourceConsoleSplitView.sourceView save];
     
-    // TODO:    int count;
+    // TODO: Implement C Support
+    //    int count;
     //    char **args = [self commandLineArgumentsFor: "propeller-elf-gcc -v" count: &count];
     //    maingcc(2, args);
     //    free(args);
@@ -250,6 +249,12 @@ static ProjectViewController *this;						// This singleton instance of this clas
             
             commandLine = [NSString stringWithFormat: @"%@ -L %@", commandLine, [self escape: project.path]];
             
+            NSString *libraryPath = [[Common sandbox] stringByAppendingPathComponent: SPIN_LIBRARY];
+            commandLine = [NSString stringWithFormat: @"%@ -L %@", commandLine, [self escape: libraryPath]];
+            
+            if (project.spinCompilerOptions && project.spinCompilerOptions.length > 0)
+                commandLine = [NSString stringWithFormat: @"%@ %@", commandLine, project.spinCompilerOptions];
+            
             NSString *path = [project.path stringByAppendingPathComponent: file];
             commandLine = [NSString stringWithFormat: @"%@ %@", commandLine, [self escape: path]];
             
@@ -257,8 +262,10 @@ static ProjectViewController *this;						// This singleton instance of this clas
             int count;
             char **args = [self commandLineArgumentsFor: [commandLine UTF8String] count: &count];
 #if DEBUG_SPEW
-            for (int i = 0; i < count; ++i) 
-                printf("%2d: %s\n", i, args[i]);
+            for (int i = 0; i < count; ++i) {
+                char *arg = args[i];
+                printf("%2d: %s\n", i, arg);
+            }
 #endif
             mainOpenSpin(count, args);
             free(args);
@@ -414,10 +421,11 @@ static ProjectViewController *this;						// This singleton instance of this clas
     // Combine escaped spaces.
     NSMutableArray *nsargs = [[NSMutableArray alloc] init];
     for (int i = 0; i < preliminary_args.count; ++i) {
-        NSString *arg = preliminary_args[i];
+        NSString *arg = [preliminary_args[i] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
         while (i < preliminary_args.count && [arg characterAtIndex: arg.length - 1] == '\\')
             arg = [NSString stringWithFormat: @"%@ %@", [arg substringToIndex: arg.length - 1], preliminary_args[++i]];
-        [nsargs addObject: arg];
+        if (arg.length > 0)
+	        [nsargs addObject: arg];
     }
     
     // Set the number of arguments.
@@ -464,7 +472,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     
     // Remove the file from the .side file.
     NSError *error = nil;
-    [self updateSideFile: &error];
+    [project writeSideFile: &error];
     if (error)
         [Common reportError: error];
     
@@ -549,11 +557,11 @@ static ProjectViewController *this;						// This singleton instance of this clas
     [detailViewController.sourceConsoleSplitView.sourceView setSource: @"" forPath: nil];
     languageType language = languageSpin;
     NSString *extension = [[partialPath pathExtension] lowercaseString];
-    if ([extension isEqualToString: @"c"])
+    if ([extension caseInsensitiveCompare: @"c"] == NSOrderedSame)
         language = languageC;
-    else if ([extension isEqualToString: @"h"])
+    else if ([extension caseInsensitiveCompare: @"h"] == NSOrderedSame)
         language = languageC;
-    else if ([extension isEqualToString: @"cpp"])
+    else if ([extension caseInsensitiveCompare: @"cpp"] == NSOrderedSame)
         language = languageCPP;
     detailViewController.sourceConsoleSplitView.sourceView.language = language;
 
@@ -632,28 +640,13 @@ static ProjectViewController *this;						// This singleton instance of this clas
 - (void) reportError: (NSString *) message inFile: (NSString *) file line: (int) line offset: (int) offset {
     // TODO: Open the file containing the error.
     // TODO: Show the error at the line containing the error.
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Build Error"
-                                                    message: message
-                                                   delegate: nil
-                                          cancelButtonTitle: @"OK"
-                                          otherButtonTitles: nil];
-    [alert show];
-}
-
-/*!
- * Write an updated .side file based on the current project settings.
- *
- * @param error			Pointer to the error; this is set if an error occurred updating the file.
- */
-
-- (void) updateSideFile: (NSError **) error {
-    NSString *sideFile = @"";
-    for (NSString *projectFile in project.files)
-        sideFile = [NSString stringWithFormat: @"%@%@\n", sideFile, projectFile];
-    // TODO: Update once C projects are supported.
-    // TODO: Update once command line arguments are supported.
-    [NSString stringWithFormat: @"%@>compiler=SPIN\n", sideFile];
-    [sideFile writeToFile: project.sidePath atomically: YES encoding: NSUTF8StringEncoding error: error];
+    UIAlertView *theAlert = [[UIAlertView alloc] initWithTitle: @"Build Error"
+                                                       message: message
+                                                      delegate: nil
+                                             cancelButtonTitle: @"OK"
+                                             otherButtonTitles: nil];
+    theAlert.tag = alertWarning;
+    [theAlert show];
 }
 
 #pragma mark - Actions
@@ -769,7 +762,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (void) keyboardWasShown: (NSNotification *) notification {
-    if ([compilerOptionsTextField isFirstResponder] || [linkerOptionsTextField isFirstResponder]) {
+    if ([compilerOptionsTextField isFirstResponder] || [linkerOptionsTextField isFirstResponder] || [spinCompilerOptionsTextField isFirstResponder]) {
         NSDictionary *info = [notification userInfo];
         CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     
@@ -780,6 +773,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
             keyboardViewRect = rect;
         rect.size.height -= keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
         self.view.frame = rect;
+        [UIView animateWithDuration: 0.1 animations: ^{
+            [self.view layoutIfNeeded];
+        }];
         
         keyboardVisible = YES;
     }
@@ -794,7 +790,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (void) keyboardWillBeHidden: (NSNotification *) notification {
-    if ([compilerOptionsTextField isFirstResponder] || [linkerOptionsTextField isFirstResponder]) {
+    if ([compilerOptionsTextField isFirstResponder] || [linkerOptionsTextField isFirstResponder] || [spinCompilerOptionsTextField isFirstResponder]) {
         NSDictionary *info = [notification userInfo];
         CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         
@@ -804,9 +800,30 @@ static ProjectViewController *this;						// This singleton instance of this clas
         else
             rect.size.height += keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
         self.view.frame = rect;
+        [UIView animateWithDuration: 0.5 animations: ^{
+            [self.view layoutIfNeeded];
+        }];
         
         keyboardVisible = NO;
     }
+}
+
+/*!
+ * Called when the view controller's view needs to update its constraints.
+ *
+ * You may override this method in a subclass in order to add constraints to the view or its subviews. 
+ * If you override this method, your implementation must invoke super’s implementation.
+ */
+
+- (void) updateViewConstraints {
+    [super updateViewConstraints];
+    
+    if (SUPPORT_C || SUPPORT_CPP)
+        spinSimpleIDEOptionsHeightConstraint.constant = simpleIDEOptionsHeightConstraint.constant;
+    else
+        spinSimpleIDEOptionsHeightConstraint.constant = spinOptionsHeightConstraint.constant;
+    
+    [self.view setNeedsLayout];
 }
 
 /*!
@@ -866,6 +883,21 @@ static ProjectViewController *this;						// This singleton instance of this clas
     
     // Create an object for the list of open files.
     self.openFiles = [[NSMutableArray alloc] init];
+    
+    // Hide/show the appropriate options view.
+    if (SUPPORT_C || SUPPORT_CPP) {
+        spinOptionsView.hidden = YES;
+        simpleIDEOptionsView.hidden = NO;
+    } else {
+        spinOptionsView.hidden = NO;
+        simpleIDEOptionsView.hidden = YES;
+    }
+    
+    // Register as the deligate for the options views.
+    if (SUPPORT_C || SUPPORT_CPP)
+        spinCompilerOptionsView.delegate = self;
+    else
+        spinOptionsView.delegate = self;
     
     // Record our singleton instance.
     this = self;
@@ -933,6 +965,22 @@ static ProjectViewController *this;						// This singleton instance of this clas
             [optimizationButton setTitle: optimizationPickerElements[row] forState: UIControlStateNormal];
             break;
     }
+}
+
+#pragma mark - SpinCompilerOptionsViewDelegate
+
+/*!
+ * Called if the user taps Open or Cancel, this method passes the file selection information.
+ *
+ * @param options		The new compiler options.
+ */
+
+- (void) spinCompilerOptionsViewOptionsChanged: (NSString *) options {
+    project.spinCompilerOptions = options;
+    NSError *error = nil;
+    [project writeSideFile: &error];
+    if (error)
+        [Common reportError: error];
 }
 
 #pragma mark - LoadImageViewControllerDelegate
@@ -1026,7 +1074,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * Passes the user's request to build the current project to the delegate.
  */
 
-- (void) detailViewControllerDelegateBuildProject {
+- (void) detailViewControllerBuildProject {
     [self build];
 }
 
@@ -1036,11 +1084,11 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * Passes the user's request to delete the current file to the delegate.
  */
 
-- (void) detailViewControllerDelegateCloseFile {
+- (void) detailViewControllerCloseFile {
 	// Make sure the open file is a file that is not in the open project. This should not happen, so no error is needed.
     NSString *path = [DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView.path;
     NSString *projectName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-    if (project && ![project.name isEqualToString: projectName]) {
+    if (project && [project.name caseInsensitiveCompare: projectName] != NSOrderedSame) {
         // Remove the file form the open files list.
         NSString *partialPath = [projectName stringByAppendingPathComponent: [path lastPathComponent]];
         [openFiles removeObject: partialPath];
@@ -1072,7 +1120,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param toFileName	The file name for the file in the project.
  */
 
-- (void) detailViewControllerDelegateCopyFrom: (NSString *) fromPath to: (NSString *) toFileName {
+- (void) detailViewControllerCopyFrom: (NSString *) fromPath to: (NSString *) toFileName {
     if (project && project.files && project.files.count > 0) {
         // Copy the file to the new location.
         NSString *toPath = [project.path stringByAppendingPathComponent: toFileName];
@@ -1092,15 +1140,15 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * Passes the user's request to delete the current file to the delegate.
  */
 
-- (void) detailViewControllerDelegateDeleteFile {
+- (void) detailViewControllerDeleteFile {
     DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
     NSString *path = detailViewController.sourceConsoleSplitView.sourceView.path;
     NSString *fileName = [path lastPathComponent];
     NSString *projectName = [[path stringByDeletingLastPathComponent] lastPathComponent];
     
-    if ([projectName isEqualToString: project.name]) {
+    if ([projectName caseInsensitiveCompare: project.name] == NSOrderedSame) {
         if (project.files.count == 1)
-            [self detailViewControllerDelegateDeleteProject];
+            [self detailViewControllerDeleteProject];
         else {
             NSString *message = [NSString stringWithFormat: @"Are you sure you want to delete the file %@? This operation cannot be undone.", fileName];
             self.alert = [[UIAlertView alloc] initWithTitle: @"Delete?"
@@ -1120,7 +1168,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * Passes the user's request to delete the current project to the delegate.
  */
 
-- (void) detailViewControllerDelegateDeleteProject {
+- (void) detailViewControllerDeleteProject {
     NSString *message = [NSString stringWithFormat: @"Are you sure you want to delete the project %@? This operation cannot be undone.", project.name];
     self.alert = [[UIAlertView alloc] initWithTitle: @"Delete?"
                                             message: message
@@ -1137,7 +1185,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param name		The name for the new file.
  */
 
-- (void) detailViewControllerDelegateNewFile: (NSString *) name {
+- (void) detailViewControllerNewFile: (NSString *) name {
 	// Create the file.
     NSString *path = [project.path stringByAppendingPathComponent: name];
     NSError *error = nil;
@@ -1159,67 +1207,55 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param name		The name of the project to open.
  */
 
-- (void) detailViewControllerDelegateOpenProject: (NSString *) name {
-    // Get the various paths.
-    project.name = name;
-    project.path = [[Common sandbox] stringByAppendingPathComponent: name];
-    project.sidePath = [project.path stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"side"]];
-    
-    // Scan the .side file for files and the language.
-    project.files = [[NSMutableArray alloc] init];
-    NSArray *lines = [[NSString stringWithContentsOfFile: project.sidePath 
-                                                encoding: NSUTF8StringEncoding 
-                                                   error: nil] componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
-    for (NSString *line in lines) {
-        if ([line stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0) {
-            if ([line characterAtIndex: 0] == '>') {
-                NSString *command = [line substringFromIndex: 1];
-                if ([[command lowercaseString] hasPrefix: @"compiler="]) {
-                    command = [[command substringFromIndex: 9] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    if ([command caseInsensitiveCompare: @"C"] == NSOrderedSame)
-                        project.language = languageC;
-                    else if ([command caseInsensitiveCompare: @"CPP"] == NSOrderedSame)
-                        project.language = languageCPP;
-                    else
-                        project.language = languageSpin;
-                }
-            } else {
-                NSString *path = [project.path stringByAppendingPathComponent: line];
-                if ([[NSFileManager defaultManager] fileExistsAtPath: path])
-                    [project.files addObject: line];
-            }
-        }
-    }
-    
-    // Clear the console.
-    DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
-    detailViewController.sourceConsoleSplitView.consoleView.text = @"";
-    
-    // Set the language in the UI.
-    [self changeLanguage: project.language];
-    
-    
-    // If there are files in the "Other open files" list that are in this project, remove them from that list.
-    NSMutableArray *openFiles2 = [[NSMutableArray alloc] init];
-    for (NSString *file in openFiles) {
-        NSString *projectName = [file pathComponents][0];
-        if (![projectName isEqualToString: project.name])
-            [openFiles2 addObject: file];
-    }
-    self.openFiles = openFiles2;
-    
-    // Repaint the table with the new file list.
-    [namesTableView reloadData];
+- (void) detailViewControllerOpenProject: (NSString *) name {
+    // Load the object.
+    NSError *error = nil;
+    Project *newProject = [[Project alloc] init];
+    [newProject readSideFile: name error: &error];
+    if (error) {
+        [Common reportError: error];
+    } else {
+        project = newProject;
         
-    // Select and open the initial file.
-    if (project.files.count > 0) {
-        NSString *partialPath = [project.name stringByAppendingPathComponent: project.files[0]];
-        [self openFile: partialPath];
-        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: 0 inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+        // Clear the console.
+        DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
+        detailViewController.sourceConsoleSplitView.consoleView.text = @"";
+        
+        // Set the language in the UI.
+        [self changeLanguage: project.language];
+        
+        
+        // If there are files in the "Other open files" list that are in this project, remove them from that list.
+        NSMutableArray *openFiles2 = [[NSMutableArray alloc] init];
+        for (NSString *file in openFiles) {
+            NSString *projectName = [file pathComponents][0];
+            if ([projectName caseInsensitiveCompare: project.name] != NSOrderedSame)
+                [openFiles2 addObject: file];
+        }
+        self.openFiles = openFiles2;
+        
+        // Repaint the table with the new file list.
+        [namesTableView reloadData];
+        
+        // Select and open the initial file.
+        if (project.files.count > 0) {
+            NSString *partialPath = [project.name stringByAppendingPathComponent: project.files[0]];
+            [self openFile: partialPath];
+            [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: 0 inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+        }
+        
+        // Fill in any options.
+        NSString *options = @"";
+        if (project.spinCompilerOptions)
+            options = project.spinCompilerOptions;
+        if (SUPPORT_C || SUPPORT_CPP)
+            spinCompilerOptionsView.compilerOptionsTextField.text = options;
+        else
+            spinOptionsView.compilerOptionsTextField.text = options;
+        
+        // Update the button state.
+        [detailViewController checkButtonState];
     }
-    
-    // Update the button state.
-    [detailViewController checkButtonState];
 }
 
 /*!
@@ -1231,7 +1267,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param file			The the name of the file (with extension) in the project.
  */
 
-- (void) detailViewControllerDelegateOpenProject: (NSString *) projectName file: (NSString *) file {
+- (void) detailViewControllerOpenProject: (NSString *) projectName file: (NSString *) file {
     // Form the path name for the file.
     NSString *partialPath = [projectName stringByAppendingPathComponent: file];
     
@@ -1239,15 +1275,15 @@ static ProjectViewController *this;						// This singleton instance of this clas
     int row = -1;
     for (int i = 0; i < openFiles.count; ++i) {
         NSString *existingPath = openFiles[i];
-        if ([existingPath isEqualToString: partialPath]) {
+        if ([existingPath caseInsensitiveCompare: partialPath] == NSOrderedSame) {
             row = i;
             break;
         }
     }
-    if (project && project.name && [projectName isEqualToString: project.name]) {
+    if (project && project.name && [projectName caseInsensitiveCompare: project.name] == NSOrderedSame) {
         // The file is in the current project. Open it there.
         for (int i = 0; i < project.files.count; ++i)
-            if ([project.files[i] isEqualToString: file]) {
+            if ([project.files[i] caseInsensitiveCompare: file] == NSOrderedSame) {
                 [self openFile: partialPath];
                 [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: i inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
             }
@@ -1284,12 +1320,12 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param newName		The new name of the file.
  */
 
-- (void) detailViewControllerDelegateRenameFile: (NSString *) oldName newName: (NSString *) newName {
+- (void) detailViewControllerRenameFile: (NSString *) oldName newName: (NSString *) newName {
     // Form full path names.
     NSString *oldPath = [project.path stringByAppendingPathComponent: oldName];
     NSString *newPath = [project.path stringByAppendingPathComponent: newName];
     
-    // Save the contents of hte current file.
+    // Save the contents of the current file.
     [[DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView save];
     
     // Rename the physical file.
@@ -1308,6 +1344,10 @@ static ProjectViewController *this;						// This singleton instance of this clas
         // Update the file list.
         [namesTableView reloadData];
         
+        // Rewrite the side file.
+        if (!error)
+            [project writeSideFile: &error];
+        
         // Select the correct project.
         int index = [project.files indexOfObject: newName];
         [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: index inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
@@ -1325,27 +1365,70 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param name		The new name of the project.
  */
 
-- (void) detailViewControllerDelegateRenameProject: (NSString *) name {
+- (void) detailViewControllerRenameProject: (NSString *) name {
     if (project.name) {
-        // Get the various updated paths.
-        NSString *newName = name;
-        NSString *newPath = [[Common sandbox] stringByAppendingPathComponent: name];
-        NSString *newSidePath = [project.path stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"side"]];
-        
-        // Rename the project files.
-        NSError *error = nil;
-        [[NSFileManager defaultManager] moveItemAtPath: project.sidePath toPath: newSidePath error: &error];
-        if (!error) {
-            [[NSFileManager defaultManager] moveItemAtPath: project.path toPath: newPath error: &error];
-            
-            // Reset the UI.
-            project.name = newName;
-            [namesTableView reloadData];
+        // Make sure the new project name is not the name of an existing file.
+        BOOL duplicate = NO;
+        for (NSString *file in project.files) {
+            NSString *fileName = [[file lastPathComponent] stringByDeletingPathExtension];
+            if ([name caseInsensitiveCompare: fileName] == NSOrderedSame) {
+                NSString *message = [NSString stringWithFormat: @"There is a file named %@ in the project.\n\nPlease select a different name.", fileName];
+                self.alert = [[UIAlertView alloc] initWithTitle: @"Duplicate"
+                                                        message: message
+                                                       delegate: self
+                                              cancelButtonTitle: @"OK"
+                                              otherButtonTitles: nil];
+                alert.tag = alertWarning;
+                [alert show];
+
+                duplicate = YES;
+                break;
+            }
         }
         
-        // Report any errors.
-        if (error)
-            [Common reportError: error];
+        if (!duplicate) {
+            // Get the various updated paths.
+            NSString *newName = name;
+            NSString *newPath = [[Common sandbox] stringByAppendingPathComponent: name];
+            NSString *newSidePath = [project.path stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"side"]];
+            NSString *oldProjectFilePath = [project.path stringByAppendingPathComponent: [project.name stringByAppendingPathExtension: @"spin"]];
+            NSString *newProjectFilePath = [project.path stringByAppendingPathComponent: [newName stringByAppendingPathExtension: @"spin"]];
+            
+            NSError *error = nil;
+            
+            // Rename the project files.
+            [[NSFileManager defaultManager] moveItemAtPath: project.sidePath toPath: newSidePath error: &error];
+            
+            // Rename the project's main file.
+            if (!error) {
+                [[NSFileManager defaultManager] moveItemAtPath: oldProjectFilePath toPath: newProjectFilePath error: &error];
+                
+                // Change the name in the project's list of files.
+                [project.files removeObject: [project.name stringByAppendingPathExtension: @"spin"]];
+                [project.files addObject: [newName stringByAppendingPathExtension: @"spin"]];
+                [project.files sortUsingComparator: ^NSComparisonResult (NSString *obj1, NSString *obj2) {
+                    return [obj1 compare: obj2];
+                }];
+            }
+            
+            // Rename the project itself and finish up the project object.
+            if (!error) {
+                [[NSFileManager defaultManager] moveItemAtPath: project.path toPath: newPath error: &error];
+                project.path = newPath;
+                
+                // Reset the UI.
+                project.name = newName;
+                [namesTableView reloadData];
+            }
+            
+            // Rewrite the side file.
+            if (!error)
+                [project writeSideFile: &error];
+            
+            // Report any errors.
+            if (error)
+                [Common reportError: error];
+        }
     }
 }
 
@@ -1357,7 +1440,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param sender		The UI component that triggered this call. Used to position the popover.
  */
 
-- (void) detailViewControllerDelegateRunProject: (UIView *) sender {
+- (void) detailViewControllerRunProject: (UIView *) sender {
     if (loadImagePopoverController == nil && xbeePopoverController == nil)
         if ([self build]) {
             // Create the controller and add the root controller.
@@ -1393,7 +1476,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * @param sender		The UI component that triggered this call. Used to position the popover.
  */
 
-- (void) detailViewControllerDelegateXBeeProject: (UIView *) sender {
+- (void) detailViewControllerXBeeProject: (UIView *) sender {
     if (loadImagePopoverController == nil && xbeePopoverController == nil) {
         // Create the controller and add the root controller.
         ConfigurationViewController *configurationController = [[ConfigurationViewController alloc] initWithNibName: @"ConfigurationViewController"
@@ -1452,7 +1535,10 @@ static ProjectViewController *this;						// This singleton instance of this clas
         cell.textLabel.text = [@"   " stringByAppendingString: project.files[row]];
     } else {
         cell.textLabel.text = [@"   " stringByAppendingString: [openFiles[row] pathComponents][1]];
-        cell.detailTextLabel.text = [@"    " stringByAppendingString: [openFiles[row] pathComponents][0]];
+        NSString *projectName = [openFiles[row] pathComponents][0];
+        if ([projectName isEqualToString: SPIN_LIBRARY])
+            projectName = SPIN_LIBRARY_PICKER_NAME;
+        cell.detailTextLabel.text = [@"    " stringByAppendingString: projectName];
     }
     return cell;
 }

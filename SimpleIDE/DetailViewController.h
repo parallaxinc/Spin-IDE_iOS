@@ -22,7 +22,7 @@
  * Passes the user's request to build the current project to the delegate.
  */
 
-- (void) detailViewControllerDelegateBuildProject;
+- (void) detailViewControllerBuildProject;
 
 /*!
  * Close the open file.
@@ -30,7 +30,7 @@
  * Passes the user's request to delete the current file to the delegate.
  */
 
-- (void) detailViewControllerDelegateCloseFile;
+- (void) detailViewControllerCloseFile;
 
 /*!
  * Copy a file to the currently open project.
@@ -42,7 +42,7 @@
  * @param toFileName	The file name for the file in the project.
  */
 
-- (void) detailViewControllerDelegateCopyFrom: (NSString *) fromPath to: (NSString *) toFileName;
+- (void) detailViewControllerCopyFrom: (NSString *) fromPath to: (NSString *) toFileName;
 
 /*!
  * Delete the open file.
@@ -50,7 +50,7 @@
  * Passes the user's request to delete the current file to the delegate.
  */
 
-- (void) detailViewControllerDelegateDeleteFile;
+- (void) detailViewControllerDeleteFile;
 
 /*!
  * Delete the open project.
@@ -58,7 +58,7 @@
  * Passes the user's request to delete the current project to the delegate.
  */
 
-- (void) detailViewControllerDelegateDeleteProject;
+- (void) detailViewControllerDeleteProject;
 
 /*!
  * Open a new file in the current project.
@@ -66,7 +66,7 @@
  * @param name		The name for the new file.
  */
 
-- (void) detailViewControllerDelegateNewFile: (NSString *) name;
+- (void) detailViewControllerNewFile: (NSString *) name;
 
 /*!
  * Open a project.
@@ -79,7 +79,7 @@
  * @param name		The name of the project to open.
  */
 
-- (void) detailViewControllerDelegateOpenProject: (NSString *) name;
+- (void) detailViewControllerOpenProject: (NSString *) name;
 
 /*!
  * Open a file.
@@ -90,7 +90,7 @@
  * @param file		The the name of the file (with extension) in the project.
  */
 
-- (void) detailViewControllerDelegateOpenProject: (NSString *) project file: (NSString *) file;
+- (void) detailViewControllerOpenProject: (NSString *) project file: (NSString *) file;
 
 /*!
  * Rename a file in the current project.
@@ -101,7 +101,7 @@
  * @param newName		The new name of the file.
  */
 
-- (void) detailViewControllerDelegateRenameFile: (NSString *) oldName newName: (NSString *) newName;
+- (void) detailViewControllerRenameFile: (NSString *) oldName newName: (NSString *) newName;
 
 /*!
  * Rename a project.
@@ -111,7 +111,7 @@
  * @param name		The new name of the project.
  */
 
-- (void) detailViewControllerDelegateRenameProject: (NSString *) name;
+- (void) detailViewControllerRenameProject: (NSString *) name;
 
 /*!
  * Run the currently open project.
@@ -121,7 +121,7 @@
  * @param sender		The UI component that triggered this call. Used to position the popover.
  */
 
-- (void) detailViewControllerDelegateRunProject: (UIView *) sender;
+- (void) detailViewControllerRunProject: (UIView *) sender;
 
 /*!
  * Seelct an XBee device.
@@ -131,7 +131,7 @@
  * @param sender		The UI component that triggered this call. Used to position the popover.
  */
 
-- (void) detailViewControllerDelegateXBeeProject: (UIView *) sender;
+- (void) detailViewControllerXBeeProject: (UIView *) sender;
 
 @end
 
@@ -139,7 +139,7 @@
 typedef enum {stateNothingOpen, stateOpenProject, stateOpenFiles, stateOpenProjectAndFilesEditingProjectFile, stateOpenProjectAndFilesEditingNonProjectFile} buttonStates;
 
 
-@interface DetailViewController : UIViewController <NewFileOrProjectViewControllerDelegate, OpenFileViewControllerDelegate, OpenProjectViewControllerDelegate, RenameFileOrProjectViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate>
+@interface DetailViewController : UIViewController <NewFileOrProjectViewControllerDelegate, OpenFileViewControllerDelegate, OpenProjectViewControllerDelegate, RenameFileOrProjectViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, SourceViewDelegate>
 
 @property (nonatomic) buttonStates buttonState;
 @property (weak, nonatomic) id<DetailViewControllerDelegate> delegate;

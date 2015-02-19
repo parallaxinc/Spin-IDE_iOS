@@ -14,11 +14,34 @@
 #import "SpinHighlighter.h"
 
 
+//
+//	This class is used to record the selection range in files that have been opened, so the selection can be restored if hte file is reopened.
+//
+
+@interface TextLocation : NSObject
+
+@property (nonatomic, retain) NSString *path;
+@property (nonatomic, retain) UITextRange *range;
+
+@end
+
+@implementation TextLocation
+
+@synthesize path;
+@synthesize range;
+
+@end
+
+//
+//	The implementation of SourceView begins here.
+//
+
 @interface SourceView () {
     BOOL dirty;												// YES if the file has changed since the last save or open.
 }
 
 @property (nonatomic, retain) Highlighter *highlighter;		// The highlighter to use for the current file.
+@property (nonatomic, retain) NSMutableArray *textLocations;// An array of TextLocation objects; locations for previously opened files.
 
 @end
 
@@ -28,6 +51,8 @@
 @synthesize highlighter;
 @synthesize language;
 @synthesize path;
+@synthesize sourceViewDelegate;
+@synthesize textLocations;
 
 #pragma mark - Misc
 
@@ -38,7 +63,10 @@
 - (void) initCommon {
     self.language = languageC;
     self.highlighter = [[CHighlighter alloc] init];
+    self.textLocations = [[NSMutableArray alloc] init];
     self.delegate = self;
+    self.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.autocorrectionType = UITextAutocorrectionTypeNo;
 }
 
 /*!
@@ -81,13 +109,34 @@
  */
 
 - (void) save {
-    if (path && dirty) {
-        NSError *error;
-        [self.text writeToFile: path atomically: YES encoding: NSUTF8StringEncoding error: &error];
-        if (error)
-            [Common reportError: error];
-        else
-            dirty = NO;
+    if (path) {
+        // Save the current file.
+        if (dirty) {
+            NSError *error;
+            [self.text writeToFile: path atomically: YES encoding: NSUTF8StringEncoding error: &error];
+            if (error)
+                [Common reportError: error];
+            else
+                dirty = NO;
+        }
+        
+        // Remove the location of the last insertion point for this file (if there is one).
+        for (int i = 0; i < textLocations.count; ++i) {
+            TextLocation *textLocation = textLocations[i];
+            if ([textLocation.path caseInsensitiveCompare: path] == NSOrderedSame) {
+                [textLocations removeObjectAtIndex: i];
+                break;
+            }
+        }
+        
+        // Record the lcoation of the insertion point.
+        UITextRange *range = self.selectedTextRange;
+        if (range) {
+            TextLocation *textLocation = [[TextLocation alloc] init];
+            textLocation.path = path;
+            textLocation.range = range;
+            [textLocations addObject: textLocation];
+        }
     }
 }
 
@@ -100,10 +149,22 @@
  */
 
 - (void) setSource: (NSString *) text forPath: (NSString *) thePath {
+    // Save the current text.
     [self save];
+    
+    // Use the new file.
     [self setAttributedText: [highlighter format: text]];
     dirty = NO;
     self.path = thePath;
+    
+    // If the file has already been opened, use the last known insertion point.
+    for (TextLocation *textLocation in textLocations)
+        if ([textLocation.path caseInsensitiveCompare: path] == NSOrderedSame) {
+            self.selectedTextRange = textLocation.range;
+            CGRect rect = [self firstRectForRange: textLocation.range];
+//            <<<this is not scrolling properly, and netiehr is the down arrow key. See http://stackoverflow.com/questions/22315755/ios-7-1-uitextview-still-not-scrolling-to-cursor-caret-after-new-line
+            [self scrollRectToVisible: rect animated: NO];
+        }
 }
 
 #pragma mark - Getters and setters
@@ -166,6 +227,10 @@
     NSRange selectedRange = self.selectedRange;
     [self setAttributedText: [highlighter format: textView.text]];
     self.selectedRange = selectedRange;
+    
+    // Notify the delegate.
+    if ([sourceViewDelegate respondsToSelector: @selector(sourceViewTextChanged)])
+        [sourceViewDelegate sourceViewTextChanged];
     
     // Mark the file as dirty.
     dirty = YES;

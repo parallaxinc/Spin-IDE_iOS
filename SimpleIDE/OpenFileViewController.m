@@ -70,7 +70,7 @@
     for (NSString *file in files) {
         NSString *extension = [file pathExtension];
         for (NSString *validExtension in [Common validExtensions]) {
-            if ([validExtension isEqualToString: extension]) {
+            if ([validExtension caseInsensitiveCompare: extension] == NSOrderedSame) {
                 [filePickerElements addObject: file];
                 break;
             }
@@ -130,6 +130,8 @@
         selectedRow = projectPickerElements.count - 1;
     if (selectedRow >= 0) {
         selectedProject = projectPickerElements[selectedRow];
+        if ([selectedProject isEqualToString: SPIN_LIBRARY_PICKER_NAME])
+            selectedProject = SPIN_LIBRARY;
         [self showFilesFor: selectedRow];
     }
 }
@@ -155,10 +157,12 @@
 
 - (void) setSelectedProject: (NSString *) theSelectedProject {
     for (int i = 0; i < projectPickerElements.count; ++i) {
-        if ([theSelectedProject isEqualToString: projectPickerElements[i]]) {
+        if ([theSelectedProject caseInsensitiveCompare: projectPickerElements[i]] == NSOrderedSame) {
             selectedRow = i;
             [picker selectRow: i inComponent: 0 animated: YES];
             selectedProject = theSelectedProject;
+            if ([selectedProject isEqualToString: SPIN_LIBRARY_PICKER_NAME])
+                selectedProject = SPIN_LIBRARY;
             [self showFilesFor: selectedRow];
             break;
         }
@@ -179,6 +183,8 @@
     if (selectedRow >= 0 && selectedRow < projectPickerElements.count) {
         [picker selectRow: selectedRow inComponent: 0 animated: NO];
         selectedProject = projectPickerElements[selectedRow];
+        if ([selectedProject isEqualToString: SPIN_LIBRARY_PICKER_NAME])
+            selectedProject = SPIN_LIBRARY;
         [self showFilesFor: selectedRow];
     }
 }
@@ -223,6 +229,8 @@
         // Select a new project.
         selectedRow = row;
         selectedProject = projectPickerElements[row]; // Deliberately does not use the setter, which is for external consumption.
+        if ([selectedProject isEqualToString: SPIN_LIBRARY_PICKER_NAME])
+            selectedProject = SPIN_LIBRARY;
         [self showFilesFor: row];
     } else {
         // Select a new file.

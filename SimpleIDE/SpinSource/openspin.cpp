@@ -10,6 +10,7 @@
 // openspin.cpp
 //
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +21,7 @@
 #include "pathentry.h"
 #include "textconvert.h"
 #include "preprocess.h"
+#include "Utilities.h"
 
 #define ObjFileStackLimit   16
 
@@ -38,15 +40,15 @@ static char s_filesAccessed[MAX_FILES][PATH_MAX];
 
 static void Banner(void)
 {
-    printf("Propeller Spin/PASM Compiler \'OpenSpin\' (c)2012-2014 Parallax Inc. DBA Parallax Semiconductor.\n");
-    printf("Version 1.00.71 Compiled on %s %s\n",__DATE__, __TIME__);
+    fprintf(GetStdout(), "Propeller Spin/PASM Compiler \'OpenSpin\' (c)2012-2014 Parallax Inc. DBA Parallax Semiconductor.\n");
+    fprintf(GetStdout(), "Version 1.00.71 Compiled on %s %s\n",__DATE__, __TIME__);
 }
 
 /* Usage - display a usage message and exit */
 static void Usage(void)
 {
     Banner();
-    fprintf(stderr, "\
+    fprintf(GetStderr(), "\
 usage: openspin\n\
          [ -h ]                 display this help\n\
          [ -L or -I <path> ]    add a directory to the include path\n\
@@ -118,7 +120,7 @@ FILE* OpenFileInPath(const char *name, const char *mode)
     else
     {
         // should never hit this, but just in case
-        printf("Too many files!\n");
+        fprintf(GetStdout(), "Too many files!\n");
         exit(-2);
     }
 
@@ -182,7 +184,7 @@ int GetData(unsigned char* pDest, char* pFileName, int nMaxSize)
     }
     else
     {
-        printf("Cannot find/open dat file: %s \n", pFileName);
+        fprintf(GetStdout(), "Cannot find/open dat file: %s \n", pFileName);
         return -1;
     }
 
@@ -199,7 +201,7 @@ bool GetPASCIISource(char* pFilename)
         char* pPASCIIBuffer = new char[nLength+1];
         if (!UnicodeToPASCII(pBuffer, nLength, pPASCIIBuffer, s_bUsePreprocessor))
         {
-            printf("Unrecognized text encoding format!\n");
+            fprintf(GetStdout(), "Unrecognized text encoding format!\n");
             delete [] pPASCIIBuffer;
             free(pBuffer);
             return false;
@@ -234,7 +236,7 @@ void PrintError(const char* pFilename, const char* pErrorString)
     int offendingItemEnd = 0;
     GetErrorInfo(lineNumber, column, offsetToStartOfLine, offsetToEndOfLine, offendingItemStart, offendingItemEnd);
 
-    printf("%s(%d:%d) : error : %s\n", pFilename, lineNumber, column, pErrorString);
+    fprintf(GetStdout(), "%s(%d:%d) : error : %s\n", pFilename, lineNumber, column, pErrorString);
 
     char errorItem[512];
     char errorLine[512];
@@ -252,7 +254,7 @@ void PrintError(const char* pFilename, const char* pErrorString)
         errorItem[offendingItemEnd - offendingItemStart] = 0;
     }
 
-    printf("Line:\n%s\nOffending Item: %s\n", errorLine, errorItem);
+    fprintf(GetStdout(), "Line:\n%s\nOffending Item: %s\n", errorLine, errorItem);
 }
 
 bool CompileRecursively(char* pFilename, bool bQuiet, bool bFileTreeOutputOnly)
@@ -260,12 +262,12 @@ bool CompileRecursively(char* pFilename, bool bQuiet, bool bFileTreeOutputOnly)
     if (s_nObjStackPtr > 0 && (!bQuiet || bFileTreeOutputOnly))
     {
         char spaces[] = "                              \0";
-        printf("%s|-%s\n", &spaces[32-(s_nObjStackPtr<<1)], pFilename);
+        fprintf(GetStdout(), "%s|-%s\n", &spaces[32-(s_nObjStackPtr<<1)], pFilename);
     }
     s_nObjStackPtr++;
     if (s_nObjStackPtr > ObjFileStackLimit)
     {
-        printf("%s : error : Object nesting exceeds limit of %d levels.\n", pFilename, ObjFileStackLimit);
+        fprintf(GetStdout(), "%s : error : Object nesting exceeds limit of %d levels.\n", pFilename, ObjFileStackLimit);
         return false;
     }
 
@@ -276,7 +278,7 @@ bool CompileRecursively(char* pFilename, bool bQuiet, bool bFileTreeOutputOnly)
     }
     if (!GetPASCIISource(pFilename))
     {
-        printf("%s : error : Can not find/open file.\n", pFilename);
+        fprintf(GetStdout(), "%s : error : Can not find/open file.\n", pFilename);
         return false;
     }
 
@@ -319,7 +321,7 @@ bool CompileRecursively(char* pFilename, bool bQuiet, bool bFileTreeOutputOnly)
         }
         if (!GetPASCIISource(pFilename))
         {
-            printf("%s : error : Can not find/open file.\n", pFilename);
+            fprintf(GetStdout(), "%s : error : Can not find/open file.\n", pFilename);
             return false;
         }
 
@@ -332,7 +334,7 @@ bool CompileRecursively(char* pFilename, bool bQuiet, bool bFileTreeOutputOnly)
 
         if (!CopyObjectsFromHeap(s_pCompilerData, filenames))
         {
-            printf("%s : error : Object files exceed 128k.\n", pFilename);
+            fprintf(GetStdout(), "%s : error : Object files exceed 128k.\n", pFilename);
             return false;
         }
     }
@@ -358,7 +360,7 @@ bool CompileRecursively(char* pFilename, bool bQuiet, bool bFileTreeOutputOnly)
             }
             if (p + s_pCompilerData->dat_lengths[i] > data_limit)
             {
-                printf("%s : error : Object files exceed 128k.\n", pFilename);
+                fprintf(GetStdout(), "%s : error : Object files exceed 128k.\n", pFilename);
                 return false;
             }
             s_pCompilerData->dat_offsets[i] = p;
@@ -378,14 +380,14 @@ bool CompileRecursively(char* pFilename, bool bQuiet, bool bFileTreeOutputOnly)
     unsigned int i = 0x10 + s_pCompilerData->psize + s_pCompilerData->vsize + (s_pCompilerData->stack_requirement << 2);
     if ((s_pCompilerData->compile_mode == 0) && (i > s_pCompilerData->eeprom_size))
     {
-        printf("%s : error : Object exceeds runtime memory limit by %d longs.\n", pFilename, (i - s_pCompilerData->eeprom_size) >> 2);
+        fprintf(GetStdout(), "%s : error : Object exceeds runtime memory limit by %d longs.\n", pFilename, (i - s_pCompilerData->eeprom_size) >> 2);
         return false;
     }
 
     // save this object in the heap
     if (!AddObjectToHeap(pFilename, s_pCompilerData))
     {
-        printf("%s : error : Object Heap Overflow.\n", pFilename);
+        fprintf(GetStdout(), "%s : error : Object Heap Overflow.\n", pFilename);
         return false;
     }
     s_nObjStackPtr--;
@@ -418,7 +420,7 @@ bool ComposeRAM(unsigned char** ppBuffer, int& bufferSize, bool bDATonly, bool b
         {
            if (vbase + 8 > eeprom_size)
            {
-              printf("ERROR: eeprom size exceeded by %d longs.\n", (vbase + 8 - eeprom_size) >> 2);
+              fprintf(GetStdout(), "ERROR: eeprom size exceeded by %d longs.\n", (vbase + 8 - eeprom_size) >> 2);
               return false;
            }
            // reset ram
@@ -486,8 +488,8 @@ void CleanupMemory()
     CleanObjectHeap();
     CleanupPathEntries();
     Cleanup();
-    fflush(stdout);
-    fflush(stderr);
+    fflush(GetStdout());
+    fflush(GetStderr());
 }
 
 extern "C"
@@ -510,6 +512,9 @@ int mainOpenSpin(int argc, char* argv[])
     bool bFileTreeOutputOnly = false;
     bool bFileListOutputOnly = false;
     bool bDumpSymbols = false;
+    
+    // Initialize standard and error out.
+    InitOut();
 
     // go through the command line arguments, skipping over any -D
     for(int i = 1; i < argc; i++)
@@ -665,7 +670,7 @@ int mainOpenSpin(int argc, char* argv[])
                     CleanupMemory();
                     return 1;
                 }
-                freopen(p, "w", stdout);
+                SetStdout(fopen(p, "w"));
                 break;
                 
             case 'R':
@@ -683,7 +688,7 @@ int mainOpenSpin(int argc, char* argv[])
                     CleanupMemory();
                     return 1;
                 }
-                freopen(p, "w", stderr);
+                SetStderr(fopen(p, "w"));
                 break;
                 
             case 'h':
@@ -780,7 +785,7 @@ int mainOpenSpin(int argc, char* argv[])
         const char* pTemp = strstr(&outputFilename[0], ".spin");
         if (pTemp == 0)
         {
-            printf("ERROR: spinfile must have .spin extension. You passed in: %s\n", infile);
+            fprintf(GetStdout(), "ERROR: spinfile must have .spin extension. You passed in: %s\n", infile);
             Usage();
             CleanupMemory();
             return 1;
@@ -811,12 +816,12 @@ int mainOpenSpin(int argc, char* argv[])
     if (!bQuiet)
     {
         Banner();
-        printf("Compiling...\n%s\n", infile);
+        fprintf(GetStdout(), "Compiling...\n%s\n", infile);
     }
 
     if (bFileTreeOutputOnly)
     {
-        printf("%s\n", infile);
+        fprintf(GetStdout(), "%s\n", infile);
     }
 
     s_pCompilerData = InitStruct();
@@ -860,7 +865,7 @@ int mainOpenSpin(int argc, char* argv[])
 
     if (!bQuiet)
     {
-        printf("Done.\n");
+        fprintf(GetStdout(), "Done.\n");
     }
 
     if (!bFileTreeOutputOnly && !bFileListOutputOnly && !bDumpSymbols)
@@ -884,7 +889,7 @@ int mainOpenSpin(int argc, char* argv[])
 
         if (!bQuiet)
         {
-           printf("Program size is %d bytes\n", bufferSize);
+           fprintf(GetStdout(), "Program size is %d bytes\n", bufferSize);
         }
 
         delete [] pBuffer;
@@ -919,10 +924,10 @@ int mainOpenSpin(int argc, char* argv[])
             switch(s_pCompilerData->info_type[i])
             {
                 case info_con:
-                    printf("CON, %s, %d\n", szTemp, s_pCompilerData->info_data0[i]);
+                    fprintf(GetStdout(), "CON, %s, %d\n", szTemp, s_pCompilerData->info_data0[i]);
                     break;
                 case info_con_float:
-                    printf("CONF, %s, %f\n", szTemp, *((float*)&(s_pCompilerData->info_data0[i])));
+                    fprintf(GetStdout(), "CONF, %s, %f\n", szTemp, *((float*)&(s_pCompilerData->info_data0[i])));
                     break;
                 case info_pub_param:
                     {
@@ -936,11 +941,11 @@ int mainOpenSpin(int argc, char* argv[])
                             strncpy(szTemp2, &s_pCompilerData->source[start], length);
                             szTemp2[length] = 0;
                         }
-                        printf("PARAM, %s, %s, %d, %d\n", szTemp2, szTemp, s_pCompilerData->info_data0[i], s_pCompilerData->info_data1[i]);
+                        fprintf(GetStdout(), "PARAM, %s, %s, %d, %d\n", szTemp2, szTemp, s_pCompilerData->info_data0[i], s_pCompilerData->info_data1[i]);
                     }
                     break;
                 case info_pub:
-                    printf("PUB, %s, %d, %d\n", szTemp, s_pCompilerData->info_data4[i] & 0xFFFF, s_pCompilerData->info_data4[i] >> 16);
+                    fprintf(GetStdout(), "PUB, %s, %d, %d\n", szTemp, s_pCompilerData->info_data4[i] & 0xFFFF, s_pCompilerData->info_data4[i] >> 16);
                     break;
             }
         }
@@ -963,7 +968,7 @@ int mainOpenSpin(int argc, char* argv[])
         {
             if (s_filesAccessed[i][0] != 0)
             {
-                printf("%s\n", s_filesAccessed[i]);
+                fprintf(GetStdout(), "%s\n", s_filesAccessed[i]);
             }
         }
     }
@@ -979,7 +984,7 @@ int mainOpenSpin(int argc, char* argv[])
             {
                 *pTemp = 0;
             }
-            printf("%s\n", &(s_pCompilerData->list[listOffset]));
+            fprintf(GetStdout(), "%s\n", &(s_pCompilerData->list[listOffset]));
             if (pTemp)
             {
                 *pTemp = 0x0D;
@@ -1003,7 +1008,7 @@ int mainOpenSpin(int argc, char* argv[])
             {
                 *pTemp = 0;
             }
-            printf("%s\n", &(s_pCompilerData->doc[docOffset]));
+            fprintf(GetStdout(), "%s\n", &(s_pCompilerData->doc[docOffset]));
             if (pTemp)
             {
                 *pTemp = 0x0D;

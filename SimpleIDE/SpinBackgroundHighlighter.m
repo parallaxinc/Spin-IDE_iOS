@@ -66,6 +66,9 @@ typedef enum {tCON, tVAR, tOBJ, tPUB, tPRI, tDAT, tEOF, tNone} tokenType;
                 lastWasDark = NO;
             
             // Color the block completed by the current token.
+            if (token == tEOF)
+                // This handles files that don't end in a line feed, making sure the last line is highlighted.
+                lineStart = attributedText.length;
             NSRange textRange = {lastLineStart, lineStart - lastLineStart};
             [attributedText addAttributes: blockColor range: textRange];
         }

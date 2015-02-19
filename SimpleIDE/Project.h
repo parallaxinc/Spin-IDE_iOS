@@ -17,5 +17,9 @@
 @property (nonatomic, retain) NSString *name;			// The display name of the project.
 @property (nonatomic, retain) NSString *path;			// The path of the folder containing the project.
 @property (nonatomic, retain) NSString *sidePath;		// The full path of the .side (project) file.
+@property (nonatomic, retain) NSString *spinCompilerOptions; // The compiler options for the spin compiler.
+
+- (void) readSideFile: (NSString *) projectName error: (NSError **) error;
+- (void) writeSideFile: (NSError **) error;
 
 @end

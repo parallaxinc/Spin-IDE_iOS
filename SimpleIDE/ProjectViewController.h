@@ -17,7 +17,7 @@
 #include "PickerViewController.h"
 #include "SpinCompilerOptionsView.h"
 
-@interface ProjectViewController : UIViewController <DetailViewControllerDelegate, PickerViewControllerDelegate, LoadImageViewControllerDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIAlertViewDelegate>
+@interface ProjectViewController : UIViewController <DetailViewControllerDelegate, PickerViewControllerDelegate, LoadImageViewControllerDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIAlertViewDelegate, SpinCompilerOptionsViewDelegate>
 
 @property (nonatomic, retain) IBOutlet UIButton *boardTypeButton;
 @property (nonatomic, retain) IBOutlet UITextField *compilerOptionsTextField;
@@ -33,7 +33,14 @@
 @property (nonatomic, retain) IBOutlet UIView *optionsView;
 @property (nonatomic, retain) Project *project;
 @property (nonatomic, retain) IBOutlet ProjectOptionsView *projectOptionsView;
+@property (nonatomic, retain) IBOutlet UIView *simpleIDEOptionsView;
+@property (nonatomic, retain) IBOutlet SpinCompilerOptionsView *spinOptionsView;
 @property (nonatomic, retain) IBOutlet SpinCompilerOptionsView *spinCompilerOptionsView;
+@property (nonatomic, retain) IBOutlet UITextField *spinCompilerOptionsTextField;
+
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *simpleIDEOptionsHeightConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *spinOptionsHeightConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *spinSimpleIDEOptionsHeightConstraint;
 
 - (IBAction) boardTypeAction: (id) sender;
 - (IBAction) compilerTypeAction: (id) sender;

@@ -22,6 +22,7 @@
     [self setTopView: sourceView];
     
     consoleView = [[UITextView alloc] initWithFrame: [bottomView frame]];
+    consoleView.editable = NO;
     [self setBottomView: consoleView];
     
     [self setLocation: 0.8];

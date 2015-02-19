@@ -10,12 +10,20 @@
 
 @implementation SpinCompilerOptionsView
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
+@synthesize compilerOptionsTextField;
+@synthesize delegate;
+
+#pragma mark - Actions
+
+/*!
+ * Handle a change to the contents of the options UITextField.
+ *
+ * @param sender		The UITextField that triggered this call.
+ */
+
+- (IBAction) optionsEditingChanged: (UITextField *) sender {
+    if ([delegate respondsToSelector: @selector(spinCompilerOptionsViewOptionsChanged:)])
+        [delegate spinCompilerOptionsViewOptionsChanged: sender.text];
 }
-*/
 
 @end

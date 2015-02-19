@@ -8,15 +8,36 @@
 //
 // pathentry.cpp
 //
+// 18 Feb 2015, Mike Westerfield: Reset pNextPathEntry in 
+//		CleanupPathEntries to make the compiler reentrant.
+// 19 Feb 2015, Mike Westerfield: Added code to MakeNextPath
+//		to handle case insensitive file names--but not path
+//		names. The passed name is adjusted for case before the
+//		function returns. Set CASE_SENSITIVE to 1 to disable
+//		this code.
+//
+#include <dirent.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "pathentry.h"
+
+#define CASE_SENSITIVE 0
 
 PathEntry *path = NULL;
 static PathEntry **pNextPathEntry = &path;
 
 static char lastfullpath[PATH_MAX];
+
+int strcasecmp(char const *a, char const *b)
+{
+    for (;; a++, b++) {
+        int d = tolower(*a) - tolower(*b);
+        if (d != 0 || !*a)
+            return d;
+    }
+}
 
 const char *MakeNextPath(PathEntry **entry, const char *name)
 {
@@ -30,7 +51,19 @@ const char *MakeNextPath(PathEntry **entry, const char *name)
     }
     if (*entry)
     {
-        sprintf(lastfullpath, "%s%c%s", (*entry)->path, DIR_SEP, name);
+        char *caseName = (char *) name;
+        if (!CASE_SENSITIVE) {
+            DIR *dir;
+            struct dirent *ent;
+            if ((dir = opendir((*entry)->path)) != NULL) {
+                while ((ent = readdir (dir)) != NULL) {
+                    if (strcasecmp(ent->d_name, name) == 0)
+                        caseName = ent->d_name;
+                }
+                closedir (dir);
+            }
+        }
+        sprintf(lastfullpath, "%s%c%s", (*entry)->path, DIR_SEP, caseName);
         return lastfullpath;
     }
     return NULL;
@@ -83,6 +116,7 @@ void CleanupPathEntries()
     }
     path = NULL;
     lastfullpath[0] = 0;
+    pNextPathEntry = &path;
 }
 
 

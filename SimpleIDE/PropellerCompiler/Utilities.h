@@ -13,6 +13,14 @@
 #ifndef _UTILITIES_H_
 #define _UTILITIES_H_
 
+#include <stdio.h>
+
+extern void InitOut ();
+extern FILE* GetStderr ();
+extern FILE* GetStdout ();
+extern void SetStdout (FILE* f);
+extern void SetStderr (FILE* f);
+
 extern void SetPrint(char* pDestination, int limit);
 extern bool PrintChr(char theChar);
 extern bool PrintString(const char* theString);

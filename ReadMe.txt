@@ -1,4 +1,4 @@
-SimpleIDE 1.0.0.4
+SimpleIDE 1.0.0.5
 -----------------
 
 This project implements an IDE on iPads for programming Propeller based boards using an XBee radio to move the project binaries from the iPad to the Propeller board.
@@ -14,14 +14,7 @@ You can build a project locally, or connect to a configured XBee radio and run t
 Changes in this release
 -----------------------
 
-1. You can now compile spin projects with multiple files.
-
-2. Spin projects that have spaced in the file names work, now.
-
-Other features and fixes needed for alpha
------------------------------------------
-
-1. The last line in a spin file is not always highlighted properly.
+1. The last line in a spin file is now always highlighted properly.
 
 2. When a file is opened, the previous selection and position should be restored.
 
@@ -29,11 +22,25 @@ Other features and fixes needed for alpha
 
 4. Support a standard library of spin objects.
 
-5. Add cut/copy/paste/undo/redo. (These are available now as keyboard shortcuts on Bluetooth keyboards.)
+5. Add undo/redo. (These are available now as keyboard shortcuts on Bluetooth keyboards.)
 
 6. Add find/replace.
 
-7. Final code clean up.
+7. Printing is supported.
+
+8. Fixed a problem that prevented the Spin compiler from being called twice with -L command line options.
+
+9. Checks have been added to prevent renaming the main file in a project. (It's name must match the project name.)
+
+10. Fixed a problem that led to intermitant crashes on the second and subsequent compiles.
+
+11. Allow use of user supplied compiler flags.
+
+12. The spin compiler options view and source view now resize to accomodate the software keyboard.
+
+13. File names used in the OBJ block are now case insensitive, even on case sensitive file systems.
+
+14. Project and file names that differ only by case can no longer be created using the IDE.
 
 Other features and fixes needed for a solid release
 ---------------------------------------------------
@@ -48,15 +55,13 @@ Other features and fixes needed for a solid release
 
 5. The navigation control does not show up on main view until the program rotates to landscape once.
 
-6. Allow use of user supplied compiler flags.
+6. Opening and editing large files takes too long due to syntax coloring.
 
-7. Opening and editing large files takes too long due to syntax coloring.
+7. Support collapsing the side panel in landscape view.
 
-8. Support collapsing the side panel in landscape view.
+8. Support different font sizes in the editor.
 
-9. Support different font sizes in the editor.
-
-10. Allow emailing (in and out) of zipped spin projects.
+9. Allow emailing (in and out) of zipped spin projects.
 
 Other features and fixes that would be nice someday
 ---------------------------------------------------

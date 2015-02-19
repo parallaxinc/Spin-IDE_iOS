@@ -10,18 +10,29 @@
 
 #import "DetailViewController.h"
 
+#import <MobileCoreServices/UTCoreTypes.h>
+
 #import "libpropeller-elf-cpp.h"
+#import "FindViewController.h"
 #import "NavToolBar.h"
 #import "ProjectViewController.h"
 
 
-typedef enum {tagNewFile, tagNewProject, tagOpenProject, tagRenameFile, tagRenameProject, tagOpenFile} alertTags;
+typedef enum {tagFind, tagNewFile, tagNewProject, tagOpenProject, tagRenameFile, tagRenameProject, tagOpenFile} alertTags;
+typedef enum {textCommandUndo, textCommandRedo} textCommands;
 
 static DetailViewController *this;						// This singleton instance of this class.
 
 
 @interface DetailViewController () {
     BOOL initialized;									// Has the view been initialized?
+    
+    CGRect keyboardViewRect;							// View rectangle when the keyboard was shwn.
+    BOOL keyboardVisible;								// Is the keyboard visible?
+    BOOL showBuildButtons;								// YES to display the build buttons, else NO.
+    BOOL showEditButtons;								// YES to display the edit buttons, else NO.
+    BOOL showFileButtons;								// YES to display the file buttons, else NO.
+    BOOL showProjectButtons;							// YES to display the project buttons, else NO.
 }
 
 @property (nonatomic, retain) UIPopoverController *popoverController;
@@ -33,10 +44,15 @@ static DetailViewController *this;						// This singleton instance of this class
 @property (nonatomic, retain) UIButton *acopyFileButton;
 @property (nonatomic, retain) UIButton *deleteFileButton;
 @property (nonatomic, retain) UIButton *deleteProjectButton;
+@property (nonatomic, retain) UIButton *epromButton;
+@property (nonatomic, retain) UIButton *findButton;
 @property (nonatomic, retain) UIButton *anewFileButton;
+@property (nonatomic, retain) UIButton *redoButton;
 @property (nonatomic, retain) UIButton *renameFileButton;
 @property (nonatomic, retain) UIButton *renameProjectButton;
 @property (nonatomic, retain) UIButton *runButton;
+@property (nonatomic, retain) UIButton *shareButton;
+@property (nonatomic, retain) UIButton *undoButton;
 @property (nonatomic, retain) UIButton *xbeeButton;
 
 @end
@@ -57,10 +73,15 @@ static DetailViewController *this;						// This singleton instance of this class
 @synthesize acopyFileButton;
 @synthesize deleteFileButton;
 @synthesize deleteProjectButton;
+@synthesize epromButton;
+@synthesize findButton;
 @synthesize anewFileButton;
+@synthesize redoButton;
 @synthesize renameFileButton;
 @synthesize renameProjectButton;
 @synthesize runButton;
+@synthesize shareButton;
+@synthesize undoButton;
 @synthesize xbeeButton;
 
 #pragma mark - Misc
@@ -104,7 +125,7 @@ static DetailViewController *this;						// This singleton instance of this class
     if (project && project.files && project.files.count > 0) {
         if (openFiles && openFiles.count > 0) {
             NSString *projectName = [[sourceConsoleSplitView.sourceView.path stringByDeletingLastPathComponent] lastPathComponent];
-            if ([projectName isEqualToString: project.name])
+            if ([projectName caseInsensitiveCompare: project.name] == NSOrderedSame)
                 self.buttonState = stateOpenProjectAndFilesEditingProjectFile;
             else
                 self.buttonState = stateOpenProjectAndFilesEditingNonProjectFile;
@@ -119,6 +140,16 @@ static DetailViewController *this;						// This singleton instance of this class
 }
 
 /*!
+ * Check the state of the undo and redo buttons. These are separate from checkButtonState because they 
+ * change so often they don't diserve a state.
+ */
+
+- (void) checkUndRedoButtons {
+    redoButton.enabled = [sourceConsoleSplitView.sourceView.undoManager canRedo];
+    undoButton.enabled = [sourceConsoleSplitView.sourceView.undoManager canUndo];
+}
+
+/*!
  * See if a name is the same as the name of an existing file in the current project.
  *
  * @param name		The name to check.
@@ -128,7 +159,7 @@ static DetailViewController *this;						// This singleton instance of this class
 
 - (BOOL) exists: (NSString *) name {
     for (NSString *project in [ProjectViewController defaultProjectViewController].project.files) {
-        if ([project isEqualToString: name])
+        if ([project caseInsensitiveCompare: name] == NSOrderedSame)
             return YES;
     }
     return NO;
@@ -206,11 +237,19 @@ static DetailViewController *this;						// This singleton instance of this class
     UIViewController *pickerController = nil;
     UINavigationController *navigationController = nil;
     switch (tag) {
+        case tagFind: {
+            FindViewController *findViewController = [[FindViewController alloc] initWithNibName: @"FindViewController" bundle: nil];
+            findViewController.referenceTextView = sourceConsoleSplitView.sourceView;
+            pickerController = findViewController;
+            navigationController = [[UINavigationController alloc] initWithRootViewController: pickerController];
+            break;
+        }
+            
         case tagOpenFile: {
             OpenFileViewController *openFileViewController = [[OpenFileViewController alloc] initWithNibName: @"OpenFileViewController"
-                                                                                                               bundle: nil
-                                                                                                               prompt: prompt
-                                                                                                                  tag: tag];
+                                                                                                      bundle: nil
+                                                                                                      prompt: prompt
+                                                                                                         tag: tag];
             pickerController = openFileViewController;
             navigationController = [[UINavigationController alloc] initWithRootViewController: pickerController];
             openFileViewController.navController = navigationController;
@@ -322,6 +361,25 @@ static DetailViewController *this;						// This singleton instance of this class
 }
 
 /*!
+ * Reload the buttons on the button bar.
+ */
+
+- (void) reloadButtons {
+    [UIView transitionWithView: toolBarView
+                      duration: 0.50
+                       options: UIViewAnimationOptionTransitionCrossDissolve
+                    animations: ^{ 
+                        while (toolBarView.subviews.count > 0) {
+                            UIView *subview = toolBarView.subviews[0];
+                            [subview removeFromSuperview];
+                        }
+                    } 
+                    completion: nil];
+    [self setUpButtonBar];
+    self.buttonState = buttonState;
+}
+
+/*!
  * Remove a project from the lsit of projects.
  *
  * This removes the project from the list, but does not remove it from disk.
@@ -331,6 +389,103 @@ static DetailViewController *this;						// This singleton instance of this class
 
 - (void) removeProject: (NSString *) name {
     [projects removeObject: name];
+}
+
+/*!
+ * Get the range of the selected text in a text view.
+ *
+ * @param textView		The text view from which to extract the range.
+ *
+ * @return				The range of the current selection.
+ */
+
+- (NSRange) selectedRangeInTextView: (UITextView *) textView {
+    UITextPosition *beginning = textView.beginningOfDocument;
+    UITextRange *selectedRange = textView.selectedTextRange;
+    UITextPosition *selectionStart = selectedRange.start;
+    UITextPosition *selectionEnd = selectedRange.end;
+    
+    const NSInteger location = [textView offsetFromPosition: beginning toPosition: selectionStart];
+    const NSInteger length = [textView offsetFromPosition: selectionStart toPosition: selectionEnd];
+    
+    return NSMakeRange(location, length);
+}
+
+/*!
+ * Set up the list of buttons in the button bar.
+ */
+
+- (void) setUpButtonBar {
+    // Add the buttons to the button view.
+    const float space = 8;
+    const float shortSpace = 4;
+    
+    float x = 0;
+    if (showProjectButtons) {
+        [self addButtonWithImageNamed: @"project-open.png" x: &x action: @selector(showHideProjectButtonsAction)];
+        x += shortSpace;
+        [self addButtonWithImageNamed: @"new.png" x: &x action: @selector(newProjectAction:)];
+        x += space;
+        [self addButtonWithImageNamed: @"open.png" x: &x action: @selector(openProjectAction:)];
+        x += space;
+        self.renameProjectButton = [self addButtonWithImageNamed: @"rename.png" x: &x action: @selector(renameProjectAction:)];
+        x += space;
+        self.deleteProjectButton = [self addButtonWithImageNamed: @"delete.png" x: &x action: @selector(deleteProjectAction:)];
+    } else {
+        [self addButtonWithImageNamed: @"project-closed.png" x: &x action: @selector(showHideProjectButtonsAction)];
+    }
+    
+    x += shortSpace;
+    if (showFileButtons) {
+        [self addButtonWithImageNamed: @"file-open.png" x: &x action: @selector(showHideFileButtonsAction)];
+        x += space;
+        self.anewFileButton = [self addButtonWithImageNamed: @"new.png" x: &x action: @selector(newFileAction:)];
+        x += space;
+        self.renameFileButton = [self addButtonWithImageNamed: @"rename.png" x: &x action: @selector(renameFileAction:)];
+        x += space;
+        self.deleteFileButton = [self addButtonWithImageNamed: @"delete.png" x: &x action: @selector(deleteFileAction:)];
+        x += space;
+        [self addButtonWithImageNamed: @"open.png" x: &x action: @selector(openFileAction:)];
+        x += space;
+        self.closeFileButton = [self addButtonWithImageNamed: @"close.png" x: &x action: @selector(closeFileAction:)];
+        x += space;
+        self.acopyFileButton = [self addButtonWithImageNamed: @"copy.png" x: &x action: @selector(copyFileAction:)];
+    } else {
+        [self addButtonWithImageNamed: @"file-closed.png" x: &x action: @selector(showHideFileButtonsAction)];
+    }
+    
+    x += shortSpace;
+    if (showEditButtons) {
+        [self addButtonWithImageNamed: @"edit-open.png" x: &x action: @selector(showHideEditButtonsAction)];
+        x += space;
+        self.undoButton = [self addButtonWithImageNamed: @"undo.png" x: &x action: @selector(textCommandButtonAction:)];
+        undoButton.tag = textCommandUndo;
+        x += space;
+        self.redoButton = [self addButtonWithImageNamed: @"redo.png" x: &x action: @selector(textCommandButtonAction:)];
+        redoButton.tag = textCommandRedo;
+        x += space;
+        self.findButton = [self addButtonWithImageNamed: @"find.png" x: &x action: @selector(findAction:)];
+        x += space;
+        self.shareButton = [self addButtonWithImageNamed: @"share.png" x: &x action: @selector(shareAction:)];
+        [self checkUndRedoButtons];
+    } else {
+        [self addButtonWithImageNamed: @"edit-closed.png" x: &x action: @selector(showHideEditButtonsAction)];
+    }
+        
+    x += shortSpace;
+    if (showBuildButtons) {
+        [self addButtonWithImageNamed: @"build-open.png" x: &x action: @selector(showHideBuildButtonsAction)];
+        x += space;
+        self.buildButton = [self addButtonWithImageNamed: @"build.png" x: &x action: @selector(buildProjectAction)];
+        x += space;
+        self.xbeeButton = [self addButtonWithImageNamed: @"xbee.png" x: &x action: @selector(xbeeAction)];
+        x += space;
+        self.runButton = [self addButtonWithImageNamed: @"run.png" x: &x action: @selector(runProjectAction)];
+        x += space;
+        self.epromButton = [self addButtonWithImageNamed: @"eeprom.png" x: &x action: @selector(runProjectAction)]; // TODO: Implement
+    } else {
+        [self addButtonWithImageNamed: @"build-closed.png" x: &x action: @selector(showHideBuildButtonsAction)];
+    }
 }
 
 #pragma mark - Setters
@@ -357,20 +512,26 @@ static DetailViewController *this;						// This singleton instance of this class
             buildButton.enabled = NO;
             xbeeButton.enabled = NO;
             runButton.enabled = NO;
+            findButton.enabled = NO;
             break;
             
-        case stateOpenProject: 
+        case stateOpenProject: {
             renameProjectButton.enabled = YES;
             deleteFileButton.enabled = YES;
             deleteProjectButton.enabled = YES;
             anewFileButton.enabled = YES;
             closeFileButton.enabled = NO;
             acopyFileButton.enabled = YES;
-            renameFileButton.enabled = YES;
             buildButton.enabled = YES;
             xbeeButton.enabled = YES;
             runButton.enabled = YES;
+            findButton.enabled = YES;
+            
+            Project *project = [ProjectViewController defaultProjectViewController].project;
+            NSString *file = [[sourceConsoleSplitView.sourceView.path lastPathComponent] stringByDeletingPathExtension];
+            renameFileButton.enabled = [project.name caseInsensitiveCompare: file] != NSOrderedSame;
             break;
+        }
             
         case stateOpenFiles: 
             renameProjectButton.enabled = NO;
@@ -383,20 +544,26 @@ static DetailViewController *this;						// This singleton instance of this class
             buildButton.enabled = NO;
             xbeeButton.enabled = NO;
             runButton.enabled = NO;
+            findButton.enabled = YES;
             break;
             
-        case stateOpenProjectAndFilesEditingProjectFile: 
+        case stateOpenProjectAndFilesEditingProjectFile: {
             renameProjectButton.enabled = YES;
             deleteFileButton.enabled = YES;
             deleteProjectButton.enabled = YES;
             anewFileButton.enabled = YES;
             closeFileButton.enabled = NO;
             acopyFileButton.enabled = YES;
-            renameFileButton.enabled = YES;
             buildButton.enabled = YES;
             xbeeButton.enabled = YES;
             runButton.enabled = YES;
+            findButton.enabled = YES;
+            
+            Project *project = [ProjectViewController defaultProjectViewController].project;
+            NSString *file = [[sourceConsoleSplitView.sourceView.path lastPathComponent] stringByDeletingPathExtension];
+            renameFileButton.enabled = [project.name caseInsensitiveCompare: file] != NSOrderedSame;
             break;
+        }
             
         case stateOpenProjectAndFilesEditingNonProjectFile: 
             renameProjectButton.enabled = YES;
@@ -409,6 +576,7 @@ static DetailViewController *this;						// This singleton instance of this class
             buildButton.enabled = YES;
             xbeeButton.enabled = YES;
             runButton.enabled = YES;
+            findButton.enabled = YES;
             break;
     }
 }
@@ -420,8 +588,8 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) buildProjectAction {
-    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateBuildProject)])
-        [delegate detailViewControllerDelegateBuildProject];
+    if ([delegate respondsToSelector: @selector(detailViewControllerBuildProject)])
+        [delegate detailViewControllerBuildProject];
 }
 
 /*!
@@ -431,8 +599,8 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) closeFileAction: (id) sender {
-    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateCloseFile)])
-        [delegate detailViewControllerDelegateCloseFile];
+    if ([delegate respondsToSelector: @selector(detailViewControllerCloseFile)])
+        [delegate detailViewControllerCloseFile];
 }
 
 /*!
@@ -463,8 +631,8 @@ static DetailViewController *this;						// This singleton instance of this class
     }
     
     // Copy the file.
-    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateCopyFrom:to:)])
-        [delegate detailViewControllerDelegateCopyFrom: path to: name];
+    if ([delegate respondsToSelector: @selector(detailViewControllerCopyFrom:to:)])
+        [delegate detailViewControllerCopyFrom: path to: name];
 }
 
 /*!
@@ -474,8 +642,8 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) deleteFileAction: (id) sender {
-    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateDeleteFile)])
-        [delegate detailViewControllerDelegateDeleteFile];
+    if ([delegate respondsToSelector: @selector(detailViewControllerDeleteFile)])
+        [delegate detailViewControllerDeleteFile];
 }
 
 /*!
@@ -485,8 +653,18 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) deleteProjectAction: (id) sender {
-    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateDeleteProject)])
-        [delegate detailViewControllerDelegateDeleteProject];
+    if ([delegate respondsToSelector: @selector(detailViewControllerDeleteProject)])
+        [delegate detailViewControllerDeleteProject];
+}
+
+/*!
+ * Handle a hit on the Open Project button.
+ *
+ * @param sender		The button that triggered this action.
+ */
+
+- (void) findAction: (id) sender {
+    [self pickerAction: tagFind prompt: @"Find & Replace" elements: nil button: sender index: 0];
 }
 
 /*!
@@ -518,7 +696,8 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) openFileAction: (id) sender {
-    projects = [self findProjects];
+    projects = [NSMutableArray arrayWithObject: SPIN_LIBRARY_PICKER_NAME];
+    [projects addObjectsFromArray: [self findProjects]];
     [self pickerAction: tagOpenFile prompt: @"Open a File" elements: projects button: sender index: 0];
 }
 
@@ -531,6 +710,31 @@ static DetailViewController *this;						// This singleton instance of this class
 - (void) openProjectAction: (id) sender {
     projects = [self findProjects];
     [self pickerAction: tagOpenProject prompt: @"Open a Project" elements: projects button: sender index: 0];
+}
+
+/*!
+ * Handle a hit on the Share button.
+ *
+ * At the moment, the only sharing method is printing, so this defaults to a print operation.
+ *
+ * @param sender		The button that triggered this action.
+ */
+
+- (void) shareAction: (UIButton *) sender {
+    UIPrintInfo *printInfo = [UIPrintInfo printInfo];
+    printInfo.jobName = [sourceConsoleSplitView.sourceView.path lastPathComponent];
+
+    UIPrintInteractionController *print = [UIPrintInteractionController sharedPrintController];
+    print.printInfo = printInfo;
+    print.showsPageRange = YES;
+    print.printFormatter = sourceConsoleSplitView.sourceView.viewPrintFormatter;
+    
+    void (^completionHandler) (UIPrintInteractionController *, BOOL, NSError *) = ^(UIPrintInteractionController *print, BOOL completed, NSError *error) {
+        if (!completed && error) {
+            [Common reportError: error];
+        }
+    };
+    [print presentFromRect: sender.frame inView: toolBarView animated: YES completionHandler: completionHandler];
 }
 
 /*!
@@ -567,27 +771,131 @@ static DetailViewController *this;						// This singleton instance of this class
 
 /*!
  * Handle a hit on the Run Project button.
- *
- * @param sender		The button that triggered this action.
  */
 
 - (void) runProjectAction {
-    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateRunProject:)])
-        [delegate detailViewControllerDelegateRunProject: runButton];
+    if ([delegate respondsToSelector: @selector(detailViewControllerRunProject:)])
+        [delegate detailViewControllerRunProject: runButton];
 }
 
 /*!
- * Handle a hit on the XBee button.
+ * Handle a hit on the Show/Hide Build Buttons button.
+ */
+
+- (void) showHideBuildButtonsAction {
+    showBuildButtons = !showBuildButtons;
+    [self reloadButtons];
+}
+
+/*!
+ * Handle a hit on the Show/Hide Edit Buttons button.
+ */
+
+- (void) showHideEditButtonsAction {
+    showEditButtons = !showEditButtons;
+    [self reloadButtons];
+}
+
+/*!
+ * Handle a hit on the Show/Hide File Buttons button.
+ */
+
+- (void) showHideFileButtonsAction {
+    showFileButtons = !showFileButtons;
+    [self reloadButtons];
+}
+
+/*!
+ * Handle a hit on the Show/Hide Project Buttons button.
+ */
+
+- (void) showHideProjectButtonsAction {
+    showProjectButtons = !showProjectButtons;
+    [self reloadButtons];
+}
+
+/*!
+ * Handle a hit on one of hte text command buttons.
+ *
+ * The tag for the button is one of the enumeration textCommands, indicating the command to execute.
  *
  * @param sender		The button that triggered this action.
  */
 
+- (void) textCommandButtonAction: (UIButton *) sender {
+    switch ((textCommands) sender.tag) {
+        case textCommandRedo:
+            [sourceConsoleSplitView.sourceView.undoManager redo];
+            break;
+            
+        case textCommandUndo:
+            [sourceConsoleSplitView.sourceView.undoManager undo];
+            break;
+    }
+    [self checkUndRedoButtons];
+}
+                                        
+/*!
+ * Handle a hit on the XBee button.
+ */
+
 - (void) xbeeAction {
-    if ([delegate respondsToSelector: @selector(detailViewControllerDelegateXBeeProject:)])
-        [delegate detailViewControllerDelegateXBeeProject: xbeeButton];
+    if ([delegate respondsToSelector: @selector(detailViewControllerXBeeProject:)])
+        [delegate detailViewControllerXBeeProject: xbeeButton];
 }
 
 #pragma mark - View Maintenance
+
+/*
+ * Called when the virtual keyboard is shown, this method should adjust the size of the views to
+ * prevent text from appearing under the keybaord.
+ *
+ * Parameters:
+ *  notification - The notification.
+ */
+
+- (void) keyboardWasShown: (NSNotification *) notification {
+    NSDictionary *info = [notification userInfo];
+    CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    CGRect rect = sourceConsoleSplitView.frame;
+    if (keyboardVisible)
+        rect = keyboardViewRect;
+    else
+        keyboardViewRect = rect;
+    rect.size.height -= keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
+    sourceConsoleSplitView.frame = rect;
+    [UIView animateWithDuration: 0.1 animations: ^{
+        [self.view layoutIfNeeded];
+    }];
+    
+    keyboardVisible = YES;
+}
+
+/*
+ * Called when the virtual keyboard is about to be hidden, this method should adjust the size of the
+ * text view to the values before the keyboard was shown.
+ *
+ * Parameters:
+ *  notification - The notification.
+ */
+
+- (void) keyboardWillBeHidden: (NSNotification *) notification {
+    NSDictionary *info = [notification userInfo];
+    CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    CGRect rect = sourceConsoleSplitView.frame;
+    if (keyboardVisible)
+        rect = keyboardViewRect;
+    else
+        rect.size.height += keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
+    sourceConsoleSplitView.frame = rect;
+    [UIView animateWithDuration: 0.5 animations: ^{
+        [self.view layoutIfNeeded];
+    }];
+    
+    keyboardVisible = NO;
+}
 
 /*!
  * Called after the controller’s view is loaded into memory.
@@ -596,8 +904,17 @@ static DetailViewController *this;						// This singleton instance of this class
 - (void) viewDidLoad {
     [super viewDidLoad];
     
-    // Record our ingleton instance.
+    // Record our singleton instance.
     this = self;
+    
+    // Initialize the button view options.
+    showProjectButtons = YES;
+    showEditButtons = NO;
+    showFileButtons = NO;
+    showBuildButtons = YES;
+    
+    // Listen for text changes.
+    sourceConsoleSplitView.sourceView.sourceViewDelegate = self;
 }
 
 /*!
@@ -619,44 +936,8 @@ static DetailViewController *this;						// This singleton instance of this class
         self.toolBarView = [[UIView alloc] initWithFrame: CGRectMake(0, 0, toolBarWidth, toolBarHeight)];
         toolBarView.backgroundColor = [UIColor clearColor];
         
-        // Add the buttons to the button view.
-        const float space = 8;
-        const float shortSpace = 4;
-        
-        float x = 0;
-        [self addButtonWithImageNamed: @"project.png" x: &x action: nil];
-        x += shortSpace;
-        [self addButtonWithImageNamed: @"new.png" x: &x action: @selector(newProjectAction:)];
-        x += space;
-        [self addButtonWithImageNamed: @"openproj.png" x: &x action: @selector(openProjectAction:)];
-        x += space;
-        self.renameProjectButton = [self addButtonWithImageNamed: @"rename.png" x: &x action: @selector(renameProjectAction:)];
-        x += space;
-        self.deleteProjectButton = [self addButtonWithImageNamed: @"delete.png" x: &x action: @selector(deleteProjectAction:)];
-        
-        x += shortSpace;
-        [self addButtonWithImageNamed: @"file.png" x: &x action: nil];
-        x += space;
-        self.anewFileButton = [self addButtonWithImageNamed: @"new.png" x: &x action: @selector(newFileAction:)];
-        x += space;
-        self.renameFileButton = [self addButtonWithImageNamed: @"rename.png" x: &x action: @selector(renameFileAction:)];
-        x += space;
-        self.deleteFileButton = [self addButtonWithImageNamed: @"delete.png" x: &x action: @selector(deleteFileAction:)];
-        x += space;
-        [self addButtonWithImageNamed: @"openproj.png" x: &x action: @selector(openFileAction:)];
-        x += space;
-        self.closeFileButton = [self addButtonWithImageNamed: @"close.png" x: &x action: @selector(closeFileAction:)];
-        x += space;
-        self.acopyFileButton = [self addButtonWithImageNamed: @"copy.png" x: &x action: @selector(copyFileAction:)];
-        
-        x += shortSpace;
-        [self addButtonWithImageNamed: @"build_caption.png" x: &x action: nil];
-        x += space;
-        self.buildButton = [self addButtonWithImageNamed: @"build.png" x: &x action: @selector(buildProjectAction)];
-        x += space;
-        self.xbeeButton = [self addButtonWithImageNamed: @"xbee.png" x: &x action: @selector(xbeeAction)];
-        x += space;
-        self.runButton = [self addButtonWithImageNamed: @"run.png" x: &x action: @selector(runProjectAction)];
+        // Set up the button bar.
+        [self setUpButtonBar];
         
         // Use our button view as the navigation title view.
         self.navigationItem.leftBarButtonItem = nil;
@@ -664,6 +945,14 @@ static DetailViewController *this;						// This singleton instance of this class
         if ([self respondsToSelector: @selector(setEdgesForExtendedLayout:)]) {
             self.edgesForExtendedLayout = UIRectEdgeNone;
         }
+
+        // Register for keyboard events.
+        [[NSNotificationCenter defaultCenter] addObserver: self
+                                                 selector: @selector(keyboardWasShown:)
+                                                     name: UIKeyboardDidShowNotification object: nil];
+        [[NSNotificationCenter defaultCenter] addObserver: self
+                                                 selector: @selector(keyboardWillBeHidden:)
+                                                     name: UIKeyboardWillHideNotification object: nil];
         
         // Set the initial buton state.
         [self checkButtonState];
@@ -727,9 +1016,7 @@ static DetailViewController *this;						// This singleton instance of this class
             
             // Create the .side file.
             if (!error) {
-                project.sidePath = [project.path stringByAppendingPathComponent: [name stringByAppendingPathExtension: @"side"]];
-                NSString *sideFile = [NSString stringWithFormat: @"%@\n>compiler=SPIN\n", [project.files[0] lastPathComponent]];
-                [sideFile writeToFile: project.sidePath atomically: NO encoding: NSUTF8StringEncoding error: &error];
+                [project writeSideFile: &error];
             }
             
             if (!error) {
@@ -742,8 +1029,8 @@ static DetailViewController *this;						// This singleton instance of this class
                 }];
                 
                 // Open the new project.
-                if ([delegate respondsToSelector: @selector(detailViewControllerDelegateOpenProject:)])
-                    [delegate detailViewControllerDelegateOpenProject: project.name];
+                if ([delegate respondsToSelector: @selector(detailViewControllerOpenProject:)])
+                    [delegate detailViewControllerOpenProject: project.name];
             }
             
             // Handle any errors.
@@ -760,8 +1047,8 @@ static DetailViewController *this;						// This singleton instance of this class
         }
     } else {
         // Add a new file to the current project.
-        if ([delegate respondsToSelector: @selector(detailViewControllerDelegateNewFile:)])
-            [delegate detailViewControllerDelegateNewFile: name];
+        if ([delegate respondsToSelector: @selector(detailViewControllerNewFile:)])
+            [delegate detailViewControllerNewFile: name];
     }
 }
 
@@ -779,8 +1066,12 @@ static DetailViewController *this;						// This singleton instance of this class
     [popoverController dismissPopoverAnimated: YES];
     
     if (row >= 0 && name && name.length > 0)
-        if ([delegate respondsToSelector: @selector(detailViewControllerDelegateOpenProject:file:)])
-            [delegate detailViewControllerDelegateOpenProject: projects[row] file: name];
+        if ([delegate respondsToSelector: @selector(detailViewControllerOpenProject:file:)]) {
+            NSString *project = projects[row];
+            if ([project isEqualToString: SPIN_LIBRARY_PICKER_NAME])
+                project = SPIN_LIBRARY;
+            [delegate detailViewControllerOpenProject: project file: name];
+        }
 }
 
 #pragma mark - OpenProjectViewControllerDelegate
@@ -797,8 +1088,8 @@ static DetailViewController *this;						// This singleton instance of this class
     
     if (row >= 0) {
         // Open the selected project.
-        if ([delegate respondsToSelector: @selector(detailViewControllerDelegateOpenProject:)])
-            [delegate detailViewControllerDelegateOpenProject: projects[row]];
+        if ([delegate respondsToSelector: @selector(detailViewControllerOpenProject:)])
+            [delegate detailViewControllerOpenProject: projects[row]];
     }
 }
 
@@ -822,16 +1113,16 @@ static DetailViewController *this;						// This singleton instance of this class
     if (name) {
         if (isProject) {
             // Rename the current project.
-            if ([delegate respondsToSelector: @selector(detailViewControllerDelegateRenameProject:)])
-                [delegate detailViewControllerDelegateRenameProject: name];
+            if ([delegate respondsToSelector: @selector(detailViewControllerRenameProject:)])
+                [delegate detailViewControllerRenameProject: name];
             
             // Resort the projects list.
             [projects sortUsingComparator: ^NSComparisonResult (NSString *obj1, NSString *obj2) {
                 return [obj1 compare: obj2];
             }];
         } else {
-            if ([delegate respondsToSelector: @selector(detailViewControllerDelegateRenameFile:newName:)])
-                [delegate detailViewControllerDelegateRenameFile: oldName newName: name];
+            if ([delegate respondsToSelector: @selector(detailViewControllerRenameFile:newName:)])
+                [delegate detailViewControllerRenameFile: oldName newName: name];
         }
     }
 }
@@ -867,6 +1158,16 @@ static DetailViewController *this;						// This singleton instance of this class
         barButtonItem.title = NSLocalizedString(@"Project", @"Project");
         [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
     }
+}
+
+#pragma mark - SourceViewDelegate
+
+/*!
+ * Notify the delegate that the text has changed in some way.
+ */
+
+- (void) sourceViewTextChanged {
+    [self checkUndRedoButtons];
 }
 
 @end

@@ -59,6 +59,4 @@
 @property (nonatomic) double minimum;
 @property (nonatomic) double splitSize;
 
-- (void) initCommon;
-
 @end
