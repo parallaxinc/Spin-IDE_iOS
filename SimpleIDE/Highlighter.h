@@ -17,6 +17,7 @@
 @property (nonatomic, retain) NSRegularExpression *multilineCommentStartExpression; // The regular expression for the start of a multiline comment.
 @property (nonatomic, retain) NSMutableArray *rules;
 
-- (NSAttributedString *) format: (NSString *) text;
+- (void) format: (NSString *) text completionHandler: (void (^)(NSAttributedString *)) callbackBlock;
+- (NSAttributedString *) setFont: (NSString *) text;
 
 @end

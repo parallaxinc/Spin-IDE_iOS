@@ -153,7 +153,11 @@
     [self save];
     
     // Use the new file.
-    [self setAttributedText: [highlighter format: text]];
+    [self setAttributedText: [highlighter setFont: text]];
+    if (text && text.length > 0)
+        [highlighter format: text completionHandler: ^(NSAttributedString *attributedText) {
+            [self performSelectorOnMainThread: @selector(updateText:) withObject: attributedText waitUntilDone: NO];
+        }];
     dirty = NO;
     self.path = thePath;
     
@@ -167,21 +171,19 @@
         }
 }
 
-#pragma mark - Getters and setters
-
 /*!
- * Sets the text using the text highlighter.
+ * Update the source with a formatted attributed string.
  *
- * @param text			The new text.
- * @param path			The full path of the file the text belongs to. Pass nil if there is no
- *						file, in which case an error is flagged of the user tried to edit.
+ * @param attributedText	The newly formatted attributed string.
  */
 
-- (void) setHighlightedText: (NSString *) text {
-    [self save];
-    [self setAttributedText: [highlighter format: text]];
-    dirty = NO;
+- (void) updateText: (NSAttributedString *) attributedText {
+    NSRange selectedRange = self.selectedRange;
+    [self setAttributedText: attributedText];
+    self.selectedRange = selectedRange;
 }
+
+#pragma mark - Getters and setters
 
 /*!
  * Set the current language. This selects the highlighter used.
@@ -202,7 +204,11 @@
             break;
     }
     NSRange selectedRange = self.selectedRange;
-    [self setAttributedText: [highlighter format: self.text]];
+    [self setAttributedText: [highlighter setFont: self.text]];
+    if (self.text && self.text.length > 0)
+        [highlighter format: self.text completionHandler: ^(NSAttributedString *attributedText) {
+            [self performSelectorOnMainThread: @selector(updateText:) withObject: attributedText waitUntilDone: NO];
+        }];
     self.selectedRange = selectedRange;
 }
 
@@ -224,9 +230,10 @@
 
 - (void) textViewDidChange: (UITextView *) textView {
     // Reapply syntax highlighting.
-    NSRange selectedRange = self.selectedRange;
-    [self setAttributedText: [highlighter format: textView.text]];
-    self.selectedRange = selectedRange;
+    if (self.text && self.text.length > 0)
+        [highlighter format: self.text completionHandler: ^(NSAttributedString *attributedText) {
+            [self performSelectorOnMainThread: @selector(updateText:) withObject: attributedText waitUntilDone: NO];
+        }];
     
     // Notify the delegate.
     if ([sourceViewDelegate respondsToSelector: @selector(sourceViewTextChanged)])

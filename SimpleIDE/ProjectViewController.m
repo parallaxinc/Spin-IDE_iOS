@@ -10,6 +10,7 @@
 
 #import "Common.h"
 #import "ConfigurationViewController.h"
+#import "ErrorViewController.h"
 #import "openspin.h"
 #import "PickerViewController.h"
 
@@ -24,16 +25,18 @@ typedef enum {alertDeleteFile, alertDeleteProject, alertWarning} alertTags;
 static ProjectViewController *this;						// This singleton instance of this class.
 
 
+// TODO: Preference to turn off syntax highlighting
+// TODO: Collapse the side panel in landscape view
+// TODO: Follow indentation
+
 // TODO: Add a terminal
 
-// TODO: Display errors in a user fiendly way.
 // TODO: EPROM Support
 // TODO: Navigation control does not show up on main view until the program rotates to landscape once
-// TODO: Opening a large file takes a long time
-// TODO: Collapse the side panel in landscape view
-// TODO: Allow pinch zoom in the editor.
-// TODO: Turn the loader into a library.
+
 // TODO: Share zipped files.
+// TODO: Turn the loader into a library.
+// TODO: Allow pinch zoom in the editor.
 
 
 @interface ProjectViewController () <UIPopoverControllerDelegate> {
@@ -49,6 +52,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @property (nonatomic, retain) NSString *binaryFile;			// The most recently compiled binary file.
 @property (nonatomic, retain) NSArray *boardTypePickerElements;
 @property (nonatomic, retain) NSArray *compilerTypePickerElements;
+@property (nonatomic, retain) UIPopoverController *errorPopoverController;
 @property (nonatomic, retain) UIPopoverController *loadImagePopoverController;
 @property (nonatomic, retain) NSArray *memoryModelPickerElements;
 @property (nonatomic, retain) NSArray *optimizationPickerElements;
@@ -68,6 +72,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize compilerOptionsView;
 @synthesize compilerTypeButton;
 @synthesize compilerTypePickerElements;
+@synthesize errorPopoverController;
 @synthesize linkerOptionsTextField;
 @synthesize linkerOptionsView;
 @synthesize loadImagePopoverController;
@@ -545,7 +550,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 /*!
  * Open a file.
  *
- * This method saves the changes to the currently open file (if any),then opens the indicated file 
+ * This method saves the changes to the currently open file (if any), then opens the indicated file 
  * in the editing view. It does not select the file in the file list.
  *
  * @param name			The partial path name of the file to open. The path is relative to the sandbox.
@@ -578,6 +583,63 @@ static ProjectViewController *this;						// This singleton instance of this clas
     
     // Update the button state.
     [[DetailViewController defaultDetailViewController] checkButtonState];
+}
+
+/*!
+ * Open a file.
+ *
+ * This method opens any file by name and selects it. If the file is in the current project, it is selected there. If the
+ * file already appears in the list of non-project files, it is selected there. If the file is not in the file list, it is 
+ * added to the non-project file list and selected there.
+ *
+ * The project must be in a project in the sandbox.
+ *
+ * @param projectName	The name of the project containing the file.
+ * @param file			The the name of the file (with extension) in the project.
+ */
+
+- (void) openProject: (NSString *) projectName file: (NSString *) file {
+    // Form the path name for the file.
+    NSString *partialPath = [projectName stringByAppendingPathComponent: file];
+    
+    // Add the file to the list of non-project files.
+    int row = -1;
+    for (int i = 0; i < openFiles.count; ++i) {
+        NSString *existingPath = openFiles[i];
+        if ([existingPath caseInsensitiveCompare: partialPath] == NSOrderedSame) {
+            row = i;
+            break;
+        }
+    }
+    if (project && project.name && [projectName caseInsensitiveCompare: project.name] == NSOrderedSame) {
+        // The file is in the current project. Open it there.
+        for (int i = 0; i < project.files.count; ++i)
+            if ([project.files[i] caseInsensitiveCompare: file] == NSOrderedSame) {
+                [self openFile: partialPath];
+                [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: i inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
+            }
+    } else if (row == -1) {
+        // The file is not in the open files list. Add it.
+        [openFiles addObject: partialPath];
+        
+        // Sort the file list.
+        [openFiles sortUsingComparator: ^NSComparisonResult (NSString *obj1, NSString *obj2) {
+            return [obj1 compare: obj2];
+        }];
+        
+        // Select the new file.
+        [namesTableView reloadData];
+        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: [openFiles indexOfObject: partialPath] inSection: 1] 
+                                    animated: YES 
+                              scrollPosition: UITableViewScrollPositionNone];
+        
+        // Open the file.
+        [self openFile: partialPath];
+    } else {
+        // The file is already in the open list. Select it and open it in the edit view.
+        [self openFile: partialPath];
+        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: row inSection: 1] animated: YES scrollPosition: UITableViewScrollPositionNone];
+    }
 }
 
 /*!
@@ -632,21 +694,63 @@ static ProjectViewController *this;						// This singleton instance of this clas
  * Report a compilation error to the user.
  *
  * @param message		The user viewable error message.
- * @param file			The path of the file containing the error. Pass nil if hte file is not known.
+ * @param file			The path of the file containing the error. Pass nil if the file is not known.
  * @param line			The index of the line containing the error. Pass -1 if the line is not known.
- * @param offset		The offset of the error in the file. Pass 0 if the offset is not known.
+ * @param offset		The offset of the error in the line. Pass 0 if the offset is not known.
  */
 
 - (void) reportError: (NSString *) message inFile: (NSString *) file line: (int) line offset: (int) offset {
-    // TODO: Open the file containing the error.
-    // TODO: Show the error at the line containing the error.
-    UIAlertView *theAlert = [[UIAlertView alloc] initWithTitle: @"Build Error"
-                                                       message: message
-                                                      delegate: nil
-                                             cancelButtonTitle: @"OK"
-                                             otherButtonTitles: nil];
-    theAlert.tag = alertWarning;
-    [theAlert show];
+    // Open the file containing the error (if it isn't already open).
+    SourceView *sourceView = [DetailViewController defaultDetailViewController].sourceConsoleSplitView.sourceView;
+    if (![file isEqualToString: sourceView.path]) {
+        NSString *path = [file stringByDeletingLastPathComponent];
+        NSString *filesProject = [path lastPathComponent];
+        [self openProject: filesProject file: [file lastPathComponent]];
+    }
+    
+    // Get the location for the error dialog.
+    NSString *text = sourceView.text;
+    NSRange range = {0, text.length};
+    --line;
+    while (line > 0) {
+        NSRange eol = [text rangeOfString: @"\n" options: 0 range: range];
+        NSUInteger lineLength = eol.location - range.location + eol.length;
+        range.location += lineLength;
+        range.length -= lineLength;
+        --line;
+        if (range.location >= text.length)
+            line = 0;
+    }
+    range.location += offset - 1;
+    if (range.location >= text.length)
+        range.location = text.length - 1;
+    range.length = 1;
+    [sourceView scrollRangeToVisible: range];
+    
+    UITextPosition *beginning = sourceView.beginningOfDocument;
+    UITextPosition *start = [sourceView positionFromPosition: beginning offset: range.location];
+    UITextPosition *end = [sourceView positionFromPosition: start offset: range.length];
+    UITextRange *textRange = [sourceView textRangeFromPosition: start toPosition: end];
+    CGRect rect = [sourceView firstRectForRange: textRange];
+
+    // Display the error dialog.
+    ErrorViewController *errorViewController = [[ErrorViewController alloc] initWithNibName: @"ErrorViewController" bundle: nil];
+    errorViewController.errorMessage = message;
+    
+    // Create the popover.
+    UIPopoverController *errorPopover = [[NSClassFromString(@"UIPopoverController") alloc]
+                                         initWithContentViewController: errorViewController];
+    [errorPopover setPopoverContentSize: errorViewController.view.frame.size];
+    CGRect viewSize = errorViewController.view.frame;
+    [errorPopover setPopoverContentSize: viewSize.size];
+    [errorPopover setDelegate: self];
+    
+    // Display the popover.
+    self.errorPopoverController = errorPopover;
+    [self.errorPopoverController presentPopoverFromRect: rect
+                                                 inView: sourceView
+                               permittedArrowDirections: UIPopoverArrowDirectionAny
+                                               animated: YES];
 }
 
 #pragma mark - Actions
@@ -917,6 +1021,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
         self.pickerPopoverController = nil;
     else if (popoverController == loadImagePopoverController)
         self.loadImagePopoverController = nil;
+    else if (popoverController == errorPopoverController)
+        self.errorPopoverController = nil;
     else if (popoverController == xbeePopoverController)
         self.xbeePopoverController = nil;
 }
@@ -1268,47 +1374,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (void) detailViewControllerOpenProject: (NSString *) projectName file: (NSString *) file {
-    // Form the path name for the file.
-    NSString *partialPath = [projectName stringByAppendingPathComponent: file];
-    
-    // Add the file to the list of non-project files.
-    int row = -1;
-    for (int i = 0; i < openFiles.count; ++i) {
-        NSString *existingPath = openFiles[i];
-        if ([existingPath caseInsensitiveCompare: partialPath] == NSOrderedSame) {
-            row = i;
-            break;
-        }
-    }
-    if (project && project.name && [projectName caseInsensitiveCompare: project.name] == NSOrderedSame) {
-        // The file is in the current project. Open it there.
-        for (int i = 0; i < project.files.count; ++i)
-            if ([project.files[i] caseInsensitiveCompare: file] == NSOrderedSame) {
-                [self openFile: partialPath];
-                [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: i inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
-            }
-    } else if (row == -1) {
-        // The file is not in the open files list. Add it.
-        [openFiles addObject: partialPath];
-        
-        // Sort the file list.
-        [openFiles sortUsingComparator: ^NSComparisonResult (NSString *obj1, NSString *obj2) {
-            return [obj1 compare: obj2];
-        }];
-        
-        // Select the new file.
-        [namesTableView reloadData];
-        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: [openFiles indexOfObject: partialPath] inSection: 1] 
-                                    animated: YES 
-                              scrollPosition: UITableViewScrollPositionNone];
-        
-        // Open the file.
-        [self openFile: partialPath];
-    } else {
-        // The file is already in the open list. Select it and open it in the edit view.
-        [self openFile: partialPath];
-        [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: row inSection: 1] animated: YES scrollPosition: UITableViewScrollPositionNone];
-    }
+    [self openProject: projectName file: file];
 }
 
 /*!

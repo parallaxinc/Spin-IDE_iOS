@@ -193,6 +193,8 @@
 		27CE41E21A648067002B4EE9 /* SplitArrows.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E11A648067002B4EE9 /* SplitArrows.m */; };
 		27CE41E51A64812D002B4EE9 /* SplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E41A64812D002B4EE9 /* SplitView.m */; };
 		27CE41E81A648478002B4EE9 /* SourceConsoleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CE41E71A648478002B4EE9 /* SourceConsoleSplitView.m */; };
+		27CF8B561A9EA420008C2CA8 /* ErrorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CF8B541A9EA420008C2CA8 /* ErrorViewController.m */; };
+		27CF8B571A9EA420008C2CA8 /* ErrorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27CF8B551A9EA420008C2CA8 /* ErrorViewController.xib */; };
 		27D8CD9A1A32517400B8FA36 /* libbfd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8CD991A32517400B8FA36 /* libbfd.a */; };
 		27DC02D41A76B28A000AE018 /* NewFileOrProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DC02D21A76B28A000AE018 /* NewFileOrProjectViewController.m */; };
 		27DC02D51A76B28A000AE018 /* NewFileOrProjectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27DC02D31A76B28A000AE018 /* NewFileOrProjectViewController.xib */; };
@@ -454,6 +456,9 @@
 		27CE41E41A64812D002B4EE9 /* SplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitView.m; sourceTree = "<group>"; };
 		27CE41E61A648478002B4EE9 /* SourceConsoleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceConsoleSplitView.h; sourceTree = "<group>"; };
 		27CE41E71A648478002B4EE9 /* SourceConsoleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceConsoleSplitView.m; sourceTree = "<group>"; };
+		27CF8B531A9EA420008C2CA8 /* ErrorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorViewController.h; sourceTree = "<group>"; };
+		27CF8B541A9EA420008C2CA8 /* ErrorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorViewController.m; sourceTree = "<group>"; };
+		27CF8B551A9EA420008C2CA8 /* ErrorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ErrorViewController.xib; sourceTree = "<group>"; };
 		27D8CD991A32517400B8FA36 /* libbfd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbfd.a; sourceTree = "<group>"; };
 		27DC02D11A76B28A000AE018 /* NewFileOrProjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewFileOrProjectViewController.h; sourceTree = "<group>"; };
 		27DC02D21A76B28A000AE018 /* NewFileOrProjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewFileOrProjectViewController.m; sourceTree = "<group>"; };
@@ -559,6 +564,9 @@
 			children = (
 				274206BA191039CF00FA7E5D /* CompilerOptionsView.h */,
 				274206BB191039CF00FA7E5D /* CompilerOptionsView.m */,
+				27CF8B531A9EA420008C2CA8 /* ErrorViewController.h */,
+				27CF8B541A9EA420008C2CA8 /* ErrorViewController.m */,
+				27CF8B551A9EA420008C2CA8 /* ErrorViewController.xib */,
 				2765367B1A93C0EC004E57E5 /* Find.h */,
 				2765367C1A93C0EC004E57E5 /* Find.m */,
 				276536761A93BB4C004E57E5 /* FindViewController.h */,
@@ -921,6 +929,9 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Parallax;
 				TargetAttributes = {
+					274206781910310900FA7E5D = {
+						DevelopmentTeam = F4YREA5UW3;
+					};
 					2742069C1910310900FA7E5D = {
 						TestTargetID = 274206781910310900FA7E5D;
 					};
@@ -987,6 +998,7 @@
 				27BBADA21A707A8F009E1311 /* new.png in Resources */,
 				276F61F91A6EF689006704E0 /* LoadImageViewController.xib in Resources */,
 				276536E61A940F1D004E57E5 /* VGA_512x384_Bitmap.spin in Resources */,
+				27CF8B571A9EA420008C2CA8 /* ErrorViewController.xib in Resources */,
 				27AF4C041A92A3B100BF2434 /* project-open@2x.png in Resources */,
 				276536E41A940F1D004E57E5 /* TV_Text.spin in Resources */,
 				276536D51A940F1D004E57E5 /* RCTIME.spin in Resources */,
@@ -1147,6 +1159,7 @@
 				271BE0C31A5F3ED600D38EF9 /* pathentry.cpp in Sources */,
 				274206B9191039B500FA7E5D /* ProjectOptionsView.m in Sources */,
 				27BFBB071911856A0091F183 /* SourceView.m in Sources */,
+				27CF8B561A9EA420008C2CA8 /* ErrorViewController.m in Sources */,
 				276F61FC1A6EF937006704E0 /* TXBee.m in Sources */,
 				276F61EC1A6EF2E1006704E0 /* ConfigurationViewController.m in Sources */,
 				276F62051A6EFBE0006704E0 /* UDPDataBuffer.m in Sources */,
@@ -1226,8 +1239,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Mike Westerfield (436W7W733E)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mike Westerfield (436W7W733E)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1282,8 +1295,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Byte Works, Inc. (5Q69V99M59)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Byte Works, Inc. (5Q69V99M59)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1327,6 +1340,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Mike Westerfield (436W7W733E)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mike Westerfield (436W7W733E)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SimpleIDE/SimpleIDE-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1373,6 +1387,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Spin IDE";
+				PROVISIONING_PROFILE = "";
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
 			};
@@ -1384,7 +1399,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_WARN_BOOL_CONVERSION = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Byte Works, Inc. (5Q69V99M59)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Byte Works, Inc. (5Q69V99M59)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SimpleIDE/SimpleIDE-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1430,6 +1446,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Spin IDE";
+				PROVISIONING_PROFILE = "";
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
 			};
