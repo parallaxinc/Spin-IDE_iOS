@@ -13,6 +13,6 @@
 @implementation HighlighterRule
 
 @synthesize rule;
-@synthesize attributes;
+@synthesize color;
 
 @end

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "CodeView.h"
 #import "Common.h"
 
 @protocol SourceViewDelegate <NSObject>
@@ -21,10 +22,9 @@
 @end
 
 
-@interface SourceView : UITextView <UITextViewDelegate>
+@interface SourceView : CodeView <UITextViewDelegate>
 
 @property (weak, nonatomic) id<SourceViewDelegate> sourceViewDelegate;
-@property (nonatomic) languageType language;				// The language type (used for syntax highloghting).
 @property (nonatomic, retain) NSString *path;				// The full path of the file being edited.
 
 - (void) save;

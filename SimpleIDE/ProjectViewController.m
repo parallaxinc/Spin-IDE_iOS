@@ -38,6 +38,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
 // TODO: Turn the loader into a library.
 // TODO: Allow pinch zoom in the editor.
 
+// TODO: when a scan is unsuccessful, show an error dialog. Blank the IP address if nothing is found.
+// TODO: When Run is pressed, and no device is present, abort faster (or right away).
+
 
 @interface ProjectViewController () <UIPopoverControllerDelegate> {
     CGRect keyboardViewRect;							// View rectangle when the keyboard was shwn.
@@ -727,11 +730,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     range.length = 1;
     [sourceView scrollRangeToVisible: range];
     
-    UITextPosition *beginning = sourceView.beginningOfDocument;
-    UITextPosition *start = [sourceView positionFromPosition: beginning offset: range.location];
-    UITextPosition *end = [sourceView positionFromPosition: start offset: range.length];
-    UITextRange *textRange = [sourceView textRangeFromPosition: start toPosition: end];
-    CGRect rect = [sourceView firstRectForRange: textRange];
+    CGRect rect = [sourceView firstRectForRange: range];
 
     // Display the error dialog.
     ErrorViewController *errorViewController = [[ErrorViewController alloc] initWithNibName: @"ErrorViewController" bundle: nil];

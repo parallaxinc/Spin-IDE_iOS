@@ -8,12 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "CodeView.h"
+
 @interface FindViewController : UIViewController
 
 @property (nonatomic, retain) IBOutlet UISwitch *caseSensitiveSwitch;
 @property (nonatomic, retain) IBOutlet UIButton *findButton;
 @property (nonatomic, retain) IBOutlet UITextField *findTextField;
-@property (nonatomic, retain) UITextView *referenceTextView;
+@property (nonatomic, retain) CodeView *referenceTextView;
 @property (nonatomic, retain) IBOutlet UIButton *replaceAllButton;
 @property (nonatomic, retain) IBOutlet UIButton *replaceAndFindButton;
 @property (nonatomic, retain) IBOutlet UIButton *replaceButton;

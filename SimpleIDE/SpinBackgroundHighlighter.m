@@ -8,6 +8,8 @@
 
 #import "SpinBackgroundHighlighter.h"
 
+#import "ColoredRange.h"
+
 
 typedef enum {blockNone, blockCON, blockVAR, blockOBJ, blockPUB, blockPRI, blockDAT} blockType;
 typedef enum {tCON, tVAR, tOBJ, tPUB, tPRI, tDAT, tEOF, tNone} tokenType;
@@ -22,11 +24,9 @@ typedef enum {tCON, tVAR, tOBJ, tPUB, tPRI, tDAT, tEOF, tNone} tokenType;
     int offset;										// The offset of the next character in the text. (Offset for the character past ch.)
 }
 
-@property (nonatomic, retain) NSArray *blockColors;	// Array of NSDictionary text attributes for the normally shaded blocks, indexed by 
-													// tokenType. Index is [tCON..tDAT].
-@property (nonatomic, retain) NSArray *darkBlockColors;	// Array of NSDictionary text attributes for the darkly shaded blocks, indexed 
-													// by tokenType. Index is [tCON..tDAT].
-@property (nonatomic, retain) NSString *text;		// The text to scan.
+@property (nonatomic, retain) NSArray *blockColors;	// Array of UIColor for the normally shaded blocks, indexed by tokenType. Index is [tCON..tDAT].
+@property (nonatomic, retain) NSArray *darkBlockColors;	// Array of UIColor for the darkly shaded blocks, indexed by tokenType. Index is [tCON..tDAT].
+@property (nonatomic, retain) NSString *text;		// The text to parse.
 
 @end
 
@@ -40,25 +40,29 @@ typedef enum {tCON, tVAR, tOBJ, tPUB, tPRI, tDAT, tEOF, tNone} tokenType;
 /*!
  * Apply spin background highlighting to the blocks in the spin file.
  *
- * @param attributedText	The text to highlight. Attributes for the highlighting are added to this attributed text string.
+ * @param theText		The text to highlight.
+ *
+ * @return				An array of ColoredRange objects that describe how to color the background.
  */
 
-- (void) highlightBlocks: (NSMutableAttributedString *) attributedText {
+- (NSArray *) highlightBlocks: (NSString *) theText {
     int lastLineStart = 0;							// Offset of the start of the line containing lastToken.
     tokenType lastToken = tNone;					// This is the last block type processed, or tNone for the first block.
     tokenType lastLastToken = tNone;				// This is the block type processed before lastToken, or tNone for the first block.
     BOOL lastWasDark = YES;							// Was the last block darkened due to it being the second similar block in a row?
     
+    NSMutableArray *colors = [[NSMutableArray alloc] init];
+    
+    self.text = theText;
     offset = 0;
     ch = ' ';
     lineStart = 0;
-    self.text = attributedText.string;
 
     tokenType token = [self nextToken];
     while (lastToken != tEOF) {
         // Determine the color for the block ending with the current token.
         if (lastToken <= tDAT) {
-            NSDictionary *blockColor = blockColors[lastToken];
+            UIColor *blockColor = blockColors[lastToken];
             if (lastLastToken == lastToken && !lastWasDark) {
                 lastWasDark = YES;
                 blockColor = darkBlockColors[lastToken];
@@ -68,9 +72,13 @@ typedef enum {tCON, tVAR, tOBJ, tPUB, tPRI, tDAT, tEOF, tNone} tokenType;
             // Color the block completed by the current token.
             if (token == tEOF)
                 // This handles files that don't end in a line feed, making sure the last line is highlighted.
-                lineStart = attributedText.length;
+                lineStart = text.length;
             NSRange textRange = {lastLineStart, lineStart - lastLineStart};
-            [attributedText addAttributes: blockColor range: textRange];
+            
+            ColoredRange *coloredRange = [[ColoredRange alloc] init];
+            coloredRange.color = blockColor;
+            coloredRange.range = textRange;
+            [colors addObject: coloredRange];
         }
         
         // Update the state.
@@ -81,6 +89,8 @@ typedef enum {tCON, tVAR, tOBJ, tPUB, tPRI, tDAT, tEOF, tNone} tokenType;
         
         token = [self nextToken];
     }
+    
+    return colors;
 }
 
 /*!
@@ -94,32 +104,20 @@ typedef enum {tCON, tVAR, tOBJ, tPUB, tPRI, tDAT, tEOF, tNone} tokenType;
     
     if (self) {
         self.blockColors = [NSArray arrayWithObjects:
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 255.0/255.0 green: 248.0/255.0 blue: 192.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // CON
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 255.0/255.0 green: 223.0/255.0 blue: 191.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // VAR
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 255.0/255.0 green: 191.0/255.0 blue: 191.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // OBJ
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 191.0/255.0 green: 223.0/255.0 blue: 255.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // PUB
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 191.0/255.0 green: 248.0/255.0 blue: 255.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // PRI
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 191.0/255.0 green: 255.0/255.0 blue: 200.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // DAT
+                            [UIColor colorWithRed: 255.0/255.0 green: 248.0/255.0 blue: 192.0/255.0 alpha: 1.0], // CON
+                            [UIColor colorWithRed: 255.0/255.0 green: 223.0/255.0 blue: 191.0/255.0 alpha: 1.0], // VAR
+                            [UIColor colorWithRed: 255.0/255.0 green: 191.0/255.0 blue: 191.0/255.0 alpha: 1.0], // OBJ
+                            [UIColor colorWithRed: 191.0/255.0 green: 223.0/255.0 blue: 255.0/255.0 alpha: 1.0], // PUB
+                            [UIColor colorWithRed: 191.0/255.0 green: 248.0/255.0 blue: 255.0/255.0 alpha: 1.0], // PRI
+                            [UIColor colorWithRed: 191.0/255.0 green: 255.0/255.0 blue: 200.0/255.0 alpha: 1.0], // DAT
                             nil];
         self.darkBlockColors = [NSArray arrayWithObjects:
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 0.9*255.0/255.0 green: 0.9*248.0/255.0 blue: 0.9*192.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // CON
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 0.9*255.0/255.0 green: 0.9*223.0/255.0 blue: 0.9*191.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // VAR
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 0.9*255.0/255.0 green: 0.9*191.0/255.0 blue: 0.9*191.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // OBJ
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 0.9*191.0/255.0 green: 0.9*223.0/255.0 blue: 0.9*255.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // PUB
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 0.9*191.0/255.0 green: 0.9*248.0/255.0 blue: 0.9*255.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // PRI
-                            [[NSDictionary alloc] initWithObjectsAndKeys: [UIColor colorWithRed: 0.9*191.0/255.0 green: 0.9*255.0/255.0 blue: 0.9*200.0/255.0 alpha: 1.0],
-                             NSBackgroundColorAttributeName, nil], // DAT
+                            [UIColor colorWithRed: 0.9*255.0/255.0 green: 0.9*248.0/255.0 blue: 0.9*192.0/255.0 alpha: 1.0], // CON
+                            [UIColor colorWithRed: 0.9*255.0/255.0 green: 0.9*223.0/255.0 blue: 0.9*191.0/255.0 alpha: 1.0], // VAR
+                            [UIColor colorWithRed: 0.9*255.0/255.0 green: 0.9*191.0/255.0 blue: 0.9*191.0/255.0 alpha: 1.0], // OBJ
+                            [UIColor colorWithRed: 0.9*191.0/255.0 green: 0.9*223.0/255.0 blue: 0.9*255.0/255.0 alpha: 1.0], // PUB
+                            [UIColor colorWithRed: 0.9*191.0/255.0 green: 0.9*248.0/255.0 blue: 0.9*255.0/255.0 alpha: 1.0], // PRI
+                            [UIColor colorWithRed: 0.9*191.0/255.0 green: 0.9*255.0/255.0 blue: 0.9*200.0/255.0 alpha: 1.0], // DAT
                             nil];
     }
     

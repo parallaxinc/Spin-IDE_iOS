@@ -141,8 +141,8 @@
 /*!
  * Sent to the receiver when one or more fingers move in the associated view.
  *
- * This implementation tracks movements, moving this view and sending a splitMovedFrom: to:
- * message to the delegate.
+ * This implementation tracks movements, moving this view and sending a 
+ * splitViewProtocolMovedFrom:to: message to the delegate.
  *
  * @param touches		A set of UITouchinstances in the event represented by event that 
  *						represent touches in the UITouchPhaseMovedphase.

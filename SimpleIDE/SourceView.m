@@ -9,19 +9,16 @@
 #import "SourceView.h"
 
 #import "Common.h"
-#import "CHighlighter.h"
-#import "Highlighter.h"
-#import "SpinHighlighter.h"
 
 
 //
-//	This class is used to record the selection range in files that have been opened, so the selection can be restored if hte file is reopened.
+//	This class is used to record the selection range in files that have been opened, so the selection can be restored if the file is reopened.
 //
 
 @interface TextLocation : NSObject
 
 @property (nonatomic, retain) NSString *path;
-@property (nonatomic, retain) UITextRange *range;
+@property (nonatomic) NSRange range;
 
 @end
 
@@ -40,7 +37,6 @@
     BOOL dirty;												// YES if the file has changed since the last save or open.
 }
 
-@property (nonatomic, retain) Highlighter *highlighter;		// The highlighter to use for the current file.
 @property (nonatomic, retain) NSMutableArray *textLocations;// An array of TextLocation objects; locations for previously opened files.
 
 @end
@@ -48,7 +44,6 @@
 
 @implementation SourceView
 
-@synthesize highlighter;
 @synthesize language;
 @synthesize path;
 @synthesize sourceViewDelegate;
@@ -62,11 +57,8 @@
 
 - (void) initCommon {
     self.language = languageC;
-    self.highlighter = [[CHighlighter alloc] init];
     self.textLocations = [[NSMutableArray alloc] init];
     self.delegate = self;
-    self.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    self.autocorrectionType = UITextAutocorrectionTypeNo;
 }
 
 /*!
@@ -129,14 +121,11 @@
             }
         }
         
-        // Record the lcoation of the insertion point.
-        UITextRange *range = self.selectedTextRange;
-        if (range) {
-            TextLocation *textLocation = [[TextLocation alloc] init];
-            textLocation.path = path;
-            textLocation.range = range;
-            [textLocations addObject: textLocation];
-        }
+        // Record the location of the insertion point.
+        TextLocation *textLocation = [[TextLocation alloc] init];
+        textLocation.path = path;
+        textLocation.range = self.selectedRange;
+        [textLocations addObject: textLocation];
     }
 }
 
@@ -153,18 +142,14 @@
     [self save];
     
     // Use the new file.
-    [self setAttributedText: [highlighter setFont: text]];
-    if (text && text.length > 0)
-        [highlighter format: text completionHandler: ^(NSAttributedString *attributedText) {
-            [self performSelectorOnMainThread: @selector(updateText:) withObject: attributedText waitUntilDone: NO];
-        }];
+    [self setText: text];
     dirty = NO;
     self.path = thePath;
     
     // If the file has already been opened, use the last known insertion point.
     for (TextLocation *textLocation in textLocations)
         if ([textLocation.path caseInsensitiveCompare: path] == NSOrderedSame) {
-            self.selectedTextRange = textLocation.range;
+            self.selectedRange = textLocation.range;
             CGRect rect = [self firstRectForRange: textLocation.range];
 //            <<<this is not scrolling properly, and netiehr is the down arrow key. See http://stackoverflow.com/questions/22315755/ios-7-1-uitextview-still-not-scrolling-to-cursor-caret-after-new-line
             [self scrollRectToVisible: rect animated: NO];
@@ -179,36 +164,7 @@
 
 - (void) updateText: (NSAttributedString *) attributedText {
     NSRange selectedRange = self.selectedRange;
-    [self setAttributedText: attributedText];
-    self.selectedRange = selectedRange;
-}
-
-#pragma mark - Getters and setters
-
-/*!
- * Set the current language. This selects the highlighter used.
- *
- * @param theLanguage		The new language.
- */
-
-- (void) setLanguage: (languageType) theLanguage {
-    language = theLanguage;
-    switch (language) {
-        case languageC:
-        case languageCPP:
-            self.highlighter = [[CHighlighter alloc] init];
-            break;
-            
-        case languageSpin:
-            self.highlighter = [[SpinHighlighter alloc] init];
-            break;
-    }
-    NSRange selectedRange = self.selectedRange;
-    [self setAttributedText: [highlighter setFont: self.text]];
-    if (self.text && self.text.length > 0)
-        [highlighter format: self.text completionHandler: ^(NSAttributedString *attributedText) {
-            [self performSelectorOnMainThread: @selector(updateText:) withObject: attributedText waitUntilDone: NO];
-        }];
+    [self setText: [attributedText string]]; // Rework when text is formatted. 
     self.selectedRange = selectedRange;
 }
 
@@ -229,11 +185,12 @@
  */
 
 - (void) textViewDidChange: (UITextView *) textView {
+// TODO: Move to CodeView
     // Reapply syntax highlighting.
-    if (self.text && self.text.length > 0)
-        [highlighter format: self.text completionHandler: ^(NSAttributedString *attributedText) {
-            [self performSelectorOnMainThread: @selector(updateText:) withObject: attributedText waitUntilDone: NO];
-        }];
+//    if (self.text && self.text.length > 0)
+//        [highlighter format: self.text completionHandler: ^(NSAttributedString *attributedText) {
+//            [self performSelectorOnMainThread: @selector(updateText:) withObject: attributedText waitUntilDone: NO];
+//        }];
     
     // Notify the delegate.
     if ([sourceViewDelegate respondsToSelector: @selector(sourceViewTextChanged)])

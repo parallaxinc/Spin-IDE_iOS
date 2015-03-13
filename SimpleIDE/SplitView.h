@@ -26,6 +26,6 @@
 - (void) hideSplit: (BOOL) hide showingBottom: (BOOL) showingBottom;
 - (void) setMaximum: (double) value;
 - (void) setMinimum: (double) value;
-- (void) splitMovedFrom: (double) from to: (double) to;
+- (void) splitViewProtocolMovedFrom: (double) from to: (double) to;
 
 @end

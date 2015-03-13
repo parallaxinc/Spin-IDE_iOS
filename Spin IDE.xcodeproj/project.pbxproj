@@ -196,6 +196,9 @@
 		27CF8B561A9EA420008C2CA8 /* ErrorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CF8B541A9EA420008C2CA8 /* ErrorViewController.m */; };
 		27CF8B571A9EA420008C2CA8 /* ErrorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27CF8B551A9EA420008C2CA8 /* ErrorViewController.xib */; };
 		27D8CD9A1A32517400B8FA36 /* libbfd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8CD991A32517400B8FA36 /* libbfd.a */; };
+		27DA14171AA781E400BAB9DE /* CodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DA14161AA781E400BAB9DE /* CodeView.m */; };
+		27DA141B1AA7D3EE00BAB9DE /* ColoredRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DA141A1AA7D3EE00BAB9DE /* ColoredRange.m */; };
+		27DA141E1AA7DD8000BAB9DE /* CodeRect.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DA141D1AA7DD8000BAB9DE /* CodeRect.m */; };
 		27DC02D41A76B28A000AE018 /* NewFileOrProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DC02D21A76B28A000AE018 /* NewFileOrProjectViewController.m */; };
 		27DC02D51A76B28A000AE018 /* NewFileOrProjectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27DC02D31A76B28A000AE018 /* NewFileOrProjectViewController.xib */; };
 		27E1F2FA1A6DC87400B30331 /* run.png in Resources */ = {isa = PBXBuildFile; fileRef = 27E1F2F91A6DC87400B30331 /* run.png */; };
@@ -460,6 +463,12 @@
 		27CF8B541A9EA420008C2CA8 /* ErrorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorViewController.m; sourceTree = "<group>"; };
 		27CF8B551A9EA420008C2CA8 /* ErrorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ErrorViewController.xib; sourceTree = "<group>"; };
 		27D8CD991A32517400B8FA36 /* libbfd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbfd.a; sourceTree = "<group>"; };
+		27DA14151AA781E400BAB9DE /* CodeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CodeView.h; sourceTree = "<group>"; };
+		27DA14161AA781E400BAB9DE /* CodeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CodeView.m; sourceTree = "<group>"; };
+		27DA14191AA7D3EE00BAB9DE /* ColoredRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColoredRange.h; sourceTree = "<group>"; };
+		27DA141A1AA7D3EE00BAB9DE /* ColoredRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColoredRange.m; sourceTree = "<group>"; };
+		27DA141C1AA7DD8000BAB9DE /* CodeRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CodeRect.h; sourceTree = "<group>"; };
+		27DA141D1AA7DD8000BAB9DE /* CodeRect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CodeRect.m; sourceTree = "<group>"; };
 		27DC02D11A76B28A000AE018 /* NewFileOrProjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewFileOrProjectViewController.h; sourceTree = "<group>"; };
 		27DC02D21A76B28A000AE018 /* NewFileOrProjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewFileOrProjectViewController.m; sourceTree = "<group>"; };
 		27DC02D31A76B28A000AE018 /* NewFileOrProjectViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewFileOrProjectViewController.xib; sourceTree = "<group>"; };
@@ -608,6 +617,8 @@
 			children = (
 				27BFBB0E1911B3880091F183 /* CHighlighter.h */,
 				27BFBB0F1911B3880091F183 /* CHighlighter.m */,
+				27DA14191AA7D3EE00BAB9DE /* ColoredRange.h */,
+				27DA141A1AA7D3EE00BAB9DE /* ColoredRange.m */,
 				27BFBB0B1911AD100091F183 /* Highlighter.h */,
 				27BFBB0C1911AD100091F183 /* Highlighter.m */,
 				275BB9801913046500F0F020 /* HighlighterRule.h */,
@@ -711,6 +722,7 @@
 				271BE0D11A60055100D38EF9 /* Text Highlighting */,
 				276F61E21A6EDD19006704E0 /* UDP */,
 				271BE0D01A60052200D38EF9 /* Utility Views */,
+				27DA14181AA7823A00BAB9DE /* Code View */,
 				276F61E61A6EF2B2006704E0 /* XBee Loader */,
 				2742068B1910310900FA7E5D /* AppDelegate.h */,
 				2742068C1910310900FA7E5D /* AppDelegate.m */,
@@ -879,6 +891,17 @@
 				276F62011A6EFB64006704E0 /* XBeeCommon.m */,
 			);
 			name = "XBee Loader";
+			sourceTree = "<group>";
+		};
+		27DA14181AA7823A00BAB9DE /* Code View */ = {
+			isa = PBXGroup;
+			children = (
+				27DA141C1AA7DD8000BAB9DE /* CodeRect.h */,
+				27DA141D1AA7DD8000BAB9DE /* CodeRect.m */,
+				27DA14151AA781E400BAB9DE /* CodeView.h */,
+				27DA14161AA781E400BAB9DE /* CodeView.m */,
+			);
+			name = "Code View";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1124,6 +1147,7 @@
 				271BE0BF1A5F3ED600D38EF9 /* flexbuf.cpp in Sources */,
 				276F61F81A6EF689006704E0 /* LoadImageViewController.m in Sources */,
 				271BE0EE1A607AC600D38EF9 /* OpenProjectViewController.m in Sources */,
+				27DA141E1AA7DD8000BAB9DE /* CodeRect.m in Sources */,
 				27CE41DF1A64803F002B4EE9 /* SplitViewControl.m in Sources */,
 				276F61E91A6EF2C4006704E0 /* Loader.m in Sources */,
 				274206891910310900FA7E5D /* main.m in Sources */,
@@ -1152,6 +1176,7 @@
 				271BE0C01A5F3ED600D38EF9 /* preprocess.cpp in Sources */,
 				271BE0EA1A60472D00D38EF9 /* Hello_Message.c in Sources */,
 				274206B61910349D00FA7E5D /* ProjectViewController.m in Sources */,
+				27DA141B1AA7D3EE00BAB9DE /* ColoredRange.m in Sources */,
 				271BE0AE1A5F3EC300D38EF9 /* ExpressionResolver.cpp in Sources */,
 				276F61E51A6EDD2A006704E0 /* GCDAsyncUdpSocket.m in Sources */,
 				271BE0C21A5F3ED600D38EF9 /* openspin.cpp in Sources */,
@@ -1161,6 +1186,7 @@
 				27BFBB071911856A0091F183 /* SourceView.m in Sources */,
 				27CF8B561A9EA420008C2CA8 /* ErrorViewController.m in Sources */,
 				276F61FC1A6EF937006704E0 /* TXBee.m in Sources */,
+				27DA14171AA781E400BAB9DE /* CodeView.m in Sources */,
 				276F61EC1A6EF2E1006704E0 /* ConfigurationViewController.m in Sources */,
 				276F62051A6EFBE0006704E0 /* UDPDataBuffer.m in Sources */,
 				2765F5041A0D3F9B006B32F4 /* iOS_SimpleIDE.m in Sources */,
@@ -1399,7 +1425,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_WARN_BOOL_CONVERSION = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Byte Works, Inc. (5Q69V99M59)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Byte Works, Inc. (5Q69V99M59)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SimpleIDE/SimpleIDE-Prefix.pch";

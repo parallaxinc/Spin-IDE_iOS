@@ -10,6 +10,6 @@
 
 @interface SpinBackgroundHighlighter : NSObject
 
-- (void) highlightBlocks: (NSMutableAttributedString *) attributedText;
+- (NSArray *) highlightBlocks: (NSString *) theText;
 
 @end

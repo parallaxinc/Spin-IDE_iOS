@@ -11,6 +11,6 @@
 @interface HighlighterRule : NSObject
 
 @property (nonatomic, retain) NSRegularExpression *rule;		// The regular expression for the pattern search.
-@property (nonatomic, retain) NSDictionary *attributes;			// The text attributes used to paint the selected text.
+@property (nonatomic, retain) UIColor *color;					// The color used to paint the selected text.
 
 @end

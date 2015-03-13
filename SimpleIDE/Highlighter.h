@@ -12,12 +12,13 @@
 
 @interface Highlighter : NSObject
 
-@property (nonatomic, retain) NSDictionary *multiLineCommentAttributes;	// Character attributes for multiline comments.
+@property (nonatomic, retain) UIColor *multiLineCommentColor;	// The text color for multiline comments.
 @property (nonatomic, retain) NSRegularExpression *multilineCommentEndExpression; // The regular expression for the end of a multiline comment.
 @property (nonatomic, retain) NSRegularExpression *multilineCommentStartExpression; // The regular expression for the start of a multiline comment.
 @property (nonatomic, retain) NSMutableArray *rules;
 
-- (void) format: (NSString *) text completionHandler: (void (^)(NSAttributedString *)) callbackBlock;
-- (NSAttributedString *) setFont: (NSString *) text;
+- (NSArray *) highlightBlocks: (NSString *) theText;
+- (NSArray *) multilineHighlights: (NSString *) theText;
+- (NSArray *) wordHighlights: (NSString *) theText forRange: (NSRange) range;
 
 @end
