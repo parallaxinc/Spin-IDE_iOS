@@ -203,6 +203,8 @@
 		272BC9401AD5E28600827C40 /* SymbolEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272BC9301AD5E28600827C40 /* SymbolEngine.cpp */; };
 		272BC9411AD5E28600827C40 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272BC9321AD5E28600827C40 /* Utilities.cpp */; };
 		272BC9431AD5E54800827C40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 272BC9421AD5E54800827C40 /* Main.storyboard */; };
+		274844141AD7471E001EE772 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 274844121AD7471E001EE772 /* LICENSE */; };
+		274844151AD7471E001EE772 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 274844131AD7471E001EE772 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -475,6 +477,8 @@
 		272BC9321AD5E28600827C40 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utilities.cpp; path = PropellerCompiler/Utilities.cpp; sourceTree = "<group>"; };
 		272BC9331AD5E28600827C40 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utilities.h; path = PropellerCompiler/Utilities.h; sourceTree = "<group>"; };
 		272BC9421AD5E54800827C40 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		274844121AD7471E001EE772 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = SupportingFiles/LICENSE; sourceTree = "<group>"; };
+		274844131AD7471E001EE772 /* README.md */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; name = README.md; path = SupportingFiles/README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -573,6 +577,8 @@
 				272BC7881AD5D6F400827C40 /* libopcodes.a */,
 				272BC7891AD5D6F400827C40 /* libpropeller-elf-cpp.h */,
 				272BC78A1AD5D6F400827C40 /* libz.a */,
+				274844121AD7471E001EE772 /* LICENSE */,
+				274844131AD7471E001EE772 /* README.md */,
 				272BC78B1AD5D6F400827C40 /* ReadMe.txt */,
 				272BC78C1AD5D6F400827C40 /* SimpleIDE-Prefix.pch */,
 				272BC7991AD5D76200827C40 /* Foundation.framework */,
@@ -987,6 +993,7 @@
 				272BC84B1AD5D7DF00827C40 /* Serial_Lcd.spin in Resources */,
 				272BC83C1AD5D7DF00827C40 /* License.spin in Resources */,
 				272BC8581AD5D7DF00827C40 /* TV_Text.spin in Resources */,
+				274844141AD7471E001EE772 /* LICENSE in Resources */,
 				272BC7F61AD5D7AB00827C40 /* xbee.png in Resources */,
 				272BC7EF1AD5D7AB00827C40 /* rename@2x.png in Resources */,
 				272BC8371AD5D7DF00827C40 /* Graphics.spin in Resources */,
@@ -1188,6 +1195,7 @@
 				272BC8D31AD5E0D300827C40 /* SourceView.m in Sources */,
 				272BC9361AD5E28600827C40 /* CompileExpression.cpp in Sources */,
 				272BC9401AD5E28600827C40 /* SymbolEngine.cpp in Sources */,
+				274844151AD7471E001EE772 /* README.md in Sources */,
 				272BC8EB1AD5E10B00827C40 /* TXBee.m in Sources */,
 				272BC9351AD5E28600827C40 /* CompileDatBlocks.cpp in Sources */,
 			);
