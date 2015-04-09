@@ -241,7 +241,7 @@ static Find *this;
             if (iswalnum(ch))
                 return NO;
         }
-        int pos = selection.location + selection.length;
+        int pos = (int) (selection.location + selection.length);
         if (pos < [[text text] length]) {
             int ch = [[text text] characterAtIndex: pos];
             if (iswalnum(ch))

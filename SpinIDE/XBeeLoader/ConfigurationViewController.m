@@ -99,7 +99,7 @@ static NSArray *xBeeDevices;	// The currently known XBee devices.
     serialPort = 9750;
     NSString *serialPortString = [defaults stringForKey: @"serial_port_preference"];
     if (serialPortString != nil)
-        serialPort = [serialPortString integerValue];
+        serialPort = (int) [serialPortString integerValue];
 
     NSString *subnetString = [defaults stringForKey: @"subnet_preference"];
     if (subnetString == nil)

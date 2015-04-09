@@ -86,7 +86,7 @@
     if (pickerElements.count > 0 && selectedRow == -1)
         selectedRow = 0;
     if (selectedRow > pickerElements.count - 1)
-        selectedRow = pickerElements.count - 1;
+        selectedRow = (int) pickerElements.count - 1;
 }
 
 /*!
@@ -159,7 +159,7 @@
  */
 
 - (void) pickerView: (UIPickerView *) pickerView didSelectRow: (NSInteger) row inComponent: (NSInteger) component {
-    selectedRow = row;
+    selectedRow = (int) row;
     selectedElement = pickerElements[row]; // Deliberately does not use the setter, which is for external consumption.
 }
 

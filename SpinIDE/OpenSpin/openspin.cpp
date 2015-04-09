@@ -140,7 +140,7 @@ char* LoadFile(char* pFilename, int* pnLength)
             pp_push_file_struct(&s_preprocessor, pFile, pFilename);
             pp_run(&s_preprocessor);
             pBuffer = pp_finish(&s_preprocessor);
-            *pnLength = strlen(pBuffer);
+            *pnLength = (int) strlen(pBuffer);
             if (*pnLength == 0)
             {
                 free(pBuffer);
@@ -151,7 +151,7 @@ char* LoadFile(char* pFilename, int* pnLength)
         {
             // get the length of the file by seeking to the end and using ftell
             fseek(pFile, 0, SEEK_END);
-            *pnLength = ftell(pFile);
+            *pnLength = (int) ftell(pFile);
 
             if (*pnLength > 0)
             {
@@ -792,7 +792,7 @@ int mainOpenSpin(int argc, char* argv[])
         }
         else
         {
-            int offset = pTemp - &outputFilename[0];
+            int offset = (int) (pTemp - &outputFilename[0]);
             outputFilename[offset+1] = 0;
             if (bDATonly)
             {

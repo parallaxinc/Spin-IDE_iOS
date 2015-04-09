@@ -127,7 +127,7 @@
     if (projectPickerElements.count > 0 && selectedRow == -1)
         selectedRow = 0;
     if (selectedRow > projectPickerElements.count - 1)
-        selectedRow = projectPickerElements.count - 1;
+        selectedRow = (int) projectPickerElements.count - 1;
     if (selectedRow >= 0) {
         selectedProject = projectPickerElements[selectedRow];
         if ([selectedProject isEqualToString: SPIN_LIBRARY_PICKER_NAME])
@@ -227,11 +227,11 @@
 - (void) pickerView: (UIPickerView *) pickerView didSelectRow: (NSInteger) row inComponent: (NSInteger) component {
     if (component == 0) {
         // Select a new project.
-        selectedRow = row;
+        selectedRow = (int) row;
         selectedProject = projectPickerElements[row]; // Deliberately does not use the setter, which is for external consumption.
         if ([selectedProject isEqualToString: SPIN_LIBRARY_PICKER_NAME])
             selectedProject = SPIN_LIBRARY;
-        [self showFilesFor: row];
+        [self showFilesFor: (int) row];
     } else {
         // Select a new file.
         self.selectedName = filePickerElements[row];

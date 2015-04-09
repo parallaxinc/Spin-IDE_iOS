@@ -122,7 +122,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
         [namesTableView reloadData];
         
         // Select the file in the file list.
-        int row = [project.files indexOfObject: name];
+        int row = (int) [project.files indexOfObject: name];
         if (row >= 0) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow: row inSection: 0];
             [namesTableView selectRowAtIndexPath: indexPath animated: YES scrollPosition: UITableViewScrollPositionNone];
@@ -303,7 +303,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
                     if (range.location != NSNotFound) {
                         message = [line substringFromIndex: range.location + range.length];
                         file = [line substringToIndex: range.location];
-                        int index = line.length - 1;
+                        int index = (int) line.length - 1;
                         while (index > -1 && [line characterAtIndex: index] != '(')
                             --index;
                         if (index > -1) {
@@ -435,7 +435,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     }
     
     // Set the number of arguments.
-    *count = nsargs.count;
+    *count = (int) nsargs.count;
     
     // Form the array of arguments.
     char **args = malloc(sizeof(char *)*nsargs.count);
@@ -949,19 +949,19 @@ static ProjectViewController *this;						// This singleton instance of this clas
                                     @"C3-SDLOAD", @"C3-SDXMMC", @"C3F", @"C3F-SDLOAD", @"C3F-SDXMMC", @"DEMOBOARD",
                                     @"EEPROM", @"GENERIC", @"HYDRA", @"PROPBOE", @"PROPBOE-SDXMMC", @"PROPSTICK",
                                     @"QUICKSTART", @"RCFAST", @"RCSLOW", @"SPINSTAMP", @"SYNAPSE", nil];
-    selectedBoardTypePickerElementIndex = [boardTypePickerElements indexOfObject: @"GENERIC"];
+    selectedBoardTypePickerElementIndex = (int) [boardTypePickerElements indexOfObject: @"GENERIC"];
     
     self.compilerTypePickerElements = [[NSArray alloc] initWithObjects: @"C", @"C++", @"SPIN", nil];
-    selectedCompilerTypePickerElementIndex = [compilerTypePickerElements indexOfObject: @"C"];
+    selectedCompilerTypePickerElementIndex = (int) [compilerTypePickerElements indexOfObject: @"C"];
     
     self.memoryModelPickerElements = [[NSArray alloc] initWithObjects: @"LMM Main RAM", @"CMM Main RAM Compact",
                                       @"COG Cog RAM", @"XMMC External Flash Code Main RAM Data",
                                       @"XMM Single External RAM", @"XMM-Split External Flash Code + RAM Data", nil];
-    selectedMemoryModelPickerElementIndex = [memoryModelPickerElements indexOfObject: @"CMM Main RAM Compact"];
+    selectedMemoryModelPickerElementIndex = (int) [memoryModelPickerElements indexOfObject: @"CMM Main RAM Compact"];
     
     self.optimizationPickerElements = [[NSArray alloc] initWithObjects: @"-Os Size", @"-O2 Speed", @"-O1 Mixed",
                                        @"-O0 None", nil];
-    selectedOptimizationPickerElementIndex = [optimizationPickerElements indexOfObject: @"-Os Size"];
+    selectedOptimizationPickerElementIndex = (int) [optimizationPickerElements indexOfObject: @"-Os Size"];
     
     // Register for keyboard events.
     [[NSNotificationCenter defaultCenter] addObserver: self
@@ -1412,7 +1412,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
             [project writeSideFile: &error];
         
         // Select the correct project.
-        int index = [project.files indexOfObject: newName];
+        int index = (int) [project.files indexOfObject: newName];
         [namesTableView selectRowAtIndexPath: [NSIndexPath indexPathForRow: index inSection: 0] animated: YES scrollPosition: UITableViewScrollPositionNone];
         
         // Open the renamed file.
@@ -1618,9 +1618,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
 - (NSInteger) tableView: (UITableView *) tableView numberOfRowsInSection: (NSInteger) section {
     int count = 0;
     if (section == 0 && project)
-        count = project.files.count;
+        count = (int) project.files.count;
     else if (section == 1)
-        count = openFiles.count;
+        count = (int) openFiles.count;
     return count;
 }
 

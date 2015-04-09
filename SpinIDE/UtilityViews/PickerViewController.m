@@ -80,7 +80,7 @@
 
 - (void) pickerView: (UIPickerView *) pickerView didSelectRow: (NSInteger) row inComponent: (NSInteger) component {
     if ([delegate respondsToSelector: @selector(pickerViewController: didSelectRow:)])
-        [delegate pickerViewController: self didSelectRow: row];
+        [delegate pickerViewController: self didSelectRow: (int) row];
 }
 
 /*!

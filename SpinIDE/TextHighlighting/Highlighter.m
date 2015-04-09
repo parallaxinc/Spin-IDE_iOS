@@ -125,7 +125,7 @@
             NSRange textRange = {start, theText.length - start};
             NSTextCheckingResult *result = [multilineCommentStartExpression firstMatchInString: theText options: 0 range: textRange];
             if (result && result.range.location != NSNotFound) {
-                start = result.range.location + result.range.length;
+                start = (int) (result.range.location + result.range.length);
                 NSRange endTextRange = {start, theText.length - start};
                 NSTextCheckingResult *endResult = [multilineCommentEndExpression firstMatchInString: theText options: 0 range: endTextRange];
                 if (endResult && endResult.range.location != NSNotFound) {
@@ -137,11 +137,11 @@
                     coloredRange.range = textRange;
                     [coloredRanges addObject: coloredRange];
 
-                    start = endResult.range.location + endResult.range.length;
+                    start = (int) (endResult.range.location + endResult.range.length);
                 } else
-                    start = theText.length;
+                    start = (int) theText.length;
             } else
-                start = theText.length;
+                start = (int) theText.length;
         }
     }
     

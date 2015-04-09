@@ -391,7 +391,7 @@ bool GetSymbol(int* pLength)
     }
     else
     {
-        *pLength = strlen(pSymbol);
+        *pLength = (int) strlen(pSymbol);
     }
 
     return true;

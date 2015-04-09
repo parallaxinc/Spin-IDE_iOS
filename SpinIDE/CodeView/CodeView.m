@@ -158,7 +158,7 @@
         }
     
     if (colorIndex == -1) {
-        colorIndex = colors.count;
+        colorIndex = (int) colors.count;
         [colors addObject: color];
         NSDictionary *attribute = [NSDictionary dictionaryWithObjectsAndKeys:
                                    font, NSFontAttributeName, 
@@ -222,7 +222,7 @@
         indentString = [indentString stringByAppendingString: @" "];
     
     // Back up to the start of the selected line.
-    int location = selectedRange.location;
+    int location = (int) selectedRange.location;
     while (location > 0 && [text characterAtIndex: location - 1] != '\n')
         --location;
     
@@ -263,7 +263,7 @@
     [undoManager registerUndoWithTarget: self selector: @selector(undo:) object: undoObject];
     
     // Back up to the start of the selected line.
-    int location = selectedRange.location;
+    int location = (int) selectedRange.location;
     while (location > 0 && [text characterAtIndex: location - 1] != '\n')
         --location;
     
@@ -461,10 +461,10 @@
 
 - (int) extendSelectionTailLocation {
     if (selectedRange.length == 0)
-        return selectedRange.location;
+        return (int) selectedRange.location;
     if (selectedRange.location == initialRange.location)
-        return selectedRange.location + selectedRange.length;
-    return selectedRange.location;
+        return (int) (selectedRange.location + selectedRange.length);
+    return (int) selectedRange.location;
 }
 
 /*!
@@ -587,7 +587,7 @@
             // Move to the end of the file.
             [self cursorOff];
             if (command.modifierFlags & UIKeyModifierShift)
-                [self extendSelectionTo: text.length];
+                [self extendSelectionTo: (int) text.length];
             else {
                 selectedRange.location = text.length;
                 selectedRange.length = 0;
@@ -1133,7 +1133,7 @@
     int maxChars = 0;
     for (NSString *line in lines)
         if (line.length > maxChars)
-            maxChars = line.length;
+            maxChars = (int) line.length;
     size.width = maxChars*charWidth;
     self.contentSize = size;
 }
@@ -1281,7 +1281,7 @@
                     case 1: {
                         // Single taps place the insertion point at the tap location and cause us to 
                         // becoem first responder.
-                        int location = selectedRange.location;
+                        int location = (int) selectedRange.location;
                         
                         selectedRange.location = [self offsetFromLocation: [touch locationInView: self]];
                         if (selectedRange.length > 0) {
@@ -1306,7 +1306,7 @@
                         [self cursorOff];
                         
                         selectedRange.location = [self previousToken: [self offsetFromLocation: [touch locationInView: self]]];
-                        selectedRange.length = [self endOfToken: selectedRange.location] - selectedRange.location;
+                        selectedRange.length = (int) ([self endOfToken: (int) selectedRange.location] - selectedRange.location);
                         if (selectedRange.length == 0) {
                             if (selectedRange.location < text.length)
                                 selectedRange.length = 1;
@@ -1546,7 +1546,7 @@
         firstLine = 0;
     int lastLine = 1 + firstLine + self.frame.size.height/font.lineHeight;
     if (lastLine > lines.count)
-        lastLine = lines.count;
+        lastLine = (int) lines.count;
         
     // Set up the arrays used to track syntax highlighting.
     NSDictionary *defaultAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -1570,10 +1570,12 @@
             && coloredRange.range.location + coloredRange.range.length > initialOffset)
         {
             int colorIndex = [self colorIndexForColor: coloredRange.color];
-            int start = coloredRange.range.location < initialOffset ? 0 : coloredRange.range.location - initialOffset;
+            int start = coloredRange.range.location < initialOffset 
+            	? 0 
+            	: (int) (coloredRange.range.location - initialOffset);
             int end = coloredRange.range.location + coloredRange.range.length > initialOffset + highlightIndexSize 
                 ? highlightIndexSize 
-                : coloredRange.range.location + coloredRange.range.length - initialOffset;
+                : (int) (coloredRange.range.location + coloredRange.range.length - initialOffset);
             for (int i = start; i < end; ++i)
                 highlightIndexes[i] = colorIndex;
         }
@@ -1584,10 +1586,12 @@
             && coloredRange.range.location + coloredRange.range.length > initialOffset)
         {
             int colorIndex = [self colorIndexForColor: coloredRange.color];
-            int start = coloredRange.range.location < initialOffset ? 0 : coloredRange.range.location - initialOffset;
+            int start = coloredRange.range.location < initialOffset 
+            	? 0 
+            	: (int)  (coloredRange.range.location - initialOffset);
             int end = coloredRange.range.location + coloredRange.range.length > initialOffset + highlightIndexSize 
             	? highlightIndexSize 
-            	: coloredRange.range.location + coloredRange.range.length - initialOffset;
+            	: (int) (coloredRange.range.location + coloredRange.range.length - initialOffset);
             for (int i = start; i < end; ++i)
                 highlightIndexes[i] = colorIndex;
         }
@@ -1792,7 +1796,7 @@
 - (void) offsetsFromRange: (NSRange) range line0: (int *) line0 offset0: (int *) offset0 line1: (int *) line1 offset1: (int *) offset1 {
     int offset = 0;
     int line = 0;
-    int length = 2*(range.location + range.length);
+    int length = (int) (2*(range.location + range.length));
     
     UInt16 *buffer = (UInt16 *) malloc(length);
     NSRange substringRange;
@@ -1812,7 +1816,7 @@
     *offset0 = offset;
     
     if (line1 != nil || offset1 != nil) {
-        for (int i = range.location; i < range.location + range.length; ++i) {
+        for (int i = (int) range.location; i < range.location + range.length; ++i) {
             if (buffer[i] == '\n') {
                 ++line;
                 offset = 0;
