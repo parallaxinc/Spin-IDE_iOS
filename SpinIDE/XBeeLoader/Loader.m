@@ -9,9 +9,8 @@
 #import "Loader.h"
 
 #include <pthread.h>
-#import <ifaddrs.h>
-#import <arpa/inet.h>
 
+#include "Common.h"
 #include "XBeeCommon.h"
 #import "UDPDataBuffer.h"
 
@@ -415,7 +414,7 @@ typedef struct {
     
     if (!result) {
         if (!*err) [self validate: xbSerialIP value: serialUDP readOnly: YES err: err];			// Ensure XBee's Serial Service uses UDP packets [WRITE DISABLED DUE TO FIRMWARE BUG]
-        if (!*err) [self validate: xbIPDestination string: [self getIPAddress] readOnly: NO err: err];	// Ensure Serial-to-IP destination is us (our IP)
+        if (!*err) [self validate: xbIPDestination string: [Common getIPAddress] readOnly: NO err: err];	// Ensure Serial-to-IP destination is us (our IP)
         if (!*err) [self validate: xbOutputMask value: 0x7FFF readOnly: NO err: err];			// Ensure output mask is proper (default, in this case)
         if (!*err) [self validate: xbRTSFlow value: pinEnabled readOnly: NO err: err];			// Ensure RTS flow pin is enabled (input)
         if (!*err) [self validate: xbRTSFlow value: pinEnabled readOnly: NO err: err];			// Ensure RTS flow pin is enabled (input)
@@ -743,39 +742,6 @@ typedef struct {
         // Start reset pulse (low) and serial hold (high).
         [self setAttribute: xbOutputState value: 0x0010 err: err];
     }
-}
-
-/*!
- * Get the IP address of the local iOS device.
- *
- * @return		The IP address as a dotted decomal string.
- */
-
-- (NSString *) getIPAddress {
-    NSString *address = @"error";
-    struct ifaddrs *interfaces = NULL;
-    struct ifaddrs *temp_addr = NULL;
-    int success = 0;
-    
-    // retrieve the current interfaces - returns 0 on success
-    success = getifaddrs(&interfaces);
-    if (success == 0) {
-        // Loop through linked list of interfaces
-        temp_addr = interfaces;
-        while (temp_addr != NULL) {
-            if (temp_addr->ifa_addr->sa_family == AF_INET) {
-                // Check if interface is en0 which is the wifi connection on the iPhone
-                if ([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
-                    // Get NSString from C String
-                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                }
-            }
-            temp_addr = temp_addr->ifa_next;
-        }
-    }
-    // Free memory
-    freeifaddrs(interfaces);
-    return address;
 }
 
 /*!

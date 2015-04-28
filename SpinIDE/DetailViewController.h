@@ -139,7 +139,7 @@
 typedef enum {stateNothingOpen, stateOpenProject, stateOpenFiles, stateOpenProjectAndFilesEditingProjectFile, stateOpenProjectAndFilesEditingNonProjectFile} buttonStates;
 
 
-@interface DetailViewController : UIViewController <NewFileOrProjectViewControllerDelegate, OpenFileViewControllerDelegate, OpenProjectViewControllerDelegate, RenameFileOrProjectViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, SourceViewDelegate>
+@interface DetailViewController : UIViewController <NewFileOrProjectViewControllerDelegate, OpenFileViewControllerDelegate, OpenProjectViewControllerDelegate, RenameFileOrProjectViewControllerDelegate, UIPopoverControllerDelegate, SourceViewDelegate>
 
 @property (nonatomic) buttonStates buttonState;
 @property (weak, nonatomic) id<DetailViewControllerDelegate> delegate;
@@ -150,8 +150,7 @@ typedef enum {stateNothingOpen, stateOpenProject, stateOpenFiles, stateOpenProje
 
 - (void) checkButtonState;
 + (DetailViewController *) defaultDetailViewController;
+- (void) reloadButtons;
 - (void) removeProject: (NSString *) name;
-- (void) splitViewController: (UISplitViewController *) svc
-     willChangeToDisplayMode: (UISplitViewControllerDisplayMode) displayMode;
 
 @end

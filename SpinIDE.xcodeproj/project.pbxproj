@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		272BC75B1AD5D48000827C40 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 272BC75A1AD5D48000827C40 /* main.m */; };
 		272BC75E1AD5D48000827C40 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 272BC75D1AD5D48000827C40 /* AppDelegate.m */; };
-		272BC7611AD5D48000827C40 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 272BC7601AD5D48000827C40 /* MasterViewController.m */; };
 		272BC7691AD5D48000827C40 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 272BC7681AD5D48000827C40 /* Images.xcassets */; };
 		272BC76C1AD5D48000827C40 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 272BC76A1AD5D48000827C40 /* LaunchScreen.xib */; };
 		272BC7781AD5D48000827C40 /* SpinIDETests.m in Sources */ = {isa = PBXBuildFile; fileRef = 272BC7771AD5D48000827C40 /* SpinIDETests.m */; };
@@ -204,7 +203,12 @@
 		272BC9411AD5E28600827C40 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272BC9321AD5E28600827C40 /* Utilities.cpp */; };
 		272BC9431AD5E54800827C40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 272BC9421AD5E54800827C40 /* Main.storyboard */; };
 		274844141AD7471E001EE772 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 274844121AD7471E001EE772 /* LICENSE */; };
-		274844151AD7471E001EE772 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 274844131AD7471E001EE772 /* README.md */; };
+		27A09C4E1AEED8CF00A1374B /* CodeCompletion.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A09C4D1AEED8CF00A1374B /* CodeCompletion.m */; };
+		27A09C511AEEDB6500A1374B /* CodeCompletionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A09C501AEEDB6500A1374B /* CodeCompletionButton.m */; };
+		27A09C531AEEE35A00A1374B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 27A09C521AEEE35A00A1374B /* Settings.bundle */; };
+		27A09C8B1AEEF56C00A1374B /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A09C8A1AEEF56C00A1374B /* SplitViewController.m */; };
+		27AF78401AD874CD005C8396 /* Serial Terminal Demo.spin in Resources */ = {isa = PBXBuildFile; fileRef = 27AF783F1AD874CD005C8396 /* Serial Terminal Demo.spin */; };
+		27AF78441AD87549005C8396 /* TerminalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AF78431AD87549005C8396 /* TerminalView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -223,8 +227,6 @@
 		272BC75A1AD5D48000827C40 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		272BC75C1AD5D48000827C40 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		272BC75D1AD5D48000827C40 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		272BC75F1AD5D48000827C40 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
-		272BC7601AD5D48000827C40 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
 		272BC7681AD5D48000827C40 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		272BC76B1AD5D48000827C40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		272BC7711AD5D48000827C40 /* SpinIDETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpinIDETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -479,6 +481,16 @@
 		272BC9421AD5E54800827C40 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		274844121AD7471E001EE772 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = SupportingFiles/LICENSE; sourceTree = "<group>"; };
 		274844131AD7471E001EE772 /* README.md */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; name = README.md; path = SupportingFiles/README.md; sourceTree = "<group>"; };
+		27A09C4C1AEED8CA00A1374B /* CodeCompletion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CodeCompletion.h; path = CodeView/CodeCompletion.h; sourceTree = "<group>"; };
+		27A09C4D1AEED8CF00A1374B /* CodeCompletion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CodeCompletion.m; path = CodeView/CodeCompletion.m; sourceTree = "<group>"; };
+		27A09C4F1AEEDB6500A1374B /* CodeCompletionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CodeCompletionButton.h; path = CodeView/CodeCompletionButton.h; sourceTree = "<group>"; };
+		27A09C501AEEDB6500A1374B /* CodeCompletionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CodeCompletionButton.m; path = CodeView/CodeCompletionButton.m; sourceTree = "<group>"; };
+		27A09C521AEEE35A00A1374B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SupportingFiles/Settings.bundle; sourceTree = "<group>"; };
+		27A09C891AEEF56C00A1374B /* SplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewController.h; sourceTree = "<group>"; };
+		27A09C8A1AEEF56C00A1374B /* SplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitViewController.m; sourceTree = "<group>"; };
+		27AF783F1AD874CD005C8396 /* Serial Terminal Demo.spin */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; name = "Serial Terminal Demo.spin"; path = "SupportingFiles/Samples/Serial Terminal Demo.spin"; sourceTree = "<group>"; };
+		27AF78421AD87549005C8396 /* TerminalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TerminalView.h; path = Terminal/TerminalView.h; sourceTree = "<group>"; };
+		27AF78431AD87549005C8396 /* TerminalView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TerminalView.m; path = Terminal/TerminalView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -533,6 +545,7 @@
 				272BC8BB1AD5E05900827C40 /* CodeView */,
 				272BC90B1AD5E21F00827C40 /* OpenSpin */,
 				272BC91E1AD5E26B00827C40 /* PropellerCompiler */,
+				27AF78411AD87512005C8396 /* Terminal */,
 				272BC8F81AD5E1B000827C40 /* TextHighlighting */,
 				272BC8EE1AD5E12E00827C40 /* UDP */,
 				272BC87C1AD5DFF900827C40 /* UtilityViews */,
@@ -546,8 +559,6 @@
 				272BC7681AD5D48000827C40 /* Images.xcassets */,
 				272BC76A1AD5D48000827C40 /* LaunchScreen.xib */,
 				272BC9421AD5E54800827C40 /* Main.storyboard */,
-				272BC75F1AD5D48000827C40 /* MasterViewController.h */,
-				272BC7601AD5D48000827C40 /* MasterViewController.m */,
 				272BC8F51AD5E19800827C40 /* NavToolBar.h */,
 				272BC8F61AD5E19800827C40 /* NavToolBar.m */,
 				272BC8F21AD5E15900827C40 /* Project.h */,
@@ -558,6 +569,8 @@
 				272BC8CF1AD5E0B700827C40 /* SourceConsoleSplitView.m */,
 				272BC8D11AD5E0D300827C40 /* SourceView.h */,
 				272BC8D21AD5E0D300827C40 /* SourceView.m */,
+				27A09C891AEEF56C00A1374B /* SplitViewController.h */,
+				27A09C8A1AEEF56C00A1374B /* SplitViewController.m */,
 				272BC7581AD5D48000827C40 /* Supporting Files */,
 			);
 			path = SpinIDE;
@@ -570,6 +583,7 @@
 				272BC7F81AD5D7BF00827C40 /* Libraries */,
 				272BC8611AD5D7ED00827C40 /* Samples */,
 				272BC7591AD5D48000827C40 /* Info.plist */,
+				27A09C521AEEE35A00A1374B /* Settings.bundle */,
 				272BC75A1AD5D48000827C40 /* main.m */,
 				272BC7851AD5D6F400827C40 /* libbfd.a */,
 				272BC7861AD5D6F400827C40 /* libgas.a */,
@@ -730,6 +744,7 @@
 				272BC8691AD5D80D00827C40 /* FloatString.spin */,
 				272BC86A1AD5D80D00827C40 /* Hello_Message.c */,
 				272BC86B1AD5D80D00827C40 /* LargeSpinCode.spin */,
+				27AF783F1AD874CD005C8396 /* Serial Terminal Demo.spin */,
 			);
 			name = Samples;
 			sourceTree = "<group>";
@@ -781,6 +796,10 @@
 		272BC8BB1AD5E05900827C40 /* CodeView */ = {
 			isa = PBXGroup;
 			children = (
+				27A09C4C1AEED8CA00A1374B /* CodeCompletion.h */,
+				27A09C4D1AEED8CF00A1374B /* CodeCompletion.m */,
+				27A09C4F1AEEDB6500A1374B /* CodeCompletionButton.h */,
+				27A09C501AEEDB6500A1374B /* CodeCompletionButton.m */,
 				272BC8BC1AD5E06C00827C40 /* CodeInputAccessoryView.h */,
 				272BC8BD1AD5E06C00827C40 /* CodeInputAccessoryView.m */,
 				272BC8BE1AD5E06C00827C40 /* CodeMagnifierView.h */,
@@ -895,6 +914,15 @@
 			name = PropellerCompiler;
 			sourceTree = "<group>";
 		};
+		27AF78411AD87512005C8396 /* Terminal */ = {
+			isa = PBXGroup;
+			children = (
+				27AF78421AD87549005C8396 /* TerminalView.h */,
+				27AF78431AD87549005C8396 /* TerminalView.m */,
+			);
+			name = Terminal;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -945,7 +973,7 @@
 				TargetAttributes = {
 					272BC7541AD5D48000827C40 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = F4YREA5UW3;
+						DevelopmentTeam = 5Q69V99M59;
 					};
 					272BC7701AD5D48000827C40 = {
 						CreatedOnToolsVersion = 6.2;
@@ -985,6 +1013,7 @@
 				272BC83F1AD5D7DF00827C40 /* Monitor.spin in Resources */,
 				272BC7F31AD5D7AB00827C40 /* share@2x.png in Resources */,
 				272BC7F01AD5D7AB00827C40 /* run.png in Resources */,
+				27AF78401AD874CD005C8396 /* Serial Terminal Demo.spin in Resources */,
 				272BC7E31AD5D7AB00827C40 /* new.png in Resources */,
 				272BC86D1AD5D80D00827C40 /* Blink16-23.spin in Resources */,
 				272BC85A1AD5D7DF00827C40 /* VGA_512x384_Bitmap.spin in Resources */,
@@ -1022,6 +1051,7 @@
 				272BC8601AD5D7DF00827C40 /* VocalTract.spin in Resources */,
 				272BC7EA1AD5D7AB00827C40 /* project-open@2x.png in Resources */,
 				272BC8571AD5D7DF00827C40 /* TV_Terminal.spin in Resources */,
+				27A09C531AEEE35A00A1374B /* Settings.bundle in Resources */,
 				272BC7D11AD5D7AB00827C40 /* close@2x.png in Resources */,
 				272BC8AE1AD5E01200827C40 /* OpenProjectViewController.xib in Resources */,
 				272BC7E41AD5D7AB00827C40 /* new@2x.png in Resources */,
@@ -1132,6 +1162,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				272BC8CB1AD5E06C00827C40 /* CodeUndo.m in Sources */,
+				27A09C8B1AEEF56C00A1374B /* SplitViewController.m in Sources */,
 				272BC8A91AD5E01200827C40 /* NewFileOrProjectViewController.m in Sources */,
 				272BC8B61AD5E01200827C40 /* SplitView.m in Sources */,
 				272BC8781AD5DE5600827C40 /* Common.m in Sources */,
@@ -1152,6 +1183,7 @@
 				272BC8D01AD5E0B700827C40 /* SourceConsoleSplitView.m in Sources */,
 				272BC8AB1AD5E01200827C40 /* OpenFileViewController.m in Sources */,
 				272BC8C81AD5E06C00827C40 /* CodeInputAccessoryView.m in Sources */,
+				27A09C4E1AEED8CF00A1374B /* CodeCompletion.m in Sources */,
 				272BC8AD1AD5E01200827C40 /* OpenProjectViewController.m in Sources */,
 				272BC8F71AD5E19800827C40 /* NavToolBar.m in Sources */,
 				272BC75E1AD5D48000827C40 /* AppDelegate.m in Sources */,
@@ -1161,7 +1193,6 @@
 				272BC8BA1AD5E03800827C40 /* ProjectViewController.m in Sources */,
 				272BC91A1AD5E23500827C40 /* openspin.cpp in Sources */,
 				272BC9061AD5E1D600827C40 /* ColoredRange.m in Sources */,
-				272BC7611AD5D48000827C40 /* MasterViewController.m in Sources */,
 				272BC8B01AD5E01200827C40 /* PickerViewController.m in Sources */,
 				272BC8A21AD5E01200827C40 /* CompilerOptionsView.m in Sources */,
 				272BC8ED1AD5E10B00827C40 /* XBeeCommon.m in Sources */,
@@ -1171,6 +1202,7 @@
 				272BC93F1AD5E28600827C40 /* StringConstantRoutines.cpp in Sources */,
 				272BC8EA1AD5E10B00827C40 /* ProgressView.m in Sources */,
 				272BC8741AD5D80D00827C40 /* Hello_Message.c in Sources */,
+				27AF78441AD87549005C8396 /* TerminalView.m in Sources */,
 				272BC8A61AD5E01200827C40 /* FindViewController.m in Sources */,
 				272BC8B21AD5E01200827C40 /* RenameFileOrProjectViewController.m in Sources */,
 				272BC91B1AD5E23500827C40 /* pathentry.cpp in Sources */,
@@ -1179,6 +1211,7 @@
 				272BC8F11AD5E14200827C40 /* GCDAsyncUdpSocket.m in Sources */,
 				272BC8E71AD5E10B00827C40 /* Loader.m in Sources */,
 				272BC9391AD5E28600827C40 /* DistillObjects.cpp in Sources */,
+				27A09C511AEEDB6500A1374B /* CodeCompletionButton.m in Sources */,
 				272BC91D1AD5E23500827C40 /* textconvert.cpp in Sources */,
 				272BC9381AD5E28600827C40 /* CompileUtilities.cpp in Sources */,
 				272BC9071AD5E1D600827C40 /* Highlighter.m in Sources */,
@@ -1195,7 +1228,6 @@
 				272BC8D31AD5E0D300827C40 /* SourceView.m in Sources */,
 				272BC9361AD5E28600827C40 /* CompileExpression.cpp in Sources */,
 				272BC9401AD5E28600827C40 /* SymbolEngine.cpp in Sources */,
-				274844151AD7471E001EE772 /* README.md in Sources */,
 				272BC8EB1AD5E10B00827C40 /* TXBee.m in Sources */,
 				272BC9351AD5E28600827C40 /* CompileDatBlocks.cpp in Sources */,
 			);
@@ -1356,7 +1388,7 @@
 				INFOPLIST_FILE = SpinIDETests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SpinIDE.app/SpinIDE";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Spin IDE.app/Spin IDE";
 			};
 			name = Debug;
 		};
@@ -1371,7 +1403,7 @@
 				INFOPLIST_FILE = SpinIDETests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SpinIDE.app/SpinIDE";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Spin IDE.app/Spin IDE";
 			};
 			name = Release;
 		};

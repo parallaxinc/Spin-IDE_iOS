@@ -25,10 +25,6 @@ typedef enum {alertDeleteFile, alertDeleteProject, alertWarning} alertTags;
 static ProjectViewController *this;						// This singleton instance of this class.
 
 
-// TODO: Preference to turn off syntax highlighting
-// TODO: Collapse the side panel in landscape view
-// TODO: Follow indentation
-
 // TODO: Add a terminal
 
 // TODO: EPROM Support
@@ -38,7 +34,6 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 // TODO: when a scan is unsuccessful, show an error dialog. Blank the IP address if nothing is found.
 // TODO: When Run is pressed, and no device is present, abort faster (or right away).
-
 
 @interface ProjectViewController () <UIPopoverControllerDelegate> {
     CGRect keyboardViewRect;							// View rectangle when the keyboard was shwn.

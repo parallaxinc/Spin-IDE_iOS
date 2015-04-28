@@ -8,9 +8,7 @@
 
 #import "ConfigurationViewController.h"
 
-#include <ifaddrs.h>
-#include <arpa/inet.h>
-
+#include "Common.h"
 #include "XBeeCommon.h"
 #include "ProgressView.h"
 
@@ -44,43 +42,6 @@ static NSArray *xBeeDevices;	// The currently known XBee devices.
 @synthesize progress;
 @synthesize subnetTextField;
 
-
-/*!
- * Get the local IP address of this iOS device on the connected network. This can be used as the base address
- * for scanning the network for XBee devices.
- *
- * @return		The IP address for this iOS device on the local network.
- */
-
-- (NSString *) getIPAddress {
-    NSString *address = @"error";
-    struct ifaddrs *interfaces = NULL;
-    struct ifaddrs *temp_addr = NULL;
-    int success = 0;
-    
-    // Retrieve the current interfaces - returns 0 on success.
-    success = getifaddrs(&interfaces);
-    if (success == 0) {
-        // Loop through linked list of interfaces.
-        temp_addr = interfaces;
-        while (temp_addr != NULL) {
-            if( temp_addr->ifa_addr->sa_family == AF_INET) {
-                // Check if interface is en0 which is the wifi connection on the iPhone.
-                if ([[NSString stringWithUTF8String: temp_addr->ifa_name] isEqualToString: @"en0"]) {
-                    // Get NSString from C String
-                    address = [NSString stringWithUTF8String: inet_ntoa(((struct sockaddr_in *) temp_addr->ifa_addr)->sin_addr)];
-                }
-            }
-            
-            temp_addr = temp_addr->ifa_next;
-        }
-    }
-    
-    // Free memory
-    freeifaddrs(interfaces);
-    
-    return address;
-}
 
 /*!
  * Load the preferences.
@@ -139,7 +100,7 @@ static NSArray *xBeeDevices;	// The currently known XBee devices.
  */
 
 - (void) scanForDevices {
-    NSString *subnet = [[[self getIPAddress] stringByDeletingPathExtension] stringByAppendingPathExtension: @"255"];
+    NSString *subnet = [[[Common getIPAddress] stringByDeletingPathExtension] stringByAppendingPathExtension: @"255"];
     Loader *loader = [Loader defaultLoader];
     self.delegate = loader.delegate;
     loader.delegate = self;

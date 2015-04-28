@@ -1,4 +1,4 @@
-Spin IDE 1.0.0.7
+Spin IDE 1.0.0.8
 ----------------
 
 This project implements an IDE on iPads for programming Propeller based boards using an XBee radio to move the project binaries from the iPad to the Propeller board.
@@ -50,6 +50,12 @@ The big change in this release is replacing Apple's UITextView with a new custom
 
 9. The screen follows the cursor in all known situations where it should do so.
 
+10. There is a preferece to tuen of syntax coloring. See the Spin IDE pane in the Settings app.
+
+11. Pressing return now follows the indentation of the line above.
+
+12. There is a preference to collapse the file view on the left in landscape view. Just as in portrait view, use the disclosure arrow to see the file list.  See the Spin IDE pane in the Settings app for the preference.
+
 Other features and fixes needed for a solid release
 ---------------------------------------------------
 
@@ -57,13 +63,11 @@ Other features and fixes needed for a solid release
 
 2. Support download to EPROM, not just RAM.
 
-3. Support collapsing the side panel in landscape view.
+3. Allow emailing (in and out) of zipped spin projects.
 
-4. Allow emailing (in and out) of zipped spin projects.
+4. Sumbit iOS Changes to the Spin compiler as a repository branch.
 
-5. Sumbit iOS Changes to the Spin compiler as a repository branch.
-
-6. Turn the loader into a library so it is easier to use in other iOS projects.
+5. Turn the loader into a library so it is easier to use in other iOS projects.
 
 Other features and fixes that would be nice someday
 ---------------------------------------------------

@@ -21,7 +21,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Create projects for the various sample files.
     NSArray *samples = [NSArray arrayWithObjects: @"Blank", @"Blink16-23", @"Blink16", @"Clock", @"ClockDemo", @"Float-Blink_Demo", 
-                        @"FloatMath", @"FloatString", @"LargeSpinCode", nil];
+                        @"FloatMath", @"FloatString", @"LargeSpinCode", @"Serial Terminal Demo", nil];
     NSMutableArray *sources = [[NSMutableArray alloc] init];
     for (NSString *name in samples)
         [sources addObject: [[NSBundle mainBundle] pathForResource: name ofType: @"spin"]];
@@ -84,7 +84,8 @@
     // Set up the split view controller.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
+    if ([splitViewController respondsToSelector: @selector(displayModeButtonItem)])
+	    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.delegate = self;
     return YES;
 }

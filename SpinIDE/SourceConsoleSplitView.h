@@ -9,10 +9,12 @@
 #import "SplitView.h"
 
 #import "SourceView.h"
+#import "TerminalView.h"
 
 @interface SourceConsoleSplitView : SplitView
 
 @property (nonatomic, retain) UITextView *consoleView;
 @property (nonatomic, retain) SourceView *sourceView;
+@property (nonatomic, retain) TerminalView *terminalView;
 
 @end

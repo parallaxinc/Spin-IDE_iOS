@@ -17,6 +17,7 @@
 #import "FindViewController.h"
 #import "NavToolBar.h"
 #import "ProjectViewController.h"
+#import "SplitViewController.h"
 
 
 typedef enum {tagFind, tagNewFile, tagNewProject, tagOpenProject, tagRenameFile, tagRenameProject, tagOpenFile} alertTags;
@@ -421,6 +422,9 @@ static DetailViewController *this;						// This singleton instance of this class
     const float space = 8;
     const float shortSpace = 4;
     
+    if (SYSTEM_VERSION_LESS_THAN(@"8.0"))
+	    self.navigationItem.leftBarButtonItem = [SplitViewController defaultSplitViewController].barButtonItem;
+    
     float x = 0;
     if (showProjectButtons) {
         [self addButtonWithImageNamed: @"project-open.png" x: &x action: @selector(showHideProjectButtonsAction)];
@@ -591,6 +595,18 @@ static DetailViewController *this;						// This singleton instance of this class
 - (void) buildProjectAction {
     if ([delegate respondsToSelector: @selector(detailViewControllerBuildProject)])
         [delegate detailViewControllerBuildProject];
+}
+
+/*!
+ * Check the syntax coloring preference.
+ */
+
+- (void) syntaxColorPreference {
+    sourceConsoleSplitView.sourceView.useSyntaxColoring = YES;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *color = [defaults stringForKey: @"syntax_coloring_preference"];
+    if (color != nil)
+        sourceConsoleSplitView.sourceView.useSyntaxColoring = [defaults boolForKey: @"syntax_coloring_preference"];
 }
 
 /*!
@@ -847,6 +863,10 @@ static DetailViewController *this;						// This singleton instance of this class
 
 #pragma mark - View Maintenance
 
+/*!
+ * Handle a low memory situation.
+ */
+
 - (void) didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     [sourceConsoleSplitView.sourceView didReceiveMemoryWarning];
@@ -975,8 +995,34 @@ static DetailViewController *this;						// This singleton instance of this class
         initialized = YES;
     }
     
+    // Check our preferences.
+    [self syntaxColorPreference];
+
     // Call super.
     [super viewWillAppear: animated];
+}
+
+/*!
+ * UIKit calls this method before changing the size of a presented view controller’s view. You can override 
+ * this method in your own objects and use it to perform additional tasks related to the size change. For 
+ * example, a container view controller might use this method to override the traits of its embedded child 
+ * view controllers. Use the provided coordinator object to animate any changes you make.
+ *
+ * If you override this method in your custom view controllers, always call super at some point in your 
+ * implementation so that UIKit can forward the size change message appropriately. View controllers forward 
+ * the size change message to their views and child view controllers. Presentation controllers forward the 
+ * size change to their presented view controller.
+ *
+ * @param size			The new size for the container’s view.
+ * @param coordinator	The transition coordinator object managing the size change. You can use this object 
+ *						to animate your changes or get information about the transition that is in progress.
+ */
+
+- (void) viewWillTransitionToSize: (CGSize) size
+        withTransitionCoordinator: (id<UIViewControllerTransitionCoordinator>) coordinator
+{
+    [super viewWillTransitionToSize: size withTransitionCoordinator: coordinator];
+    [self syntaxColorPreference];
 }
 
 #pragma mark - PopoverController Delegate Methods
@@ -984,8 +1030,7 @@ static DetailViewController *this;						// This singleton instance of this class
 /*!
  * Tells the delegate that the popover was dismissed.
  *
- * Parameters:
- *  thePopoverController: The popover controller that was dismissed.
+ * @param thePopoverController		The popover controller that was dismissed.
  */
 
 - (void) popoverControllerDidDismissPopover: (UIPopoverController *) thePopoverController {
@@ -1139,54 +1184,6 @@ static DetailViewController *this;						// This singleton instance of this class
             if ([delegate respondsToSelector: @selector(detailViewControllerRenameFile:newName:)])
                 [delegate detailViewControllerRenameFile: oldName newName: name];
         }
-    }
-}
-
-#pragma mark - UISplitViewControllerDelegate
-
-/*!
- * Tells the delegate that the display mode for the split view controller is about to change.
- *
- * The split view controller calls this method when its display mode is about to change. Because 
- * changing the display mode usually means hiding or showing one of the child view controllers, 
- * you can implement this method and use it to add or remove the controls for showing the primary 
- * view controller.
- *
- * @param svc			The split view controller whose display mode is changing.
- * @param displayMode	The new display mode that is about to be applied to the split view controller.
- */
-
-- (void) splitViewController: (UISplitViewController *) svc
-     willChangeToDisplayMode: (UISplitViewControllerDisplayMode) displayMode
-{
-    UIBarButtonItem *barButtonItem = svc.displayModeButtonItem;
-    [self.navigationItem setLeftBarButtonItem: barButtonItem animated: YES];
-}
-
-/*!
- * Tells the delegate that the specified view controller is about to be hidden.
- *
- * When the split view controller rotates from a landscape to portrait orientation, it normally hides 
- * one of its view controllers. When that happens, it calls this method to coordinate the addition of 
- * a button to the toolbar (or navigation bar) of the remaining custom view controller. If you want 
- * the soon-to-be hidden view controller to be displayed in a popover, you must implement this method 
- * and use it to add the specified button to your interface.
- *
- * @param svc				The split view controller that owns the specified view controller.
- * @param aViewController	The view controller being hidden.
- * @param barButtonItem		A button you can add to your toolbar.
- * @param pc				The popover controller that uses taps in barButtonItem to display the 
- *							specified view controller.
- */
-
-- (void) splitViewController: (UISplitViewController *) splitController 
-      willHideViewController: (UIViewController *) viewController 
-           withBarButtonItem: (UIBarButtonItem *) barButtonItem 
-        forPopoverController: (UIPopoverController *) popoverController
-{
-	if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-        barButtonItem.title = NSLocalizedString(@"Project", @"Project");
-        [self.navigationItem setLeftBarButtonItem: barButtonItem animated: YES];
     }
 }
 

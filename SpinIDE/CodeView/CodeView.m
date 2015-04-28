@@ -13,12 +13,18 @@
 #import "CodeView.h"
 
 #import <MobileCoreServices/UTCoreTypes.h>
+#if IS_PARALLAX
 #import "CHighlighter.h"
+#else
+#import "BASICHighlighter.h"
+#endif
 #import "CodeMagnifierView.h"
 #import "CodeRect.h"
 #import "CodeUndo.h"
 #import "ColoredRange.h"
+#if IS_PARALLAX
 #import "SpinHighlighter.h"
+#endif
 
 #define LOLLIPOP_TOUCH_SIZE (10)								/* Radius of the lollipop touch area. */
 #define LOLLIPOP_SIZE (5)										/* Radius of the lollipop candy - 0.5. */
@@ -36,7 +42,9 @@
     int repeatKeyStartCounter;									// A count down timer so the repeat key does not start too fast.
     
     BOOL firstLollipop;											// If trackingSelection, YES for the initial selection mark, or NO for the end selection mark.
+    BOOL hardwareKeyboard;										// Have we detected the use of a hardware keyboard?
     NSRange initialRange;										// selectedRange when the drag selection or shift selection started.
+    float keyboardWillShowDelta;								// The size of the keyboard when it was last shown.
     float pinchStartFontSize;									// The font size at the start of a pinch gensture.
     float pinchStartDistance;									// Separation distance in points at the start of a pinch gensture.
     CGPoint touchScrollLocation;								// The location of the most recent touch movement.
@@ -56,7 +64,6 @@
 @property (nonatomic, retain) NSArray *multilineHighlights;		// Array of ColoredRange objects indicating ranges of text to highlight.
 @property (nonatomic, retain) NSArray *theKeyCommands;			// The key commands supported by this editor.
 @property (nonatomic, retain) NSArray *selectionRects;			// The current selection rectangles. Valid only if selectedRange.length > 0.
-@property (nonatomic, retain) UITextInputMode *textInputMode;	// The default keyboard.
 
 @property (nonatomic, retain) UIKeyCommand *repeatKeyCommand;	// The key for a repeat key timer to repeat.
 @property (nonatomic, retain) NSTimer *repeatKeyTimer;			// A timer used to implement repeat keys.
@@ -71,13 +78,14 @@
 
 @implementation CodeView
 
+@synthesize allowEditMenu;
 @synthesize attributes;
-@synthesize autocapitalizationType;
-@synthesize autocorrectionType;
 @synthesize backgroundHighlights;
 @synthesize codeViewDelegate;
 @synthesize colors;
 @synthesize cursorTimer;
+@synthesize editable;
+@synthesize followIndentation;
 @synthesize font;
 @synthesize highlighter;
 @synthesize indentCharacters;
@@ -92,12 +100,20 @@
 @synthesize repeatKeyTimer;
 @synthesize selectedRange;
 @synthesize selectionRects;
-@synthesize spellCheckingType;
 @synthesize text;
-@synthesize textInputMode;
 @synthesize theKeyCommands;
 @synthesize touchScrollTimer;
 @synthesize undoManager;
+@synthesize useSyntaxColoring;
+
+@synthesize autocapitalizationType;
+@synthesize autocorrectionType;
+@synthesize spellCheckingType;
+@synthesize enablesReturnKeyAutomatically;
+@synthesize keyboardAppearance;
+@synthesize keyboardType;
+@synthesize returnKeyType;
+@synthesize secureTextEntry;
 
 #pragma mark - Misc
 
@@ -130,8 +146,7 @@
                 CGRect r = [self firstRectForRange: selectedRange];
                 
                 // If the rectangle is visible in the view, update the rectangle's area.
-                CGRect visibleRect = self.frame;
-                visibleRect = CGRectOffset(visibleRect, self.contentOffset.x, self.contentOffset.y);
+                CGRect visibleRect = self.bounds;
                 if (CGRectContainsRect(visibleRect, r)) {
                     [self setNeedsDisplayInRect: r];
                 }
@@ -507,21 +522,44 @@
  */
 
 - (void) initCodeViewCommon {
+    // Iniitalize the various fields.
     self.text = @"";
     selectedRange.location = 0;
     selectedRange.length = 0;
     self.font = [UIFont fontWithName: @"Menlo-Regular" size: 13];
     self.language = languageSpin;
+    self.editable = YES;
+#if IS_PARALLAX
     self.highlighter = [[SpinHighlighter alloc] init];
+#else
+    self.highlighter = [[BASICHighlighter alloc] init];
+#endif
     self.delegate = self;
     [self initCursorTimer];
     self.undoManager = [[CodeUndoManager alloc] init];
     undoManager.groupsByEvent = NO;
     self.indentCharacters = DEFAULT_INDENT;
+    self.followIndentation = YES;
     
-    autocapitalizationType = UITextAutocapitalizationTypeNone;
-    autocorrectionType = UITextAutocorrectionTypeNo;
-    spellCheckingType = UITextSpellCheckingTypeNo;
+    self.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.spellCheckingType = UITextSpellCheckingTypeNo;
+    self.enablesReturnKeyAutomatically = NO;
+    self.keyboardAppearance = UIKeyboardAppearanceDefault;
+    self.keyboardType = UIKeyboardTypeDefault;
+    self.returnKeyType = UIReturnKeyDefault;
+    self.secureTextEntry = NO;
+    
+    self.allowEditMenu = YES;
+    
+    // Register for keyboard notifications.
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(keyboardWillShow:)
+                                                 name: UIKeyboardWillShowNotification object: nil];
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(keyboardWillHide:)
+                                                 name: UIKeyboardWillHideNotification object: nil];
+
 }
 
 /*!
@@ -559,6 +597,69 @@
 
 - (BOOL) isspindigit: (int) ch {
     return isnumber(ch) || ch == '_';
+}
+
+/*!
+ * Called when the keyboard is about to be hidden.
+ *
+ * We check to see if the hide is because the hardware keyboard has become active. If so, the keyboard
+ * will still appear with the accessory view. We turn that off and reshow the keyboard.
+ *
+ * @param notification			Keyborad notificaiton information.
+ */
+
+- (void) keyboardWillHide: (NSNotification *) notification {
+    NSDictionary *info = [notification userInfo];
+    
+    NSValue *keyboardFrameBegin = [info valueForKey: UIKeyboardFrameBeginUserInfoKey];
+    CGRect frameBeginRect;
+    [keyboardFrameBegin getValue: &frameBeginRect];
+    NSValue *keyboardFrameEnd = [info valueForKey: UIKeyboardFrameEndUserInfoKey];
+    CGRect frameEndRect;
+    [keyboardFrameEnd getValue: &frameEndRect];
+    
+    float delta = fabs(frameBeginRect.origin.y - frameEndRect.origin.y);
+    if (fabs(keyboardWillShowDelta - delta) == PREFERRED_ACCESSORY_HEIGHT && !hardwareKeyboard) {
+        hardwareKeyboard = YES;
+        [self resignFirstResponder];
+        [self becomeFirstResponder];
+    }
+}
+
+/*!
+ * Called when the keyboard is about to be shown.
+ *
+ * The keyboard can show because it is needed or becuase a hardware keyboard is in use, in which case the 
+ * O/S still tries to show the accessory view. We check to see which is happening and reshow the keyboard
+ * without the accessory view if a hardware keyboard is in use, or with it if we've jsut switched to a
+ * software keyboard.
+ *
+ * @param notification			Keyborad notificaiton information.
+ */
+
+- (void) keyboardWillShow: (NSNotification *) notification {
+    NSDictionary *info = [notification userInfo];
+    
+    NSValue *keyboardFrameBegin = [info valueForKey: UIKeyboardFrameBeginUserInfoKey];
+    CGRect frameBeginRect;
+    [keyboardFrameBegin getValue: &frameBeginRect];
+    NSValue *keyboardFrameEnd = [info valueForKey: UIKeyboardFrameEndUserInfoKey];
+    CGRect frameEndRect;
+    [keyboardFrameEnd getValue: &frameEndRect];
+    
+    keyboardWillShowDelta = fabs(frameBeginRect.origin.y - frameEndRect.origin.y);
+    
+    if (keyboardWillShowDelta == PREFERRED_ACCESSORY_HEIGHT) {
+        if (!hardwareKeyboard) {
+            hardwareKeyboard = YES;
+            [self resignFirstResponder];
+            [self becomeFirstResponder];
+        }
+    } else if (hardwareKeyboard) {
+        hardwareKeyboard = NO;
+        [self resignFirstResponder];
+        [self becomeFirstResponder];
+    }
 }
 
 /*!
@@ -943,6 +1044,14 @@
 }
 
 /*!
+ * Remove all actions from the undo buffer.
+ */
+
+- (void) purgeUndoBuffer {
+    [undoManager removeAllActions];
+}
+
+/*!
  * Handle a repeat key.
  *
  * This method periodically repeats the effect of the most recently typed character.
@@ -958,6 +1067,21 @@
 }
 
 /*!
+ * Replace text with new text.
+ *
+ * Upon completion, the selected range will be a zero length selection after the new text.
+ *
+ * @param range			The range of text to replace. This must be a valid range for the current
+ *						text.
+ * @param theText		The new text.
+ */
+
+- (void) replaceRange: (NSRange) range withText: (NSString *) theText {
+    self.selectedRange = range;
+    [self insertText: theText];
+}
+
+/*!
  * Set the selection range without starting a new undo group.
  *
  * @param range		The new selection range.
@@ -969,6 +1093,9 @@
     [self cursorOn];
     [self setNeedsDisplay];
     cursorColumn = -1;
+    if ([codeViewDelegate respondsToSelector: @selector(codeViewDidChangeSelection:)])
+        [codeViewDelegate codeViewDidChangeSelection: self];
+    [inputAccessoryView setContext: text selection: selectedRange];
 }
 
 /*!
@@ -978,9 +1105,11 @@
  */
 
 - (void) showEditMenu: (CGRect) r {
-    UIMenuController *menuController = [UIMenuController sharedMenuController];
-    [menuController setTargetRect: r inView: self];
-    [menuController setMenuVisible: YES animated: NO];
+    if (allowEditMenu) {
+        UIMenuController *menuController = [UIMenuController sharedMenuController];
+        [menuController setTargetRect: r inView: self];
+        [menuController setMenuVisible: YES animated: NO];
+    }
 }
 
 /*!
@@ -994,6 +1123,16 @@
     self.scrollEnabled = NO;
     pinchStartDistance = [self distanceBetweenTouches: touches];
     pinchStartFontSize = [font pointSize];
+}
+
+/*!
+ * Call this method when the text changes.
+ */
+
+- (void) textChanged {
+    if ([codeViewDelegate respondsToSelector: @selector(codeViewTextChanged)])
+        [codeViewDelegate codeViewTextChanged];
+    [inputAccessoryView setContext: text selection: selectedRange];
 }
 
 /*!
@@ -1092,6 +1231,8 @@
     [undoObject undo: self];
     [undoManager registerUndoWithTarget: self selector: @selector(undo:) object: [undoObject redoObject]];
     [self scrollRangeToVisible: selectedRange];
+    
+    [self textChanged];
 }
 
 /*!
@@ -1148,6 +1289,7 @@
 
 - (void) setFrame: (CGRect) frame {
     [super setFrame: frame];
+    [self scrollRangeToVisible: selectedRange];
     [self setNeedsDisplay];
 }
 
@@ -1187,6 +1329,45 @@
 #pragma mark - Touch events
 
 /*!
+ * See if a touch event is in a lollipop.
+ *
+ * As a side effect, this sets firstLollipop to YES or NO, depending on whether the touch was in the
+ * starting or ending selection lollipop. The value is not valid if the touch is not in either lollipop.
+ *
+ * @param touch			The touch event to check.
+ *
+ * @return				YES if the touch is in a lollipop, else NO.
+ */
+
+- (BOOL) isTouchInLollipop: (UITouch *) touch {
+    BOOL result = NO;
+            
+    if (selectedRange.length > 0 && selectionRects != nil) {
+            CGRect r = ((CodeRect *) selectionRects[0]).rect;
+            r.origin.x -= LOLLIPOP_TOUCH_SIZE;
+            r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
+            r.origin.y -= LOLLIPOP_SIZE + LOLLIPOP_TOUCH_SIZE;
+        r.size.height = LOLLIPOP_SIZE + 2*LOLLIPOP_TOUCH_SIZE + r.size.height;
+            
+        result = CGRectContainsPoint(r, [touch locationInView: self]);
+            firstLollipop = YES;
+            
+        if (!result) {
+                CGRect r = ((CodeRect *) selectionRects[selectionRects.count - 1]).rect;
+                r.origin.x += r.size.width - LOLLIPOP_TOUCH_SIZE;
+                r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
+                r.origin.y += r.size.height + LOLLIPOP_SIZE - LOLLIPOP_TOUCH_SIZE;
+                r.size.height = 2*LOLLIPOP_TOUCH_SIZE;
+                
+            result = CGRectContainsPoint(r, [touch locationInView: self]);
+                firstLollipop = NO;
+            }
+    }
+    
+    return result;
+}
+            
+/*!
  * Tells the receiver when one or more fingers touch down in a view or window.
  *
  * @param touches		A set of UITouch instances that represent the touches for the starting phase 
@@ -1196,31 +1377,8 @@
 
 - (void) touchesBegan: (NSSet *) touches withEvent: (UIEvent *) event {
     if (touches.count == 1) {
-        if (selectedRange.length > 0 && selectionRects != nil) {
-            // Check to see if the touch is in a lollipop. If so, cancel scroll view panning and begin 
-            // tracking a selection change.
-            UITouch *touch = [touches anyObject];
-            
-            CGRect r = ((CodeRect *) selectionRects[0]).rect;
-            r.origin.x -= LOLLIPOP_TOUCH_SIZE;
-            r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
-            r.origin.y -= LOLLIPOP_SIZE + LOLLIPOP_TOUCH_SIZE;
-            r.size.height = 2*LOLLIPOP_TOUCH_SIZE;
-            
-            trackingSelection = CGRectContainsPoint(r, [touch locationInView: self]);
-            firstLollipop = YES;
-            
-            if (!trackingSelection) {
-                CGRect r = ((CodeRect *) selectionRects[selectionRects.count - 1]).rect;
-                r.origin.x += r.size.width - LOLLIPOP_TOUCH_SIZE;
-                r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
-                r.origin.y += r.size.height + LOLLIPOP_SIZE - LOLLIPOP_TOUCH_SIZE;
-                r.size.height = 2*LOLLIPOP_TOUCH_SIZE;
-                
-                trackingSelection = CGRectContainsPoint(r, [touch locationInView: self]);
-                firstLollipop = NO;
-            }
-            
+        if ([self isTouchInLollipop: [touches anyObject]]) {
+            trackingSelection = YES;
             self.scrollEnabled = !trackingSelection;
             initialRange = selectedRange;
         }
@@ -1276,28 +1434,34 @@
     if (touches.count == 1 && touch) {
         if ([touch tapCount] > 0 || magnifierView != nil) {
             if ([self becomeFirstResponder]) {
-	            int tapCount = ([touch tapCount] - 1)%3 + 1;
+                int tapCount = ([touch tapCount] - 1)%3 + 1;
                 switch (tapCount) {
                     case 1: {
-                        // Single taps place the insertion point at the tap location and cause us to 
-                        // becoem first responder.
-                        int location = (int) selectedRange.location;
-                        
-                        selectedRange.location = [self offsetFromLocation: [touch locationInView: self]];
-                        if (selectedRange.length > 0) {
-                            selectedRange.length = 0;
-                            [self setNeedsDisplay];
-                            [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+                        if ([self isTouchInLollipop: touch]) {
+                            // Single taps in a lollipop display the edit menu.
+                            CGPoint location = [touch locationInView: self];
+                            [self showEditMenu: CGRectMake(location.x, location.y, 5, 5)];
                         } else {
-                            if (location == selectedRange.location && magnifierView == nil) {
-                                [self showEditMenu: [self firstRectForRange: selectedRange]];
-                            } else {
+                            // Single taps place the insertion point at the tap location and cause us to 
+                            // becoem first responder.
+                            int location = (int) selectedRange.location;
+                            
+                            selectedRange.location = [self offsetFromLocation: [touch locationInView: self]];
+                            if (selectedRange.length > 0) {
+                                selectedRange.length = 0;
+                                [self setNeedsDisplay];
                                 [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+                            } else {
+                                if (location == selectedRange.location && magnifierView == nil) {
+                                    [self showEditMenu: [self firstRectForRange: selectedRange]];
+                                } else {
+                                    [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+                                }
                             }
+                            
+                            cursorColumn = -1;
+                            [undoManager beginNewUndoGroup];
                         }
-                        
-                        cursorColumn = -1;
-                        [undoManager beginNewUndoGroup];
                         break;
                     }
                         
@@ -1440,6 +1604,18 @@
 #pragma mark - Getters and setters
 
 /*!
+ * Set the allowEditMenu flag. Setting it to NO will hide the edit menu if it is visible.
+ *
+ * @param theAllowEditMenu	The new flag setting.
+ */
+
+- (void) setAllowEditMenu: (BOOL) theAllowEditMenu {
+    allowEditMenu = theAllowEditMenu;
+    if (!allowEditMenu)
+        [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+}
+
+/*!
  * Set the font for the view. This must be a monospaced font.
  *
  * @param theFont		The new font.
@@ -1465,6 +1641,7 @@
 - (void) setLanguage: (languageType) theLanguage {
     if (language != theLanguage) {
         language = theLanguage;
+#if IS_PARALLAX
         switch (language) {
             case languageC:
             case languageCPP:
@@ -1477,6 +1654,7 @@
         }
         self.backgroundHighlights = [highlighter highlightBlocks: text];
         self.multilineHighlights = [highlighter multilineHighlights: text];
+#endif
     }
 }
 
@@ -1499,6 +1677,7 @@
 
 - (void) setText: (NSString *) theText {
     text = [theText stringByReplacingOccurrencesOfString: @"\r\n" withString: @"\n"];
+    text = [text stringByReplacingOccurrencesOfString: @"\r" withString: @"\n"];
     self.lines = [text componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
     [self updateViewSize];
     [self setNeedsDisplay];
@@ -1517,11 +1696,11 @@
 - (void) drawRect: (CGRect) rect {
     // Draw the background.
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
+    CGContextSetFillColorWithColor(context, [self.backgroundColor CGColor]);
     CGContextFillRect(context, rect);
     
     // Draw any blocks of background color.
-    if (backgroundHighlights) {
+    if (backgroundHighlights && useSyntaxColoring) {
         for (ColoredRange *coloredRange in backgroundHighlights) {
             CGContextRef context = UIGraphicsGetCurrentContext();
             CGContextSetFillColorWithColor(context, [coloredRange.color CGColor]);
@@ -1560,42 +1739,43 @@
         highlightIndexSize += 1 + ((NSString *) lines[i]).length;
     UInt8 *highlightIndexes = (UInt8 *) calloc(1, highlightIndexSize);
     
-    // Get the line based highlights.
-    int initialOffset = [self offsetFromLine: firstLine offset: 0];
-    NSRange range = {initialOffset, highlightIndexSize};
-    if (range.location + range.length > text.length)
-        range.length = text.length - range.location;
-    for (ColoredRange *coloredRange in [highlighter wordHighlights: text forRange: range])
-        if (coloredRange.range.location < initialOffset + highlightIndexSize 
-            && coloredRange.range.location + coloredRange.range.length > initialOffset)
-        {
-            int colorIndex = [self colorIndexForColor: coloredRange.color];
-            int start = coloredRange.range.location < initialOffset 
-            	? 0 
-            	: (int) (coloredRange.range.location - initialOffset);
-            int end = coloredRange.range.location + coloredRange.range.length > initialOffset + highlightIndexSize 
+    if (useSyntaxColoring) {
+        // Get the line based highlights.
+        int initialOffset = [self offsetFromLine: firstLine offset: 0];
+        NSRange range = {initialOffset, highlightIndexSize};
+        if (range.location + range.length > text.length)
+            range.length = text.length - range.location;
+        for (ColoredRange *coloredRange in [highlighter wordHighlights: text forRange: range])
+            if (coloredRange.range.location < initialOffset + highlightIndexSize 
+                && coloredRange.range.location + coloredRange.range.length > initialOffset)
+            {
+                int colorIndex = [self colorIndexForColor: coloredRange.color];
+                int start = coloredRange.range.location < initialOffset 
+                ? 0 
+                : (int) (coloredRange.range.location - initialOffset);
+                int end = coloredRange.range.location + coloredRange.range.length > initialOffset + highlightIndexSize 
                 ? highlightIndexSize 
                 : (int) (coloredRange.range.location + coloredRange.range.length - initialOffset);
-            for (int i = start; i < end; ++i)
-                highlightIndexes[i] = colorIndex;
-        }
-
-    // Track multiline highlights through the visible text.
-    for (ColoredRange *coloredRange in multilineHighlights)
-        if (coloredRange.range.location < initialOffset + highlightIndexSize 
-            && coloredRange.range.location + coloredRange.range.length > initialOffset)
-        {
-            int colorIndex = [self colorIndexForColor: coloredRange.color];
-            int start = coloredRange.range.location < initialOffset 
-            	? 0 
-            	: (int)  (coloredRange.range.location - initialOffset);
-            int end = coloredRange.range.location + coloredRange.range.length > initialOffset + highlightIndexSize 
-            	? highlightIndexSize 
-            	: (int) (coloredRange.range.location + coloredRange.range.length - initialOffset);
-            for (int i = start; i < end; ++i)
-                highlightIndexes[i] = colorIndex;
-        }
-    
+                for (int i = start; i < end; ++i)
+                    highlightIndexes[i] = colorIndex;
+            }
+        
+        // Track multiline highlights through the visible text.
+        for (ColoredRange *coloredRange in multilineHighlights)
+            if (coloredRange.range.location < initialOffset + highlightIndexSize 
+                && coloredRange.range.location + coloredRange.range.length > initialOffset)
+            {
+                int colorIndex = [self colorIndexForColor: coloredRange.color];
+                int start = coloredRange.range.location < initialOffset 
+                ? 0 
+                : (int)  (coloredRange.range.location - initialOffset);
+                int end = coloredRange.range.location + coloredRange.range.length > initialOffset + highlightIndexSize 
+                ? highlightIndexSize 
+                : (int) (coloredRange.range.location + coloredRange.range.length - initialOffset);
+                for (int i = start; i < end; ++i)
+                    highlightIndexes[i] = colorIndex;
+            }
+    }
     
     // Draw the visible lines.
     float y = firstLine*font.lineHeight;
@@ -1732,8 +1912,8 @@
         
         [self cursorOff];
         int lineOffset = (int) (location.x/charWidth);
-        while (lineOffset && offset < substringRange.length - 1)
-            if (buffer[offset] == '\n')
+        while (lineOffset && offset < substringRange.length)
+            if (offset < substringRange.length && buffer[offset] == '\n')
                 break;
             else {
                 ++offset;
@@ -1886,7 +2066,7 @@
  * The returned array will contain one to three rectangles, depending on the number of lines the selection encompasses. If
  * the range has zero length, the rectangle will have a width of 1 and a location to the left of the indicated character.
  *
- * @param range			The range of text for which to fond the selection rectangles.
+ * @param range			The range of text for which to find the selection rectangles.
  *
  * @return				An array of one to three CodeRect objects.
  */
@@ -1929,13 +2109,41 @@
 #pragma mark - UIResponder overrides
 
 /*!
+ * Notifies the receiver that it is about to become first responder in its window.
+ *
+ * @return				YES if the receiver accepts first-responder status or NO if it refuses this status. 
+ *						The default implementation returns YES, accepting first responder status.
+ */
+
+- (BOOL) becomeFirstResponder {
+    if (self.isFirstResponder)
+        return YES;
+    
+    if (!editable)
+        return NO;
+    
+    if ([super becomeFirstResponder]) {
+        BOOL allowEditing = YES;
+        if ([codeViewDelegate respondsToSelector: @selector(codeViewShouldBeginEditing:)])
+            allowEditing = [codeViewDelegate codeViewShouldBeginEditing: self];
+        if (allowEditing) {
+            if ([codeViewDelegate respondsToSelector: @selector(codeViewDidBeginEditing:)])
+                [codeViewDelegate codeViewDidBeginEditing: self];
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+/*!
  * Returns a Boolean value indicating whether the receiver can become first responder.
  *
  * @return			Returns YES.
  */
 
 - (BOOL) canBecomeFirstResponder {
-    return YES;
+    return editable;
 }
 
 /*!
@@ -1969,6 +2177,28 @@
         result = YES;
     }
     return result;
+}
+
+/*!
+ * The custom input accessory view to display when the receiver becomes the first responder.
+ *
+ * This property is typically used to attach an accessory view to the system-supplied keyboard that is presented 
+ * for UITextField and UITextView objects.
+ *
+ * @return				The input accessory view.
+ */
+
+- (UIView *) inputAccessoryView {
+#if IS_PARALLAX
+    return nil;
+#else
+    if (!inputAccessoryView) {
+        CGRect accessFrame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen] bounds].size.width, PREFERRED_ACCESSORY_HEIGHT);
+        inputAccessoryView = [[BASICInputAccessoryView alloc] initWithFrame: accessFrame];
+        inputAccessoryView.codeInputAccessoryViewDelegate = self;
+    }
+    return inputAccessoryView;
+#endif
 }
 
 /*!
@@ -2035,6 +2265,26 @@
     return theKeyCommands;
 }
 
+/*!
+ * Notifies the receiver that it has been asked to relinquish its status as first responder in its window.
+ *
+ * The default implementation returns YES, resigning first responder status. Subclasses can override this 
+ * method to update state or perform some action such as unhighlighting the selection, or to return NO, 
+ * refusing to relinquish first responder status. If you override this method, you must call super (the 
+ * superclass implementation) at some point in your code.
+ *
+ * @return				YES if first responder status was resigned, else NO.
+ */
+
+- (BOOL) resignFirstResponder {
+    if ([super resignFirstResponder]) {
+        if ([codeViewDelegate respondsToSelector: @selector(codeViewDidEndEditing:)])
+            [codeViewDelegate codeViewDidEndEditing: self];
+        return YES;
+    }
+    return NO;
+}
+
 #pragma mark - UIKeyInput
 
 /*!
@@ -2064,6 +2314,8 @@
     cursorColumn = -1;
 
     [UIMenuController sharedMenuController].menuVisible = NO;
+    
+    [self textChanged];
 }
 
 /*!
@@ -2081,30 +2333,73 @@
  */
 
 - (void) insertText: (NSString *) theText {
-    // Regsiter the action for undo.
-    NSString *removedText = nil;
-    if (selectedRange.length > 0)
-        removedText = [self.text substringWithRange: selectedRange];
-    CodeUndo *undoObject = [CodeUndo undoInsertion: selectedRange insertedText: theText removedText: removedText];
-    [undoManager registerUndoWithTarget: self selector: @selector(undo:) object: undoObject];
-    if ([codeViewDelegate respondsToSelector: @selector(codeViewTextChanged)])
-        [codeViewDelegate codeViewTextChanged];
+    // Make sure we should do the edit.
+    BOOL allowChange = YES;
+    if ([codeViewDelegate respondsToSelector: @selector(codeView:shouldChangeTextInRange:replacementText:)])
+        allowChange = [codeViewDelegate codeView: self shouldChangeTextInRange: selectedRange replacementText: theText];
+    
+    if (allowChange) {
+        // Regsiter the action for undo.
+        NSString *removedText = nil;
+        if (selectedRange.length > 0)
+            removedText = [self.text substringWithRange: selectedRange];
+        CodeUndo *undoObject = [CodeUndo undoInsertion: selectedRange insertedText: theText removedText: removedText];
+        [undoManager registerUndoWithTarget: self selector: @selector(undo:) object: undoObject];
+        if ([codeViewDelegate respondsToSelector: @selector(codeViewTextChanged)])
+            [codeViewDelegate codeViewTextChanged];
+        
+        // Insert the text.
+        [self cursorOff];
+        self.text = [text stringByReplacingCharactersInRange: selectedRange withString: theText];
+        selectedRange.length = 0;
+        selectedRange.location += theText.length;
 
-    // Insert the text.
-    [self cursorOff];
-    self.text = [text stringByReplacingCharactersInRange: selectedRange withString: theText];
-    selectedRange.length = 0;
-    selectedRange.location += theText.length;
-    [self cursorOn];
+        // Follow indents on returns.
+        if ([theText compare: @"\n"] == NSOrderedSame) {
+            // Find the most recent non-blank line.
+            NSArray *previousLines = [[text substringToIndex: selectedRange.location] componentsSeparatedByString: @"\n"];
+            int index = (int) previousLines.count - 1;
+            while (index > 0 && [[previousLines objectAtIndex: index] length] == 0)
+                --index;
+            if (index >= 0) {
+                // Figure out how much whitespace is on it.
+                int whiteSpaceIndex = 0;
+                NSString *line = [previousLines objectAtIndex: index];
+                while (whiteSpaceIndex < [line length] &&  isspace([line characterAtIndex: whiteSpaceIndex]))
+                    ++whiteSpaceIndex;
+                
+                // If there is any whitespace at the start of the line, insert the same in the new line.
+                if (whiteSpaceIndex > 0)
+                    [self performSelector: @selector(insertText:) withObject: [line substringToIndex: whiteSpaceIndex] afterDelay: 0.02];
+            }
+        }
 
-    // Scroll to show the change.
-    [self scrollRangeToVisible: selectedRange];
+        [self cursorOn];
+        
+        // Scroll to show the change.
+        [self scrollRangeToVisible: selectedRange];
+        
+        // Reset the up/down arrow column.
+        cursorColumn = -1;
+        
+        // Hide the edit menu.
+        [UIMenuController sharedMenuController].menuVisible = NO;
+        
+        [self textChanged];
+    }
+}
 
-    // Reset the up/down arrow column.
-    cursorColumn = -1;
+#pragma mark - CodeInputAccessoryViewDelegate
 
-    // Hide the edit menu.
-    [UIMenuController sharedMenuController].menuVisible = NO;
+/*!
+ * Tells the delegate the user has selected code completion text.
+ *
+ * @param range			The range of text to replace.
+ * @param theText		The text to replace.
+ */
+
+- (void) codeInputAccessoryViewExtendingRange: (NSRange) range withText: (NSString *) theText {
+    [self replaceRange: range withText: theText];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -2117,6 +2412,9 @@
 
 - (void) scrollViewDidScroll: (UIScrollView *) scrollView {
     [self setNeedsDisplay];
+    [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+    if ([codeViewDelegate respondsToSelector: @selector(codeViewDidScroll:)])
+        [codeViewDelegate codeViewDidScroll: self];
 }
 
 #pragma mark - UIResponderStandardEditActions
