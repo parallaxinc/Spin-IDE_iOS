@@ -26,6 +26,7 @@
 #import "SpinHighlighter.h"
 #endif
 
+
 #define LOLLIPOP_TOUCH_SIZE (10)								/* Radius of the lollipop touch area. */
 #define LOLLIPOP_SIZE (5)										/* Radius of the lollipop candy - 0.5. */
 #define DEFAULT_INDENT (2)										/* The number of characters to use for indented code. */
@@ -559,7 +560,6 @@
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(keyboardWillHide:)
                                                  name: UIKeyboardWillHideNotification object: nil];
-
 }
 
 /*!
@@ -1585,9 +1585,18 @@
             [self setNeedsDisplay];
             [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
         } else if (magnifierTimer != nil) {
-            // If we are waiting for the magnifier timer to fire, cancel it.
-            [magnifierTimer invalidate];
-            self.magnifierTimer = nil;
+            // See if the touch has moved far enough from the original for it to make sense to cancel the magnifier timer.
+            UIView *topView = [[UIApplication sharedApplication] keyWindow];
+            UITouch *touch = [touches anyObject];
+            CGPoint location1 = [touch locationInView: topView];
+            CGPoint location2 = [magnifierTouch locationInView: topView];
+            float delta = ((location1.x - location2.x)*(location1.x - location2.x) 
+                           + (location1.y - location2.y)*(location1.y - location2.y));
+            if (delta > 16.0) {
+            	// If we are waiting for the magnifier timer to fire, cancel it.
+            	[magnifierTimer invalidate];
+            	self.magnifierTimer = nil;
+        	}
         }
     } else if (touches.count == 2) {
         if (trackingPinch) {
@@ -2192,6 +2201,9 @@
 #if IS_PARALLAX
     return nil;
 #else
+    if (hardwareKeyboard || SYSTEM_VERSION_LESS_THAN(@"8.0"))
+        return nil;
+    
     if (!inputAccessoryView) {
         CGRect accessFrame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen] bounds].size.width, PREFERRED_ACCESSORY_HEIGHT);
         inputAccessoryView = [[BASICInputAccessoryView alloc] initWithFrame: accessFrame];

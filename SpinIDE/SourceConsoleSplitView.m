@@ -37,7 +37,6 @@
     
     self.consoleView = [[UITextView alloc] initWithFrame: terminalConsoleSplitView.bottomView.frame];
     consoleView.editable = NO;
-    consoleView.backgroundColor = [UIColor redColor];
     terminalConsoleSplitView.bottomView = consoleView;
     
     terminalConsoleSplitView.location = 0.5;

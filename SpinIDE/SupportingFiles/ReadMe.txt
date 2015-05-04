@@ -1,4 +1,4 @@
-Spin IDE 1.0.0.8
+Spin IDE 1.0.0.9
 ----------------
 
 This project implements an IDE on iPads for programming Propeller based boards using an XBee radio to move the project binaries from the iPad to the Propeller board.
@@ -14,52 +14,12 @@ You can build a project locally, or connect to a configured XBee radio and run t
 Changes in this release
 -----------------------
 
-The big change in this release is replacing Apple's UITextView with a new custom view that is optimized for program editing. This allowed us to do many things that are not supported by Apple's UIText View (that's not a criticism; it wasn't intended to support programming) and fix a lot of bugs that have been in UITextView on and off since iOS 6 (yes, that's a criticism). Please be especially viginant about reporting editor issues so we get any kinks out of the new editor.
-
-1. Errors that are specific to a position in the source now show up as an alert over the appropriate spot in the source code.
-
-2. The navigation control shows up on main view when the program rotates to landscape once.
-
-3. Opening and editing large files now works quickly, event with syntax coloring.
-
-4. You can use a pinch gesture to enlarge and shrink the source code font.
-
-5. Large files edit faster. Don't blink. ;)
-
-6. Many bluetooth keyboard shortcuts are now supported:
-
-	a. The old stuff still works: Arrow keys move the selection, Command-C, -V, -X do copy, paste and cut, Command-Z and shift-Command-Z do undo and redo.
-
-	b. Command with arrow keys moves the selection to the end or start of a line, or the end or start of a file.
-
-	c. Option with arrow keys moves the selection by words or lines.
-
-	d. Holding down the shift key while moving the selection with any of the above options extends the selection.
-
-	e. Command-f opens the Find dialog.
-
-	f. Command-g finds the next occurance of the last string entered it he Find dialog.
-
-	g. Command-] shifts any selected line right by two spaces.
-
-	h. Command-[ shifts any selected line left by two spaces (provided it has any spaces at the start, of course).
-
-7. Using the mouse to extend a selection will now scroll the display.
-
-8. Lines are no longer wrapped. Horizontal scrolling is supported to see the full line.
-
-9. The screen follows the cursor in all known situations where it should do so.
-
-10. There is a preferece to tuen of syntax coloring. See the Spin IDE pane in the Settings app.
-
-11. Pressing return now follows the indentation of the line above.
-
-12. There is a preference to collapse the file view on the left in landscape view. Just as in portrait view, use the disclosure arrow to see the file list.  See the Spin IDE pane in the Settings app for the preference.
+1. Rudamentary terminal support.
 
 Other features and fixes needed for a solid release
 ---------------------------------------------------
 
-1. Support a terminal.
+1. Support options for the terminal.
 
 2. Support download to EPROM, not just RAM.
 

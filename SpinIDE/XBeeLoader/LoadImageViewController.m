@@ -22,7 +22,6 @@
 #import "LoadImageViewController.h"
 
 #import "ConfigurationViewController.h"
-#import "TXBee.h"
 
 @interface LoadImageViewController () {
     BOOL doingLoad;							// YES if we are currently doing a load, else NO.
@@ -32,7 +31,6 @@
 
 @property (nonatomic, retain) NSString *ipAddress;					// The IP address of the XBee radio.
 @property (nonatomic) BOOL viewingAlert;							// True when the user is viewing an alert.
-@property (nonatomic) TXBee *xBee;									// Information about the current device.
 
 @end
 

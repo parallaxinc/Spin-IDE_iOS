@@ -24,7 +24,6 @@
 #define MAX_DATA_SIZE (1392)				/* Maximum number of bytes in one UDP packet. */
 #define MAX_RX_SENSE_ERROR (23)				/* Maximum number of cycles by which the detection of a start bit could be off (as affected by the Loader code) */
 #define UDP_TIMEOUT (2.0)					/* Seconds before a UDP timeout. */
-#define SERIAL_PORT (9750)					/* The port used for serial communication. */
 #define SER_TIMEOUT (1.0)					/* Amount of time to wait before assuming a serial response will not arrive. */
 #define DYNAMIC_WAIT_FACTOR (2.0)           /* Multiply factor for dynamic waits; x times maximum round-trip time */
 #define MIN_SER_TIMEOUT (0.1)				/* The minimum allowed value for a serial timeout. */
@@ -406,7 +405,7 @@ typedef struct {
  */
 
 - (BOOL) enforceXBeeConfiguration: (NSError **) err {
-    // Dump anything in the UDP buffer. We are not expecting anything, so if something is there, it's random leak form the serial port.
+    // Dump anything in the UDP buffer. We are not expecting anything, so if something is there, it's random leak from the serial port.
     while ([udpStack pull: nil udpAddress: nil udpTime: nil]);
     
     // Is the configuration known and valid?
@@ -1001,6 +1000,9 @@ typedef struct {
 
     // Close our sockets.
     [self close];
+#if DEBUG_ME
+    printf("Close our sockets\n");
+#endif
     
     // Release our lock.
     pthread_mutex_unlock(&mutex);
@@ -1015,6 +1017,9 @@ typedef struct {
 - (void) loaderComplete {
     if ([delegate respondsToSelector: @selector(loaderComplete)])
         [delegate loaderComplete];
+#if DEBUG_ME
+    printf("loaderComplete\n");
+#endif
 }
 
 /*!
@@ -1026,6 +1031,9 @@ typedef struct {
 - (void) loaderFatalError: (NSError *) err {
     if ([delegate respondsToSelector: @selector(loaderFatalError:)])
         [delegate loaderFatalError: err];
+#if DEBUG_ME
+    printf("loaderFatalError\n");
+#endif
 }
 
 /*!
@@ -1088,7 +1096,7 @@ typedef struct {
 - (BOOL) send: (NSData *) data useAppService: (BOOL) useAppService autoRetry: (BOOL) autoRetry err: (NSError **) err {
     BOOL result = NO;
     if (useAppService) {
-        // Prep and send data using Application Service. The weird sizing (subtracting 4 form the data length and
+        // Prep and send data using Application Service. The weird sizing (subtracting 4 from the data length and
         // stuffing the data in the struct sarting at &frameID) is because prepareAppBuffer:tParamValueSize: can
         // handle either AT commands or data commands. This is a data command. The frame that is send to the XBee
         // is 4 bytes shorter for data commands.

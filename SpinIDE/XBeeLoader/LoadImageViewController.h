@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #include "Loader.h"
+#import "TXBee.h"
 
 
 @protocol LoadImageViewControllerDelegate <NSObject>
@@ -65,6 +66,7 @@
 @property (nonatomic, retain) IBOutlet UILabel *nameLabel;
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
 @property (nonatomic, retain) IBOutlet UILabel *statusLabel;
+@property (nonatomic) TXBee *xBee;									// Information about the current device.
 
 - (IBAction) cancelButton: (id) sender;
 - (void) load: (NSString *) binary;

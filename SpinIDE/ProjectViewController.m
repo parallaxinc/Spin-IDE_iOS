@@ -53,6 +53,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @property (nonatomic, retain) NSArray *memoryModelPickerElements;
 @property (nonatomic, retain) NSArray *optimizationPickerElements;
 @property (nonatomic, retain) UIPopoverController *pickerPopoverController;
+@property (nonatomic) TXBee *xBee;							// Information about the current device.
 @property (nonatomic, retain) UIPopoverController *xbeePopoverController;
 
 @end
@@ -87,6 +88,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize spinOptionsView;
 @synthesize spinCompilerOptionsView;
 @synthesize spinCompilerOptionsTextField;
+@synthesize xBee;
 @synthesize xbeePopoverController;
 
 @synthesize spinSimpleIDEOptionsHeightConstraint;
@@ -174,6 +176,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 - (BOOL) build {
     BOOL result = NO;
+    
+    // Make sure the terminal is stopped.
+    [[TerminalView defaultTerminalView] stopTerminal];
     
     // Save the current source.
     DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
@@ -1096,6 +1101,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 - (void) loadImageViewControllerLoadComplete {
     [loadImagePopoverController dismissPopoverAnimated: YES];
     self.loadImagePopoverController = nil;
+    [[TerminalView defaultTerminalView] performSelectorInBackground: @selector(startTerminal:) withObject: xBee];
 }
 
 /*!
@@ -1523,6 +1529,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
             
             // Begin the load.
             [loadImageController performSelectorInBackground: @selector(load:) withObject: binaryFile];
+            
+            // Get the selected device for later use by the termianl.
+            self.xBee = loadImageController.xBee;
         }
 }
 

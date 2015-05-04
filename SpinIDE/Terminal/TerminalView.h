@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TerminalView : UIView
+#import "CodeView.h"
+#import "GCDAsyncUdpSocket.h"
+#import "TXBee.h"
+
+
+@interface TerminalView : UIView <CodeViewDelegate, GCDAsyncUdpSocketDelegate>
+
++ (TerminalView *) defaultTerminalView;
+- (void) startTerminal: (TXBee *) theXBee;
+- (void) stopTerminal;
 
 @end

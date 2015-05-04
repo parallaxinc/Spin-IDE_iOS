@@ -32,6 +32,9 @@
 // The name for the spin libary folder as it appears in the file picker.
 #define SPIN_LIBRARY_PICKER_NAME @"(Spin Library)"
 
+// Communications constants shared between the loader and termianl.
+#define SERIAL_PORT (9750)					/* The port used for serial communication. */
+
 typedef enum {languageC, languageCPP, languageSpin} languageType;
 
 @interface Common : NSObject

@@ -20,7 +20,7 @@ static BOOL udpPortSet;			// True if the UDP port has been set, else false.
  *
  * The UDP port cannot be changed once set, and generally should not be changed. This method returns the XBee UDP port for all classes in the program.
  *
- * The defult prot is 0x0BEE.
+ * The defult port is 0x0BEE.
  *
  * @return		The UDP port number.
  */
