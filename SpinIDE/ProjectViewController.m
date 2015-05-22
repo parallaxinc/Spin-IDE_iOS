@@ -13,19 +13,18 @@
 #import "ErrorViewController.h"
 #import "openspin.h"
 #import "PickerViewController.h"
+#import "TerminalView.h"
 
 
 #define DEBUG_SPEW 0
 
 
-typedef enum {tagBoardType, tagCompilerType, tagMemoryModel, tagOptimization} pickerTags;
+typedef enum {tagBAUDRate, tagBoardType, tagCompilerType, tagMemoryModel, tagOptimization} pickerTags;
 typedef enum {alertDeleteFile, alertDeleteProject, alertWarning} alertTags;
 
 
 static ProjectViewController *this;						// This singleton instance of this class.
 
-
-// TODO: Add a terminal
 
 // TODO: EPROM Support
 
@@ -34,10 +33,13 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 // TODO: when a scan is unsuccessful, show an error dialog. Blank the IP address if nothing is found.
 // TODO: When Run is pressed, and no device is present, abort faster (or right away).
+// TODO: Sumbit iOS Changes to the Spin compiler as a repository branch.
+// TODO: Turn the loader into a library so it is easier to use in other iOS projects.
 
 @interface ProjectViewController () <UIPopoverControllerDelegate> {
     CGRect keyboardViewRect;							// View rectangle when the keyboard was shwn.
     BOOL keyboardVisible;								// Is the keyboard visible?
+    int selectedBAUDPickerElementIndex;					// The index of the selected BAUD rate picker element.
     int selectedBoardTypePickerElementIndex;			// The index of the selected Board Type picker element.
     int selectedCompilerTypePickerElementIndex;			// The index of the selected Compiler Type picker element.
     int selectedMemoryModelPickerElementIndex;			// The index of the selected Memory Model picker element.
@@ -46,6 +48,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 @property (nonatomic, retain) UIAlertView *alert;			// The current alert.
 @property (nonatomic, retain) NSString *binaryFile;			// The most recently compiled binary file.
+@property (nonatomic, retain) NSArray *baudPickerElements;
 @property (nonatomic, retain) NSArray *boardTypePickerElements;
 @property (nonatomic, retain) NSArray *compilerTypePickerElements;
 @property (nonatomic, retain) UIPopoverController *errorPopoverController;
@@ -63,6 +66,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 @synthesize alert;
 @synthesize binaryFile;
+@synthesize baudButton;
+@synthesize baudPickerElements;
 @synthesize boardTypeButton;
 @synthesize boardTypePickerElements;
 @synthesize compilerOptionsTextField;
@@ -85,15 +90,14 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize project;
 @synthesize projectOptionsView;
 @synthesize simpleIDEOptionsView;
-@synthesize spinOptionsView;
 @synthesize spinCompilerOptionsView;
 @synthesize spinCompilerOptionsTextField;
+@synthesize spinOnlyCompilerView;
+@synthesize spinOptionsView;
+@synthesize spinIDEOptionsView;
+@synthesize spinTerminalOptionsView;
 @synthesize xBee;
 @synthesize xbeePopoverController;
-
-@synthesize spinSimpleIDEOptionsHeightConstraint;
-@synthesize spinOptionsHeightConstraint;
-@synthesize simpleIDEOptionsHeightConstraint;
 
 #pragma mark - Misc
 
@@ -753,6 +757,20 @@ static ProjectViewController *this;						// This singleton instance of this clas
 #pragma mark - Actions
 
 /*!
+ * Called when the BAUD button is hit, this method allows the user to select a new BAUD rate.
+ *
+ * @param sender		The button that triggered this call.
+ */
+
+- (IBAction) baudAction: (id) sender {
+    [self pickerAction: tagBAUDRate
+                prompt: @"BAUD Rate"
+              elements: baudPickerElements
+                button: (UIButton *) sender
+                 index: selectedBAUDPickerElementIndex];
+}
+
+/*!
  * Called when the Board Type button is hit, this method allows the user to select a new board type.
  *
  * @param sender		The button that triggered this call.
@@ -767,6 +785,16 @@ static ProjectViewController *this;						// This singleton instance of this clas
 }
 
 /*!
+ * Called when the Clear button is tapped.
+ *
+ * @param sender		The button that triggered this call.
+ */
+
+- (IBAction) clearButtonAction: (id) sender {
+    [[TerminalView defaultTerminalView] clear];
+}
+
+/*!
  * Called when the Compiler Type button is hit, this method allows the user to select a new compiler type.
  *
  * @param sender		The button that triggered this call.
@@ -778,6 +806,16 @@ static ProjectViewController *this;						// This singleton instance of this clas
               elements: compilerTypePickerElements
                 button: (UIButton *) sender
                  index: selectedCompilerTypePickerElementIndex];
+}
+
+/*!
+ * Called when the Echo switch changed value.
+ *
+ * @param sender		The switch that triggered this call.
+ */
+
+- (IBAction) echoValueChanged: (UISwitch *) sender {
+    [[TerminalView defaultTerminalView] setEcho: sender.on];
 }
 
 /*!
@@ -852,6 +890,34 @@ static ProjectViewController *this;						// This singleton instance of this clas
      ];
 }
 
+/*!
+ * Called when the segmented control that selects between Terminal Options, and Spin Compiler Options is
+ * tapped. This method handles the transition from one to the other.
+ *
+ * @param sender		The segmented control that triggered this call.
+ */
+
+- (IBAction) spinOptionsAction: (id) sender {
+    [UIView transitionWithView: spinOptionsView
+                      duration: 0.5
+                       options: UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionTransitionCurlDown
+                    animations: ^(void) {
+                        switch ([sender selectedSegmentIndex]) {
+                            case 0:
+                                [spinTerminalOptionsView setHidden: NO];
+                                [spinOnlyCompilerView setHidden: YES];
+                                break;
+                                
+                            case 1:
+                                [spinTerminalOptionsView setHidden: YES];
+                                [spinOnlyCompilerView setHidden: NO];
+                                break;
+                        }
+                    }
+                    completion: nil
+     ];
+}
+
 #pragma mark - View Maintenance
 
 /*
@@ -919,10 +985,10 @@ static ProjectViewController *this;						// This singleton instance of this clas
 - (void) updateViewConstraints {
     [super updateViewConstraints];
     
-    if (SUPPORT_C || SUPPORT_CPP)
-        spinSimpleIDEOptionsHeightConstraint.constant = simpleIDEOptionsHeightConstraint.constant;
-    else
-        spinSimpleIDEOptionsHeightConstraint.constant = spinOptionsHeightConstraint.constant;
+//    if (SUPPORT_C || SUPPORT_CPP)
+//        spinSimpleIDEOptionsHeightConstraint.constant = simpleIDEOptionsHeightConstraint.constant;
+//    else
+//        spinSimpleIDEOptionsHeightConstraint.constant = spinOptionsHeightConstraint.constant;
     
     [self.view setNeedsLayout];
 }
@@ -945,6 +1011,10 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 - (void) viewDidLoad {
     // Initialize the picker lists and default values.
+    self.baudPickerElements = [[NSArray alloc] initWithObjects: @"1200", @"2400", @"4800",
+                                    @"9600", @"19200", @"38400", @"57600", @"115200", nil];
+    selectedBAUDPickerElementIndex = (int) [baudPickerElements indexOfObject: @"115200"];
+    
     self.boardTypePickerElements = [[NSArray alloc] initWithObjects: @"ACTIVITYBOARD", @"ACTIVITYBOARD-SDXMMC", @"C3",
                                     @"C3-SDLOAD", @"C3-SDXMMC", @"C3F", @"C3F-SDLOAD", @"C3F-SDXMMC", @"DEMOBOARD",
                                     @"EEPROM", @"GENERIC", @"HYDRA", @"PROPBOE", @"PROPBOE-SDXMMC", @"PROPSTICK",
@@ -998,7 +1068,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     if (SUPPORT_C || SUPPORT_CPP)
         spinCompilerOptionsView.delegate = self;
     else
-        spinOptionsView.delegate = self;
+        spinOnlyCompilerView.delegate = self;
     
     // Record our singleton instance.
     this = self;
@@ -1035,11 +1105,17 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 - (void) pickerViewController: (PickerViewController *) picker didSelectRow: (int) row {
     switch (picker.tag) {
+        case tagBAUDRate:
+            selectedBAUDPickerElementIndex = row;
+            [baudButton setTitle: baudPickerElements[row] forState: UIControlStateNormal];
+            [[TerminalView defaultTerminalView] setBaudRate: (int) [baudPickerElements[row] integerValue]];
+            break;
+            
         case tagBoardType:
             selectedBoardTypePickerElementIndex = row;
             [boardTypeButton setTitle: boardTypePickerElements[row] forState: UIControlStateNormal];
             break;
-
+            
         case tagCompilerType: {
             selectedCompilerTypePickerElementIndex = row;
             switch (row) {
@@ -1089,7 +1165,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 #pragma mark - LoadImageViewControllerDelegate
 
 /*!
- * Called when the laoder has completed loading the binary.
+ * Called when the loader has completed loading the binary.
  *
  * The loader is now in a dormant state, waiting for a new load.
  *
@@ -1355,7 +1431,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
         if (SUPPORT_C || SUPPORT_CPP)
             spinCompilerOptionsView.compilerOptionsTextField.text = options;
         else
-            spinOptionsView.compilerOptionsTextField.text = options;
+            spinOnlyCompilerView.compilerOptionsTextField.text = options;
         
         // Update the button state.
         [detailViewController checkButtonState];

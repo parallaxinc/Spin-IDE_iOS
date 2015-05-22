@@ -8,6 +8,14 @@
 
 #import "SplitViewControl.h"
 
+
+@interface SplitViewControl ()
+
+@property (nonatomic, retain) UILabel *splitLabel;
+
+@end
+
+
 @implementation SplitViewControl
 
 @synthesize arrows;
@@ -17,6 +25,8 @@
 @synthesize maximum;
 @synthesize minimum;
 @synthesize splitSize;
+@synthesize splitLabel;
+@synthesize splitTitle;
 
 /*!
  * Do initialization common to all init calls.
@@ -74,6 +84,29 @@
 }
 
 /*!
+ * Set the title for split screens. This appears in the middle of the view to label the view. It should only be used on horizontal 
+ * bars because the current implementation will look pretty horrible on a vertical bar.
+ *
+ * @param theSplitTitle		The new title. Pass nil or an empty string to remove the title.
+ */
+
+- (void) setSplitTitle: (NSString *) theSplitTitle {
+    [splitLabel removeFromSuperview];
+    self.splitLabel = nil;
+    
+    splitTitle = theSplitTitle;
+    
+    if (splitTitle != nil && splitTitle.length > 0) {
+        self.splitLabel = [[UILabel alloc] initWithFrame: CGRectMake(0, 0, 100, 10)];
+        splitLabel.text = splitTitle;
+        splitLabel.font = [UIFont systemFontOfSize: 9];
+        
+        [self updateLabelSize];
+        [self addSubview: splitLabel];
+    }
+}
+
+/*!
  * The frame rectangle, which describes the view’s location and size in its superview’s coordinate system.
  *
  * @param frame			The new frame.
@@ -81,6 +114,7 @@
 
 - (void) setFrame: (CGRect) frame {
     [gradient setFrame: CGRectMake(0, 0, frame.size.width, frame.size.height)];
+    [self updateLabelSize];
     [super setFrame: frame];
     [self setNeedsDisplay];
 }
@@ -187,6 +221,22 @@
 		if (from != frame.origin.y && [delegate respondsToSelector: @selector(splitViewProtocolMovedFrom:to:)])
 			[delegate splitViewProtocolMovedFrom: from to: frame.origin.y];
 	}
+}
+
+/*!
+ * Size the label (if any) to fit the current view.
+ */
+
+- (void) updateLabelSize {
+    if (splitLabel != nil) {
+        CGSize size = splitLabel.intrinsicContentSize;
+        CGRect frame = splitLabel.frame;
+        frame.origin.x = (self.bounds.size.width - size.width)/2.0;
+        frame.origin.y = (self.bounds.size.height - size.height)/2.0;
+        frame.size.width = size.width;
+        frame.size.height = size.height;
+        splitLabel.frame = frame;
+    }
 }
 
 @end

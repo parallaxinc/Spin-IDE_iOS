@@ -11,6 +11,11 @@
 #include "GCDAsyncUdpSocket.h"
 #import "TXBee.h"
 
+typedef enum {xbData, xbMacHigh, xbMacLow, xbSSID, xbIPAddr, xbIPMask, xbIPGateway, xbIPPort, xbIPDestination, xbNodeID,
+    xbMaxRFPayload, xbPacketingTimeout, xbIO2Mode, xbIO4Mode, xbOutputMask, xbOutputState, xbIO2Timer, xbIO4Timer, xbSerialMode, 
+    xbSerialBaud, xbSerialParity, xbSerialStopBits, xbRTSFlow, xbSerialIP, xbFirmwareVer, xbHardwareVer, xbHardwareSeries, xbChecksum}
+xbCommand;
+
 
 @protocol LoaderDelegate <NSObject>
 
@@ -112,6 +117,7 @@
 @property (nonatomic, retain) id<LoaderDelegate> delegate;
 @property (nonatomic, retain) NSString *loaderDomain;
 
+- (int) baudToXBeeIndex: (int) baud;
 - (void) cancel;
 + (Loader *) defaultLoader;
 - (NSString *) getDeviceName: (TXBee *) xBee;
@@ -121,5 +127,6 @@
  loadAttempts: (int) loadAttempts
         error: (NSError **) error;
 - (void) scan: (NSString *) subnet commandPort: (int) commandPort serialPort: (int) serialPort;
+- (BOOL) validate: (xbCommand) attribute value: (int) value readOnly: (BOOL) readOnly err: (NSError **) err;
 
 @end

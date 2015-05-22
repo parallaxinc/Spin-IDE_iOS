@@ -146,6 +146,7 @@
 @property(nonatomic, getter=isSecureTextEntry) BOOL secureTextEntry;
 
 - (void) didReceiveMemoryWarning;
+- (void) deleteBackward;
 - (CGRect) firstRectForRange: (NSRange) range;
 - (void) purgeUndoBuffer;
 - (void) replaceRange: (NSRange) range withText: (NSString *) text;

@@ -32,7 +32,7 @@
     self.terminalConsoleSplitView = [[SplitView alloc] initWithFrame: bottomView.frame];
     
     self.terminalView = [[TerminalView alloc] initWithFrame: terminalConsoleSplitView.topView.frame];
-    terminalView.backgroundColor = [UIColor greenColor];
+    terminalView.backgroundColor = [UIColor lightGrayColor];
     terminalConsoleSplitView.topView = terminalView;
     
     self.consoleView = [[UITextView alloc] initWithFrame: terminalConsoleSplitView.bottomView.frame];

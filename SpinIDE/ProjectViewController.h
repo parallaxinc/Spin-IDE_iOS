@@ -19,6 +19,7 @@
 
 @interface ProjectViewController : UIViewController <DetailViewControllerDelegate, PickerViewControllerDelegate, LoadImageViewControllerDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIAlertViewDelegate, SpinCompilerOptionsViewDelegate>
 
+@property (nonatomic, retain) IBOutlet UIButton *baudButton;
 @property (nonatomic, retain) IBOutlet UIButton *boardTypeButton;
 @property (nonatomic, retain) IBOutlet UITextField *compilerOptionsTextField;
 @property (nonatomic, retain) IBOutlet CompilerOptionsView *compilerOptionsView;
@@ -34,17 +35,19 @@
 @property (nonatomic, retain) Project *project;
 @property (nonatomic, retain) IBOutlet ProjectOptionsView *projectOptionsView;
 @property (nonatomic, retain) IBOutlet UIView *simpleIDEOptionsView;
-@property (nonatomic, retain) IBOutlet SpinCompilerOptionsView *spinOptionsView;
+@property (nonatomic, retain) IBOutlet UIView *spinIDEOptionsView;
+@property (nonatomic, retain) IBOutlet SpinCompilerOptionsView *spinOnlyCompilerView;
+@property (nonatomic, retain) IBOutlet UIView *spinOptionsView;
 @property (nonatomic, retain) IBOutlet SpinCompilerOptionsView *spinCompilerOptionsView;
+@property (nonatomic, retain) IBOutlet UIView *spinTerminalOptionsView;
 @property (nonatomic, retain) IBOutlet UITextField *spinCompilerOptionsTextField;
 
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *simpleIDEOptionsHeightConstraint;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *spinOptionsHeightConstraint;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *spinSimpleIDEOptionsHeightConstraint;
-
+- (IBAction) baudAction: (id) sender;
 - (IBAction) boardTypeAction: (id) sender;
+- (IBAction) clearButtonAction: (id) sender;
 - (IBAction) compilerTypeAction: (id) sender;
 + (ProjectViewController *) defaultProjectViewController;
+- (IBAction) echoValueChanged: (id) sender;
 - (IBAction) memoryModelAction: (id) sender;
 - (IBAction) optimizationAction: (id) sender;
 - (IBAction) optionsAction: (id) sender;

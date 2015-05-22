@@ -247,10 +247,6 @@ static char atCmd[][3] = {
     /* xbChecksum */          "CK"   /* [Rb] current configuration checksum (16-bits) */
 };
 
-typedef enum {xbData, xbMacHigh, xbMacLow, xbSSID, xbIPAddr, xbIPMask, xbIPGateway, xbIPPort, xbIPDestination, xbNodeID,
-    xbMaxRFPayload, xbPacketingTimeout, xbIO2Mode, xbIO4Mode, xbOutputMask, xbOutputState, xbIO2Timer, xbIO4Timer, xbSerialMode, xbSerialBaud,
-    xbSerialParity, xbSerialStopBits, xbRTSFlow, xbSerialIP, xbFirmwareVer, xbHardwareVer, xbHardwareSeries, xbChecksum} xbCommand;
-
 typedef enum {serialUDP = 0, serialTCP = 1} ipModes;
 typedef enum {pinDisabled= 0, pinEnabled = 1, pinAnalog = 2, pinInput = 3, pinOutLow = 4, pinOutHigh = 5} ioKinds;
 typedef enum {transparentMode = 0, apiWoEscapeMode = 1, apiWEscapeMode = 2} serialModes;

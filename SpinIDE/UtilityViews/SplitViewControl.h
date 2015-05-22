@@ -58,5 +58,6 @@
 @property (nonatomic) double maximum;
 @property (nonatomic) double minimum;
 @property (nonatomic) double splitSize;
+@property (nonatomic, retain) NSString *splitTitle;		// A title string that appears on horizontal split bars.
 
 @end

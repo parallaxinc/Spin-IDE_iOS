@@ -1,4 +1,4 @@
-//
+ //
 //  CodeView.m
 //  Spin IDE
 //
@@ -27,11 +27,11 @@
 #endif
 
 
-#define LOLLIPOP_TOUCH_SIZE (10)								/* Radius of the lollipop touch area. */
+#define LOLLIPOP_TOUCH_SIZE (20)								/* Radius of the lollipop touch area. */
 #define LOLLIPOP_SIZE (5)										/* Radius of the lollipop candy - 0.5. */
 #define DEFAULT_INDENT (2)										/* The number of characters to use for indented code. */
 #define MAGNIFIER_SIZE (150)									/* The diameter of the magnifier in pixels. Change art if this is not 150. */
-#define MAGNIFIER_TIME (1.0)									/* The number of seconds the touch must be still to start a magnifier tracking session. */
+#define MAGNIFIER_TIME (0.5)									/* The number of seconds the touch must be still to start a magnifier tracking session. */
 #define MIN_FONT_SIZE (8.0)										/* The mimiumum font size in points. */
 #define MAX_FONT_SIZE (20.0)									/* The maxiumum font size in points. */
 
@@ -40,6 +40,7 @@
     float charWidth;											// The width of a character.
     int cursorColumn;											// The column index for the cursor for the most recent up or down arrow key, or -1 for other keys.
     int cursorState;											// A value form 0 to 2 indicating if the cursor is on or off. 0 is off.
+    BOOL firstTap;												// Used to track the first tap at a new selection location.
     int repeatKeyStartCounter;									// A count down timer so the repeat key does not start too fast.
     
     BOOL firstLollipop;											// If trackingSelection, YES for the initial selection mark, or NO for the end selection mark.
@@ -217,7 +218,8 @@
 
 - (void) cursorVisible {
     [self initCursorTimer];
-    while (cursorState == 0 && selectedRange.length == 0)
+    int maxCount = 6;
+    while (cursorState == 0 && selectedRange.length == 0 && --maxCount > 0)
         [self blinkCursor: nil];
 }
 
@@ -262,6 +264,7 @@
             ++location;
     }
     
+    [self selectionChanged];
     [self cursorOn];
     [self setNeedsDisplay];
 }
@@ -309,6 +312,7 @@
             ++location;
     }
     
+    [self selectionChanged];
     [self cursorOn];
     [self setNeedsDisplay];
 }
@@ -516,6 +520,8 @@
         selectedRange.location = offset;
     } else
         selectedRange.length = offset - selectedRange.location;
+
+    [self selectionChanged];
 }
 
 /*!
@@ -609,6 +615,7 @@
  */
 
 - (void) keyboardWillHide: (NSNotification *) notification {
+    if (self.isFirstResponder) {
     NSDictionary *info = [notification userInfo];
     
     NSValue *keyboardFrameBegin = [info valueForKey: UIKeyboardFrameBeginUserInfoKey];
@@ -625,6 +632,7 @@
         [self becomeFirstResponder];
     }
 }
+}
 
 /*!
  * Called when the keyboard is about to be shown.
@@ -638,6 +646,7 @@
  */
 
 - (void) keyboardWillShow: (NSNotification *) notification {
+    if (self.isFirstResponder) {
     NSDictionary *info = [notification userInfo];
     
     NSValue *keyboardFrameBegin = [info valueForKey: UIKeyboardFrameBeginUserInfoKey];
@@ -660,6 +669,7 @@
         [self resignFirstResponder];
         [self becomeFirstResponder];
     }
+}
 }
 
 /*!
@@ -692,6 +702,7 @@
             else {
                 selectedRange.location = text.length;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
         } else if (command.modifierFlags & UIKeyModifierAlternate) {
@@ -708,6 +719,7 @@
             else {
                 selectedRange.location = location;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
         } else if (selectedRange.location < text.length || selectedRange.length > 0) {
@@ -728,6 +740,7 @@
                     selectedRange.location += selectedRange.length;
                     selectedRange.length = 0;
                 }
+                [self selectionChanged];
             }
             [self cursorVisible];
         }
@@ -758,6 +771,7 @@
             else {
                 selectedRange.location = location;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
             [self scrollRangeToVisible: selectedRange];
@@ -773,6 +787,7 @@
             else {
                 selectedRange.location = location;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
             [self scrollRangeToVisible: selectedRange];
@@ -817,6 +832,7 @@
             else {
                 selectedRange.location = location;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
         } else if (command.modifierFlags & UIKeyModifierAlternate) {
@@ -831,6 +847,7 @@
             else {
                 selectedRange.location = location;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
         } else if (selectedRange.location < text.length || selectedRange.length > 0) {
@@ -874,6 +891,7 @@
             } else {
                 selectedRange.location = 0;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
             [self scrollRangeToVisible: selectedRange];
@@ -891,6 +909,7 @@
             } else {
                 selectedRange.location = location;
                 selectedRange.length = 0;
+                [self selectionChanged];
             }
             [self cursorVisible];
             [self scrollRangeToVisible: selectedRange];
@@ -908,6 +927,7 @@
                 } else {
                     selectedRange.location = [self offsetToLine: line - 1 column: cursorColumn];
                     selectedRange.length = 0;
+                    [self selectionChanged];
                 }
                 [self cursorVisible];
             }
@@ -1082,6 +1102,16 @@
 }
 
 /*!
+ * Call when the selection changes to notify delegates and update the code completion buttons.
+ */
+
+- (void) selectionChanged {
+    if ([codeViewDelegate respondsToSelector: @selector(codeViewDidChangeSelection:)])
+        [codeViewDelegate codeViewDidChangeSelection: self];
+    [inputAccessoryView setContext: text selection: selectedRange];
+}
+
+/*!
  * Set the selection range without starting a new undo group.
  *
  * @param range		The new selection range.
@@ -1093,9 +1123,7 @@
     [self cursorOn];
     [self setNeedsDisplay];
     cursorColumn = -1;
-    if ([codeViewDelegate respondsToSelector: @selector(codeViewDidChangeSelection:)])
-        [codeViewDelegate codeViewDidChangeSelection: self];
-    [inputAccessoryView setContext: text selection: selectedRange];
+    [self selectionChanged];
 }
 
 /*!
@@ -1200,7 +1228,7 @@
 }
 
 /*!
- * If this timer firest, start tracking the magnifier tool used to precicely track the seelection point.
+ * If this timer fires, start tracking the magnifier tool used to precicely track the selection point.
  */
 
 - (void) trackMagnifier: (NSTimer *) timer {
@@ -1259,6 +1287,7 @@
             selectedRange.length = offset - selectedRange.location;
         }
     }
+    [self selectionChanged];
     
     if (selectedRange.length > 0 && !trackingSelection)
         [self showEditMenu: [self firstRectForRange: selectedRange]];
@@ -1341,27 +1370,27 @@
 
 - (BOOL) isTouchInLollipop: (UITouch *) touch {
     BOOL result = NO;
-            
+    
     if (selectedRange.length > 0 && selectionRects != nil) {
-            CGRect r = ((CodeRect *) selectionRects[0]).rect;
-            r.origin.x -= LOLLIPOP_TOUCH_SIZE;
-            r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
-            r.origin.y -= LOLLIPOP_SIZE + LOLLIPOP_TOUCH_SIZE;
+        CGRect r = ((CodeRect *) selectionRects[0]).rect;
+        r.origin.x -= LOLLIPOP_TOUCH_SIZE;
+        r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
+        r.origin.y -= LOLLIPOP_SIZE + LOLLIPOP_TOUCH_SIZE;
         r.size.height = LOLLIPOP_SIZE + 2*LOLLIPOP_TOUCH_SIZE + r.size.height;
-            
+        
         result = CGRectContainsPoint(r, [touch locationInView: self]);
-            firstLollipop = YES;
-            
+        firstLollipop = YES;
+        
         if (!result) {
-                CGRect r = ((CodeRect *) selectionRects[selectionRects.count - 1]).rect;
-                r.origin.x += r.size.width - LOLLIPOP_TOUCH_SIZE;
-                r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
-                r.origin.y += r.size.height + LOLLIPOP_SIZE - LOLLIPOP_TOUCH_SIZE;
-                r.size.height = 2*LOLLIPOP_TOUCH_SIZE;
-                
+            CGRect r = ((CodeRect *) selectionRects[selectionRects.count - 1]).rect;
+            r.origin.x += r.size.width - LOLLIPOP_TOUCH_SIZE;
+            r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
+            r.origin.y += r.size.height + LOLLIPOP_SIZE - LOLLIPOP_TOUCH_SIZE;
+            r.size.height = 2*LOLLIPOP_TOUCH_SIZE;
+            
             result = CGRectContainsPoint(r, [touch locationInView: self]);
-                firstLollipop = NO;
-            }
+            firstLollipop = NO;
+        }
     }
     
     return result;
@@ -1418,6 +1447,7 @@
         // If we are tracking a selection, erase the magnifier view.
         [magnifierView removeFromSuperview];
         self.magnifierView = nil;
+        trackingMagnifier = NO;
     }
 }
 
@@ -1452,7 +1482,7 @@
                                 [self setNeedsDisplay];
                                 [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
                             } else {
-                                if (location == selectedRange.location && magnifierView == nil) {
+                                if (location == selectedRange.location && magnifierView == nil && !firstTap) {
                                     [self showEditMenu: [self firstRectForRange: selectedRange]];
                                 } else {
                                     [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
@@ -1461,6 +1491,7 @@
                             
                             cursorColumn = -1;
                             [undoManager beginNewUndoGroup];
+                            [self selectionChanged];
                         }
                         break;
                     }
@@ -1489,6 +1520,7 @@
                         
                         cursorColumn = -1;
                         [undoManager beginNewUndoGroup];
+                        [self selectionChanged];
                         
                         [self setNeedsDisplay];
                         break;
@@ -1517,10 +1549,12 @@
                         
                         cursorColumn = -1;
                         [undoManager beginNewUndoGroup];
+                        [self selectionChanged];
                         
                         [self setNeedsDisplay];
                         break;
                 }
+                firstTap = NO;
             }
         }
     }
@@ -1537,6 +1571,7 @@
         // If we are tracking a selection, erase the magnifier view.
         [magnifierView removeFromSuperview];
         self.magnifierView = nil;
+        trackingMagnifier = NO;
     }
 }
 
@@ -1584,6 +1619,7 @@
             [self cursorVisible];
             [self setNeedsDisplay];
             [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+            [self selectionChanged];
         } else if (magnifierTimer != nil) {
             // See if the touch has moved far enough from the original for it to make sense to cancel the magnifier timer.
             UIView *topView = [[UIApplication sharedApplication] keyWindow];
@@ -1676,6 +1712,7 @@
 - (void) setSelectedRange: (NSRange) range {
     [self setSelectedRangeNoUndoGroup: range];
     [undoManager beginNewUndoGroup];
+    firstTap = YES;
 }
 
 /*!
@@ -1692,6 +1729,11 @@
     [self setNeedsDisplay];
     self.backgroundHighlights = [highlighter highlightBlocks: text];
     self.multilineHighlights = [highlighter multilineHighlights: text];
+    if (selectedRange.location > text.length)
+        selectedRange.location = text.length;
+    if (selectedRange.location + selectedRange.length > text.length)
+        selectedRange.length = text.length - selectedRange.location;
+    firstTap = YES;
 }
 
 #pragma mark - Text Rendering
@@ -2201,8 +2243,17 @@
 #if IS_PARALLAX
     return nil;
 #else
-    if (hardwareKeyboard || SYSTEM_VERSION_LESS_THAN(@"8.0"))
+    if (hardwareKeyboard || SYSTEM_VERSION_LESS_THAN(@"8.0")) {
+        self.inputAccessoryView = nil;
         return nil;
+    }
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *completion = [defaults stringForKey: @"code_completion_preference"];
+    if (completion != nil)
+        if (![defaults boolForKey: @"code_completion_preference"])
+            return nil;
+
     
     if (!inputAccessoryView) {
         CGRect accessFrame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen] bounds].size.width, PREFERRED_ACCESSORY_HEIGHT);
@@ -2367,7 +2418,7 @@
         selectedRange.location += theText.length;
 
         // Follow indents on returns.
-        if ([theText compare: @"\n"] == NSOrderedSame) {
+        if (followIndentation && [[theText substringFromIndex: theText.length - 1] compare: @"\n"] == NSOrderedSame) {
             // Find the most recent non-blank line.
             NSArray *previousLines = [[text substringToIndex: selectedRange.location] componentsSeparatedByString: @"\n"];
             int index = (int) previousLines.count - 1;
@@ -2496,6 +2547,7 @@
 - (void) selectAll: (id) sender {
     selectedRange.location = 0;
     selectedRange.length = text.length;
+    [self selectionChanged];
     [self setNeedsDisplay];
     
     CGRect rect = CGRectMake(self.contentOffset.x + self.frame.size.width/2.0, self.contentOffset.y + self.frame.size.height/2.0, 10, 10);

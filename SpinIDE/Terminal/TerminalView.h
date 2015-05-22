@@ -15,6 +15,10 @@
 
 @interface TerminalView : UIView <CodeViewDelegate, GCDAsyncUdpSocketDelegate>
 
+@property (nonatomic) int baudRate;							// The terminal BAUD rate.
+@property (nonatomic) BOOL echo;							// Echo terminal input to the output window?.
+
+- (void) clear;
 + (TerminalView *) defaultTerminalView;
 - (void) startTerminal: (TXBee *) theXBee;
 - (void) stopTerminal;
