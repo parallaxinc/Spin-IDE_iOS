@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "DetailViewController.h"
+#import "ProjectViewController.h"
 
 #import "Common.h"
 
@@ -17,8 +18,77 @@
 
 @implementation AppDelegate
 
+/*!
+ * Asks the delegate to open a resource identified by URL.
+ *
+ * Your implementation of this method should open the specified URL and update its user interface accordingly. If your 
+ * app had to be launched to open the URL, the app calls the application:willFinishLaunchingWithOptions: and
+ * application:didFinishLaunchingWithOptions: methods first, followed by this method. The return values of those methods 
+ * can be used to prevent this method from being called. (If the app is already running, only this method is called.)
+ *
+ * If the URL refers to a file that was opened through a document interaction controller, the annotation parameter may 
+ * contain additional data that the source app wanted to send along with the URL. The format of this data is defined by 
+ * the app that sent it but the data must consist of objects that can be put into a property list.
+ *
+ * Files sent to your app through AirDrop or a document interaction controller are placed in the Documents/Inbox directory 
+ * of your app’s home directory. Your app has permission to read and delete files in this directory but does not have 
+ * permission to write to them. If you want to modify a file, you must move it to a different directory first. In addition, 
+ * files in that directory are usually encrypted using data protection. If the file is protected and the user locks the 
+ * device before this method is called, you will be unable to read the file’s contents immediately. In that case, you 
+ * should save the URL and try to open the file later rather than return NO from this method. Use the 
+ * protectedDataAvailable property of the app object to determine if data protection is currently enabled.
+ *
+ * There is no matching notification for this method.
+ *
+ * @param application		The singleton app object.
+ * @param url				The URL resource to open. This resource can be a network resource or a file. For information 
+ *							about the Apple-registered URL schemes, see Apple URL Scheme Reference.
+ * @param sourceApplication	The bundle ID of the app that is requesting your app to open the URL (url).
+ * @param annotation		A property list object supplied by the source app to communicate information to the receiving 
+ *							app.
+ * @return					YES if the delegate successfully handled the request or NO if the attempt to open the URL 
+ *							resource failed.
+ */
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL) application: (UIApplication *) application
+             openURL: (NSURL *) url
+   sourceApplication: (NSString *) sourceApplication
+          annotation: (id) annotation 
+{
+    ProjectViewController *projectViewController = [ProjectViewController defaultProjectViewController];
+    [projectViewController openProject: url];
+    return YES;
+}
+
+/*!
+ * Tells the delegate that the launch process is almost done and the app is almost ready to run.
+ *
+ * Use this method (and the corresponding application:willFinishLaunchingWithOptions: method) to complete your app’s 
+ * initialization and make any final tweaks. This method is called after state restoration has occurred but before 
+ * your app’s window and other UI have been presented. At some point after this method returns, the system calls 
+ * another of your app delegate’s methods to move the app to the active (foreground) state or the background state.
+ *
+ * This method represents your last chance to process any keys in the launchOptions dictionary. If you did not evaluate 
+ * the keys in your application:willFinishLaunchingWithOptions: method, you should look at them in this method and 
+ * provide an appropriate response.
+ *
+ * Objects that are not the app delegate can access the same launchOptions dictionary values by observing the notification 
+ * named UIApplicationDidFinishLaunchingNotification and accessing the notification’s userInfo dictionary. That 
+ * notification is sent shortly after this method returns.
+ *
+ * Important
+ *
+ * For app initialization, it is highly recommended that you use this method and the 
+ * application:willFinishLaunchingWithOptions: method and do not use the applicationDidFinishLaunching: method, which 
+ * is intended only for apps that run on older versions of iOS.
+ * 
+ * The return result from this method is combined with the return result from the 
+ * application:willFinishLaunchingWithOptions: method to determine if a URL should be handled. If either method returns 
+ * NO, the URL is not handled. If you do not implement one of the methods, only the return value of the implemented 
+ * method is considered.
+ */
+
+- (BOOL) application: (UIApplication *) application didFinishLaunchingWithOptions: (NSDictionary *) launchOptions {
     // Create projects for the various sample files.
     NSArray *samples = [NSArray arrayWithObjects: @"Blank", @"Blink16-23", @"Blink16", @"Clock", @"ClockDemo", @"Float-Blink_Demo", 
                         @"FloatMath", @"FloatString", @"LargeSpinCode", @"Serial Terminal Demo", nil];

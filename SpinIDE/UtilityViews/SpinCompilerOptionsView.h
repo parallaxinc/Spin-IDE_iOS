@@ -21,7 +21,7 @@
 @end
 
 
-@interface SpinCompilerOptionsView : UIView
+@interface SpinCompilerOptionsView : UIView <UITextFieldDelegate>
 
 @property (nonatomic, retain) IBOutlet UITextField *compilerOptionsTextField;
 @property (weak, nonatomic) id<SpinCompilerOptionsViewDelegate> delegate;

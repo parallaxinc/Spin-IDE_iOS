@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <MessageUI/MFMailComposeViewController.h>
+
 #include "CompilerOptionsView.h"
 #import "DetailViewController.h"
 #include "LinkerOptionsView.h"
@@ -17,7 +19,8 @@
 #include "PickerViewController.h"
 #include "SpinCompilerOptionsView.h"
 
-@interface ProjectViewController : UIViewController <DetailViewControllerDelegate, PickerViewControllerDelegate, LoadImageViewControllerDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIAlertViewDelegate, SpinCompilerOptionsViewDelegate>
+@interface ProjectViewController : UIViewController <DetailViewControllerDelegate, PickerViewControllerDelegate, LoadImageViewControllerDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIAlertViewDelegate, 
+	SpinCompilerOptionsViewDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, retain) IBOutlet UIButton *baudButton;
 @property (nonatomic, retain) IBOutlet UIButton *boardTypeButton;
@@ -49,6 +52,7 @@
 + (ProjectViewController *) defaultProjectViewController;
 - (IBAction) echoValueChanged: (id) sender;
 - (IBAction) memoryModelAction: (id) sender;
+- (void) openProject: (NSURL *) url;
 - (IBAction) optimizationAction: (id) sender;
 - (IBAction) optionsAction: (id) sender;
 

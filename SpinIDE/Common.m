@@ -29,6 +29,31 @@
 }
 
 /*!
+ * Locate all of the projects on disk and return a list of those projects.
+ *
+ * @return			A list of the existing projects as an array of NSString objects.
+ */
+
++ (NSMutableArray *) findProjects {
+    NSMutableArray *availableProjects = [[NSMutableArray alloc] init];
+    
+    NSString *sandBoxPath = [Common sandbox];
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSArray *files = [manager contentsOfDirectoryAtPath: sandBoxPath error: nil];
+    for (NSString *projectName in files) {
+        NSString *fullPath = [sandBoxPath stringByAppendingPathComponent: projectName];
+        BOOL isDirectory;
+        if ([manager fileExistsAtPath: fullPath isDirectory: &isDirectory] && isDirectory) {
+            NSString *projectPath = [fullPath stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"side"]];
+            if ([manager fileExistsAtPath: projectPath])
+                [availableProjects addObject: projectName];
+        }
+    }
+    
+    return availableProjects;
+}
+
+/*!
  * Get the local IP address of this iOS device on the connected network. This can be used as the base address
  * for scanning the network for XBee devices.
  *

@@ -77,6 +77,8 @@
 
 @end
 
+// TODO: SensorTag Accelerometer will not scroll all the way to the end using Bluetooth keyboard after starting with software keyboard.
+// TODO: After Undo, select the change.
 
 @implementation CodeView
 
@@ -1164,7 +1166,7 @@
 }
 
 /*!
- * Call this method to determine if a touch event is near enough to the edve fo the view to trigger 
+ * Call this method to determine if a touch event is near enough to the edge of the view to trigger 
  * a scroll and, if so, to initiaate the scroll. If a scroll starts, a timer is also fired. As long 
  * as the touch is still active, the timer will continue to scroll the screen.
  *
@@ -1372,25 +1374,32 @@
     BOOL result = NO;
     
     if (selectedRange.length > 0 && selectionRects != nil) {
+        CGPoint t = [touch locationInView: self];
+        
         CGRect r = ((CodeRect *) selectionRects[0]).rect;
         r.origin.x -= LOLLIPOP_TOUCH_SIZE;
         r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
         r.origin.y -= LOLLIPOP_SIZE + LOLLIPOP_TOUCH_SIZE;
         r.size.height = LOLLIPOP_SIZE + 2*LOLLIPOP_TOUCH_SIZE + r.size.height;
+        float firstDeltaSquared = (r.origin.x - t.x)*(r.origin.x - t.x) 
+        	+ (r.origin.y + r.size.height/2 - t.y)*(r.origin.y + r.size.height/2 - t.y);
         
-        result = CGRectContainsPoint(r, [touch locationInView: self]);
+        BOOL firstResult = CGRectContainsPoint(r, [touch locationInView: self]);
         firstLollipop = YES;
         
-        if (!result) {
-            CGRect r = ((CodeRect *) selectionRects[selectionRects.count - 1]).rect;
+        r = ((CodeRect *) selectionRects[selectionRects.count - 1]).rect;
             r.origin.x += r.size.width - LOLLIPOP_TOUCH_SIZE;
             r.size.width = 2*LOLLIPOP_TOUCH_SIZE;
             r.origin.y += r.size.height + LOLLIPOP_SIZE - LOLLIPOP_TOUCH_SIZE;
             r.size.height = 2*LOLLIPOP_TOUCH_SIZE;
+        float secondDeltaSquared = (r.origin.x - t.x)*(r.origin.x - t.x) 
+        	+ (r.origin.y + r.size.height/2 - t.y)*(r.origin.y + r.size.height/2 - t.y);
             
-            result = CGRectContainsPoint(r, [touch locationInView: self]);
-            firstLollipop = NO;
-        }
+        BOOL secondResult = CGRectContainsPoint(r, [touch locationInView: self]);
+        
+        result = firstResult || secondResult;
+        if (secondResult)
+	        firstLollipop = firstDeltaSquared < secondDeltaSquared;
     }
     
     return result;
@@ -2418,7 +2427,10 @@
         selectedRange.location += theText.length;
 
         // Follow indents on returns.
-        if (followIndentation && [[theText substringFromIndex: theText.length - 1] compare: @"\n"] == NSOrderedSame) {
+        if (followIndentation 
+            && theText.length > 0 
+            && [[theText substringFromIndex: theText.length - 1] compare: @"\n"] == NSOrderedSame) 
+        {
             // Find the most recent non-blank line.
             NSArray *previousLines = [[text substringToIndex: selectedRange.location] componentsSeparatedByString: @"\n"];
             int index = (int) previousLines.count - 1;

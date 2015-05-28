@@ -13,6 +13,7 @@
 #import "ErrorViewController.h"
 #import "openspin.h"
 #import "PickerViewController.h"
+#import "SSZipArchive.h"
 #import "TerminalView.h"
 
 
@@ -28,13 +29,13 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 // TODO: EPROM Support
 
-// TODO: Share zipped files.
 // TODO: Turn the loader into a library.
 
 // TODO: when a scan is unsuccessful, show an error dialog. Blank the IP address if nothing is found.
 // TODO: When Run is pressed, and no device is present, abort faster (or right away).
 // TODO: Sumbit iOS Changes to the Spin compiler as a repository branch.
 // TODO: Turn the loader into a library so it is easier to use in other iOS projects.
+// TODO: Software keyboard hides compiler options.
 
 @interface ProjectViewController () <UIPopoverControllerDelegate> {
     CGRect keyboardViewRect;							// View rectangle when the keyboard was shwn.
@@ -46,18 +47,20 @@ static ProjectViewController *this;						// This singleton instance of this clas
     int selectedOptimizationPickerElementIndex;			// The index of the selected Optimization picker element.
 }
 
-@property (nonatomic, retain) UIAlertView *alert;			// The current alert.
-@property (nonatomic, retain) NSString *binaryFile;			// The most recently compiled binary file.
+@property (nonatomic, retain) UIAlertView *alert;		// The current alert.
+@property (nonatomic, retain) NSString *binaryFile;		// The most recently compiled binary file.
 @property (nonatomic, retain) NSArray *baudPickerElements;
 @property (nonatomic, retain) NSArray *boardTypePickerElements;
 @property (nonatomic, retain) NSArray *compilerTypePickerElements;
 @property (nonatomic, retain) UIPopoverController *errorPopoverController;
+@property (nonatomic, retain) NSArray *fileList;
 @property (nonatomic, retain) UIPopoverController *loadImagePopoverController;
 @property (nonatomic, retain) NSArray *memoryModelPickerElements;
 @property (nonatomic, retain) NSArray *optimizationPickerElements;
 @property (nonatomic, retain) UIPopoverController *pickerPopoverController;
-@property (nonatomic) TXBee *xBee;							// Information about the current device.
+@property (nonatomic) TXBee *xBee;						// Information about the current device.
 @property (nonatomic, retain) UIPopoverController *xbeePopoverController;
+@property (nonatomic, retain) NSString *zip;			// The most recently zipped project.
 
 @end
 
@@ -75,6 +78,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize compilerTypeButton;
 @synthesize compilerTypePickerElements;
 @synthesize errorPopoverController;
+@synthesize fileList;
 @synthesize linkerOptionsTextField;
 @synthesize linkerOptionsView;
 @synthesize loadImagePopoverController;
@@ -98,6 +102,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize spinTerminalOptionsView;
 @synthesize xBee;
 @synthesize xbeePopoverController;
+@synthesize zip;
 
 #pragma mark - Misc
 
@@ -175,10 +180,13 @@ static ProjectViewController *this;						// This singleton instance of this clas
 /*!
  * Build the currently open project.
  *
- * @return				YES if the project build successfully, else NO.
+ * @param buildForFileList	YES if the goal is a list of files for archiving, else NO. The list of files will be in
+ *							fileList. It is only valid if the returned value is YES.
+ *
+ * @return					YES if the project build successfully, else NO.
  */
 
-- (BOOL) build {
+- (BOOL) build: (BOOL) buildForFileList {
     BOOL result = NO;
     
     // Make sure the terminal is stopped.
@@ -265,6 +273,9 @@ static ProjectViewController *this;						// This singleton instance of this clas
             if (project.spinCompilerOptions && project.spinCompilerOptions.length > 0)
                 commandLine = [NSString stringWithFormat: @"%@ %@", commandLine, project.spinCompilerOptions];
             
+            if (buildForFileList)
+                commandLine = [NSString stringWithFormat: @"%@ -f", commandLine];
+            
             NSString *path = [project.path stringByAppendingPathComponent: file];
             commandLine = [NSString stringWithFormat: @"%@ %@", commandLine, [self escape: path]];
             
@@ -294,7 +305,21 @@ static ProjectViewController *this;						// This singleton instance of this clas
             
             // Check for an error. If one is found, display it. Return the result.
             NSString *out = [NSString stringWithContentsOfFile: stdoutPath encoding: NSUTF8StringEncoding error: nil];
-            if ([out rangeOfString: @"Done"].location != NSNotFound && [out rangeOfString: @"Program size is "].location != NSNotFound) {
+            if (buildForFileList) {
+                // If a list of files was requested, collect it.
+                result = YES;
+                NSArray *lines = [out componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
+                for (NSString *file in lines)
+                    if (file.length > 0 && ![file hasPrefix: @"/"]) {
+                        printf("Bad line: %s\n", [file UTF8String]);
+                        result = NO;
+                        break;
+                    }
+                if (result)
+                    self.fileList = lines;
+            } else if ([out rangeOfString: @"Done"].location != NSNotFound 
+                       && [out rangeOfString: @"Program size is "].location != NSNotFound) 
+            {
                 result = YES;
             } else {
                 NSArray *lines = [out componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
@@ -591,6 +616,167 @@ static ProjectViewController *this;						// This singleton instance of this clas
 }
 
 /*!
+ * Open a new, external project.
+ *
+ * The passed URL is the URL of a zipped Spin project or a .spin file. Either way, a new project is created based on
+ * the passed files and opened in the project editor.
+ *
+ * @param url			The project or file URL.
+ */
+
+- (void) openProject: (NSURL *) url {
+    Project *newProject = nil;
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    NSString *extension = [[[url absoluteString] pathExtension] lowercaseString];
+    if ([extension isEqualToString: @"pzip"] || [extension isEqualToString: @"spin"]) {
+        // Find the name of the imported project.
+        NSString *projectName = [[[url path] lastPathComponent] stringByDeletingPathExtension];
+        
+        // Find a project name that does not duplicate a current project.
+        NSArray *projects = [Common findProjects];
+        BOOL nameOK = NO;
+        NSString *rootName = projectName;
+        int index = 1;
+        while (!nameOK) {
+            nameOK = YES;
+            for (NSString *aProject in projects)
+                if ([[aProject lowercaseString] isEqualToString: [projectName lowercaseString]]) {
+                    nameOK = NO;
+                    break;
+                }
+            if (!nameOK)
+                projectName = [NSString stringWithFormat: @"%@_%d", rootName, index++];
+        }
+
+        // Create the project folder.
+        NSString *path = [[Common sandbox] stringByAppendingPathComponent: projectName];
+        [manager createDirectoryAtPath: path withIntermediateDirectories: YES attributes: nil error: &error];
+        if ([extension isEqualToString: @"pzip"]) {
+            // Load the files in the project folder.
+            if (error == nil) {
+                NSString *projectName = [[url absoluteString] lastPathComponent];
+                if (![SSZipArchive unzipFileAtPath: [url path] toDestination: path]) {
+                    NSString *message = [NSString stringWithFormat: @"The project %@ could not be opened.", projectName];
+                    self.alert = [[UIAlertView alloc] initWithTitle: @"Error Importing"
+                                                            message: message
+                                                           delegate: self
+                                                  cancelButtonTitle: @"OK"
+                                                  otherButtonTitles: nil];
+                    alert.tag = alertWarning;
+                    [alert show];
+                    path = nil;
+                }
+            } else
+                path = nil;
+            
+            // Make sure the names of the side file and main spin file match the project name.
+            NSString *sideName = nil;
+            if (path != nil) {
+                NSArray *files = [manager contentsOfDirectoryAtPath: path error: &error];
+                
+                // Find the side file (if any) and its name.
+                BOOL changed = NO;
+                for (NSString *file in files) {
+                    if ([[[file pathExtension] lowercaseString] isEqualToString: @"side"]) {
+                        sideName = [[file lastPathComponent] stringByDeletingPathExtension];
+                        if (![[sideName lowercaseString] isEqualToString: [projectName lowercaseString]]) {
+                            NSString *newName = [projectName stringByAppendingPathExtension: @"side"];
+                            NSString *newPath = [path stringByAppendingPathComponent: newName];
+                            NSString *oldPath = [path stringByAppendingPathComponent: file];
+                            [manager moveItemAtPath: oldPath toPath: newPath error: &error];
+                            changed = YES;
+                        }
+                    }
+                }
+                
+                // If the side file name was changed, find the corresponding spin file and rename it, too.
+                if (changed) {
+                    NSString *oldName = [sideName stringByAppendingPathExtension: @"spin"];
+                    NSString *oldPath = [path stringByAppendingPathComponent: oldName];
+                    NSString *newName = [projectName stringByAppendingPathExtension: @"spin"];
+                    NSString *newPath = [path stringByAppendingPathComponent: newName];
+                    if ([manager fileExistsAtPath: oldPath])
+                        [manager moveItemAtPath: oldPath toPath: newPath error: &error];
+                }
+            }
+            
+            // Create a new project object.
+            newProject = [[Project alloc] init];
+            if (sideName != nil)
+                // Do initial setup from the side file.
+                [newProject readSideFile: projectName error: &error];
+            else {
+                // Set up the new project manually.
+                newProject.language = languageSpin;
+                newProject.name = projectName;
+                newProject.path = [[Common sandbox] stringByAppendingPathComponent: projectName];
+                newProject.sidePath = [project.path stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"side"]];
+                newProject.spinCompilerOptions = @"";
+            }
+            if (error == nil) {
+                // Make sure all of the imported files are in the file list, starting with the project file.
+                newProject.files = [[NSMutableArray alloc] init];
+                NSArray *files = [manager contentsOfDirectoryAtPath: path error: &error];
+                NSString *projectFile = [projectName stringByAppendingPathExtension: @"spin"];
+                if ([manager fileExistsAtPath: [newProject.path stringByAppendingPathComponent: projectFile]])
+                    [newProject.files addObject: projectFile];
+                projectFile = [projectFile lowercaseString];
+                for (NSString *file in files) {
+                    if (![[file lowercaseString] isEqualToString: projectFile] 
+                        && ![[[file pathExtension] lowercaseString] isEqualToString: @"side"])
+                        [newProject.files addObject: file];
+                }
+            }
+        } else { // [extension isEqualToString: @"spin"]
+            // Move the spin file to the project folder.
+            [manager moveItemAtPath: [url path] 
+                             toPath: [path stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"spin"]]
+                              error: &error];
+            
+            // Create a new project object.
+            newProject = [[Project alloc] init];
+            newProject.files = [NSMutableArray arrayWithObject: [projectName stringByAppendingPathExtension: @"spin"]];
+            newProject.language = languageSpin;
+            newProject.name = projectName;
+            newProject.path = [[Common sandbox] stringByAppendingPathComponent: projectName];
+            newProject.sidePath = [project.path stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"side"]];
+            newProject.spinCompilerOptions = @"";
+        }
+        
+        // Update the side file.
+        if (error == nil)
+            [newProject writeSideFile: &error];
+        
+        // Open the new project.
+        if (error == nil)
+	        [self detailViewControllerOpenProject: projectName];
+        
+        // If there was an error, clean up the files we created.
+        if (error != nil)
+            [manager removeItemAtPath: path error: &error];
+    } else {
+        NSString *message = [NSString stringWithFormat: @"The file %@ is not a Spin file or project.", [[url path] lastPathComponent]];
+        self.alert = [[UIAlertView alloc] initWithTitle: @"Error Importing"
+                                                message: message
+                                               delegate: self
+                                      cancelButtonTitle: @"OK"
+                                      otherButtonTitles: nil];
+        alert.tag = alertWarning;
+        [alert show];
+    }
+    
+    if (error != nil)
+        [Common reportError: error];
+    
+    // Clean up any files in the in box.
+    NSString *inBoxPath = [[url path] stringByDeletingLastPathComponent];
+    NSArray *files = [manager contentsOfDirectoryAtPath: inBoxPath error: &error];
+    for (NSString *file in files)
+        [manager removeItemAtPath: [inBoxPath stringByAppendingPathComponent: file] error: &error];
+}
+
+/*!
  * Open a file.
  *
  * This method opens any file by name and selects it. If the file is in the current project, it is selected there. If the
@@ -752,6 +938,36 @@ static ProjectViewController *this;						// This singleton instance of this clas
                                                  inView: sourceView
                                permittedArrowDirections: UIPopoverArrowDirectionAny
                                                animated: YES];
+}
+
+/*!
+ * Zip the files in the current project.
+ *
+ * @return				The full path of the zipped file, or nil if there was an error.
+ */
+
+- (NSString *) zipCurrentProject {
+    NSString *result = nil;
+    
+    if ([self build: YES]) {
+        NSString *zipPath = [project.path stringByAppendingPathComponent: [project.name stringByAppendingPathExtension: @"pzip"]];
+        fileList = [fileList arrayByAddingObject: project.sidePath];
+        if ([SSZipArchive createZipFileAtPath: zipPath withFilesAtPaths: fileList]) {
+            result = zipPath;
+        }
+        
+        self.fileList = nil;
+    } else {
+        NSString *message = [NSString stringWithFormat: @"The project must build without error before it can be archived."];
+        self.alert = [[UIAlertView alloc] initWithTitle: @"Not Archived"
+                                                message: message
+                                               delegate: self
+                                      cancelButtonTitle: @"OK"
+                                      otherButtonTitles: nil];
+        alert.tag = alertWarning;
+        [alert show];
+    }
+    return result;
 }
 
 #pragma mark - Actions
@@ -1246,6 +1462,29 @@ static ProjectViewController *this;						// This singleton instance of this clas
         [self alertClicked: alertView clickedButtonAtIndex: buttonIndex];
 }
 
+#pragma mark - MFMailComposeViewControllerDelegate methods
+
+/*
+ * Tells the delegate that the user wants to dismiss the mail composition view.
+ *
+ * Parameters:
+ *	controller: The view controller object managing the mail composition view.
+ *	result: The result of the user’s action.
+ *	error: If an error occurred, this parameter contains an error object with information about the type of failure.
+ */
+
+- (void) mailComposeController: (MFMailComposeViewController *) controller 
+           didFinishWithResult: (MFMailComposeResult) result 
+                         error: (NSError *) error 
+{
+    [self dismissViewControllerAnimated: YES completion: ^(void) {
+        // Delete the zip archive.
+        [[NSFileManager defaultManager] removeItemAtPath: zip error: nil];
+    }];
+    if (error != nil)
+        [Common reportError: error];
+}
+
 #pragma mark - DetailViewControllerDelegate
 
 /*!
@@ -1255,7 +1494,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (void) detailViewControllerBuildProject {
-    [self build];
+    [self build: NO];
 }
 
 /*!
@@ -1357,6 +1596,29 @@ static ProjectViewController *this;						// This singleton instance of this clas
                                   otherButtonTitles: @"Yes", nil];
     alert.tag = alertDeleteProject;
     [alert show];
+}
+
+/*!
+ * Tells the delegate to share the current project via email.
+ */
+
+- (void) detailViewControllerEMail {
+    // Zip the project.
+    zip = [self zipCurrentProject];
+    if (zip != nil) {
+        // Mail the zipped file.
+        MFMailComposeViewController *mailController = [[MFMailComposeViewController alloc] init];
+        
+        [mailController setMailComposeDelegate: self];
+        [mailController setSubject: [NSString stringWithFormat: @"Spin IDE iOS Project: %@", project.name]];
+        [mailController setMessageBody: [NSString stringWithFormat: @"Here is the source for the Spin IDE iOS Project %@.\n\n"
+                                         @"You can import it into Spin IDE on your iPad by selecting the attachment and tapping "
+                                         @"the Share button. Select Spin IDE from the list of apps that appears.", project.name] isHTML: NO];
+        NSData *data = [NSData dataWithContentsOfFile: zip];
+        [mailController addAttachmentData: data mimeType: @"application/zip" fileName: [zip lastPathComponent]];
+        
+        [self presentViewController: mailController animated: YES completion: nil];
+    }
 }
 
 /*!
@@ -1582,7 +1844,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 
 - (void) detailViewControllerRunProject: (UIView *) sender {
     if (loadImagePopoverController == nil && xbeePopoverController == nil)
-        if ([self build]) {
+        if ([self build: NO]) {
             // Create the controller and add the root controller.
             LoadImageViewController *loadImageController = [[LoadImageViewController alloc] initWithNibName: @"LoadImageViewController"
                                                                                                      bundle: nil];

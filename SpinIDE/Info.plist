@@ -4,6 +4,41 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>com.parallax.project.pzip</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Spin Project</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.parallax.project.pzip</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>com.parallax.project.spin</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Spin File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.parallax.project.spin</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -19,8 +54,12 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.0.10</string>
+	<string>1.0.0.11</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -52,6 +91,43 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Spin Project</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.parallax.project.pzip</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>pzip</string>
+				<key>public.mime-type</key>
+				<string>application/spinproject</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Spin File</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.parallax.project.spin</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>spin</string>
+				<key>public.mime-type</key>
+				<string>application/spin</string>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>

@@ -40,6 +40,7 @@ typedef enum {languageC, languageCPP, languageSpin} languageType;
 @interface Common : NSObject
 
 + (const char *) csandbox;
++ (NSMutableArray *) findProjects;
 + (NSString *) getIPAddress;
 + (BOOL) hideFileListPreference;
 + (void) reportError: (NSError *) error;

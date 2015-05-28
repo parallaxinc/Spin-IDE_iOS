@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="H1p-Uh-vWS">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="H1p-Uh-vWS">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -471,7 +471,10 @@
                                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZrN-pU-ffO">
                                                                 <rect key="frame" x="20" y="33" width="280" height="30"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="woa-SY-Rpj" id="ZgH-YD-SSB"/>
+                                                                </connections>
                                                             </textField>
                                                         </subviews>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -484,6 +487,9 @@
                                                             <constraint firstItem="ZrN-pU-ffO" firstAttribute="top" secondItem="gtX-af-7ci" secondAttribute="bottom" constant="8" id="d8Q-ra-GAC"/>
                                                             <constraint firstItem="gtX-af-7ci" firstAttribute="top" secondItem="woa-SY-Rpj" secondAttribute="top" constant="8" id="dpH-6F-t3a"/>
                                                         </constraints>
+                                                        <connections>
+                                                            <outlet property="compilerOptionsTextField" destination="ZrN-pU-ffO" id="lAT-GH-Uv7"/>
+                                                        </connections>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="krk-sn-kmV" userLabel="View - Terminal" customClass="LinkerOptionsView">
                                                         <rect key="frame" x="0.0" y="0.0" width="320" height="308"/>

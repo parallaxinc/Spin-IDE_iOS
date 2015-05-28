@@ -17,10 +17,11 @@
 #import "FindViewController.h"
 #import "NavToolBar.h"
 #import "ProjectViewController.h"
+#import "ShareViewController.h"
 #import "SplitViewController.h"
 
 
-typedef enum {tagFind, tagNewFile, tagNewProject, tagOpenProject, tagRenameFile, tagRenameProject, tagOpenFile} alertTags;
+typedef enum {tagFind, tagNewFile, tagNewProject, tagOpenProject, tagRenameFile, tagRenameProject, tagOpenFile, tagShare} alertTags;
 typedef enum {textCommandUndo, textCommandRedo} textCommands;
 
 static DetailViewController *this;						// This singleton instance of this class.
@@ -180,31 +181,6 @@ static DetailViewController *this;						// This singleton instance of this class
 }
 
 /*!
- * Locate all of the projects on disk and return a list of those projects.
- *
- * @return			A ist of the existing projects as an array on NSString objects.
- */
-
-- (NSMutableArray *) findProjects {
-    NSMutableArray *availableProjects = [[NSMutableArray alloc] init];
-    
-    NSString *sandBoxPath = [Common sandbox];
-    NSFileManager *manager = [NSFileManager defaultManager];
-    NSArray *files = [manager contentsOfDirectoryAtPath: sandBoxPath error: nil];
-    for (NSString *projectName in files) {
-        NSString *fullPath = [sandBoxPath stringByAppendingPathComponent: projectName];
-        BOOL isDirectory;
-        if ([manager fileExistsAtPath: fullPath isDirectory: &isDirectory] && isDirectory) {
-            NSString *projectPath = [fullPath stringByAppendingPathComponent: [projectName stringByAppendingPathExtension: @"side"]];
-            if ([manager fileExistsAtPath: projectPath])
-                [availableProjects addObject: projectName];
-        }
-    }
-    
-    return availableProjects;
-}
-
-/*!
  * Frees memory allocated by commandLineArgumentsFor:count:.
  *
  * @param args		The command line arguments to dispose of.
@@ -244,6 +220,7 @@ static DetailViewController *this;						// This singleton instance of this class
             findViewController.referenceTextView = sourceConsoleSplitView.sourceView;
             pickerController = findViewController;
             navigationController = [[UINavigationController alloc] initWithRootViewController: pickerController];
+            findViewController.title = prompt;
             break;
         }
             
@@ -286,6 +263,19 @@ static DetailViewController *this;						// This singleton instance of this class
             // Select the proper row in the picker.
             if (index < elements.count)
                 [openProjectViewController.picker selectRow: index inComponent: 0 animated: NO];
+            break;
+        }
+            
+        case tagNewFile: {
+            NewFileOrProjectViewController *newFileViewController = [[NewFileOrProjectViewController alloc] initWithNibName: @"NewFileOrProjectViewController" 
+                                                                                                                     bundle: nil 
+                                                                                                                     prompt: prompt
+                                                                                                                  isProject: NO];
+            pickerController = newFileViewController;
+            navigationController = [[UINavigationController alloc] initWithRootViewController: newFileViewController];
+            newFileViewController.navController = navigationController;
+            newFileViewController.projects = elements;
+            newFileViewController.delegate = self;
             break;
         }
             
@@ -332,16 +322,12 @@ static DetailViewController *this;						// This singleton instance of this class
             break;
         }
             
-        case tagNewFile: {
-            NewFileOrProjectViewController *newFileViewController = [[NewFileOrProjectViewController alloc] initWithNibName: @"NewFileOrProjectViewController" 
-                                                                                                                     bundle: nil 
-                                                                                                                     prompt: prompt
-                                                                                                                  isProject: NO];
-            pickerController = newFileViewController;
-            navigationController = [[UINavigationController alloc] initWithRootViewController: newFileViewController];
-            newFileViewController.navController = navigationController;
-            newFileViewController.projects = elements;
-            newFileViewController.delegate = self;
+        case tagShare: {
+            ShareViewController *shareViewController = [[ShareViewController alloc] initWithNibName: @"ShareViewController" bundle: nil];
+            pickerController = shareViewController;
+            navigationController = [[UINavigationController alloc] initWithRootViewController: pickerController];
+            shareViewController.title = prompt;
+            shareViewController.shareViewControllerDelegate = self;
             break;
         }
     }
@@ -382,7 +368,7 @@ static DetailViewController *this;						// This singleton instance of this class
 }
 
 /*!
- * Remove a project from the lsit of projects.
+ * Remove a project from the list of projects.
  *
  * This removes the project from the list, but does not remove it from disk.
  *
@@ -436,6 +422,8 @@ static DetailViewController *this;						// This singleton instance of this class
         self.renameProjectButton = [self addButtonWithImageNamed: @"rename.png" x: &x action: @selector(renameProjectAction:)];
         x += space;
         self.deleteProjectButton = [self addButtonWithImageNamed: @"delete.png" x: &x action: @selector(deleteProjectAction:)];
+        x += space;
+        self.shareButton = [self addButtonWithImageNamed: @"share.png" x: &x action: @selector(shareAction:)];
     } else {
         [self addButtonWithImageNamed: @"project-closed.png" x: &x action: @selector(showHideProjectButtonsAction)];
     }
@@ -470,8 +458,6 @@ static DetailViewController *this;						// This singleton instance of this class
         redoButton.tag = textCommandRedo;
         x += space;
         self.findButton = [self addButtonWithImageNamed: @"find.png" x: &x action: @selector(findAction:)];
-        x += space;
-        self.shareButton = [self addButtonWithImageNamed: @"share.png" x: &x action: @selector(shareAction:)];
         [self checkUndRedoButtons];
     } else {
         [self addButtonWithImageNamed: @"edit-closed.png" x: &x action: @selector(showHideEditButtonsAction)];
@@ -508,6 +494,7 @@ static DetailViewController *this;						// This singleton instance of this class
     switch (buttonState) {
         case stateNothingOpen: 
             renameProjectButton.enabled = NO;
+            shareButton.enabled = NO;
             deleteFileButton.enabled = NO;
             deleteProjectButton.enabled = NO;
             anewFileButton.enabled = NO;
@@ -522,6 +509,7 @@ static DetailViewController *this;						// This singleton instance of this class
             
         case stateOpenProject: {
             renameProjectButton.enabled = YES;
+            shareButton.enabled = YES;
             deleteFileButton.enabled = YES;
             deleteProjectButton.enabled = YES;
             anewFileButton.enabled = YES;
@@ -540,6 +528,7 @@ static DetailViewController *this;						// This singleton instance of this class
             
         case stateOpenFiles: 
             renameProjectButton.enabled = NO;
+            shareButton.enabled = NO;
             deleteFileButton.enabled = NO;
             deleteProjectButton.enabled = NO;
             anewFileButton.enabled = NO;
@@ -554,6 +543,7 @@ static DetailViewController *this;						// This singleton instance of this class
             
         case stateOpenProjectAndFilesEditingProjectFile: {
             renameProjectButton.enabled = YES;
+            shareButton.enabled = YES;
             deleteFileButton.enabled = YES;
             deleteProjectButton.enabled = YES;
             anewFileButton.enabled = YES;
@@ -572,6 +562,7 @@ static DetailViewController *this;						// This singleton instance of this class
             
         case stateOpenProjectAndFilesEditingNonProjectFile: 
             renameProjectButton.enabled = YES;
+            shareButton.enabled = YES;
             deleteFileButton.enabled = NO;
             deleteProjectButton.enabled = YES;
             anewFileButton.enabled = YES;
@@ -702,7 +693,7 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) newProjectAction: (id) sender {
-    projects = [self findProjects];
+    projects = [Common findProjects];
     [self pickerAction: tagNewProject prompt: @"New Project" elements: projects button: sender index: 0];
 }
 
@@ -714,7 +705,7 @@ static DetailViewController *this;						// This singleton instance of this class
 
 - (void) openFileAction: (id) sender {
     projects = [NSMutableArray arrayWithObject: SPIN_LIBRARY_PICKER_NAME];
-    [projects addObjectsFromArray: [self findProjects]];
+    [projects addObjectsFromArray: [Common findProjects]];
     [self pickerAction: tagOpenFile prompt: @"Open a File" elements: projects button: sender index: 0];
 }
 
@@ -725,7 +716,7 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) openProjectAction: (id) sender {
-    projects = [self findProjects];
+    projects = [Common findProjects];
     [self pickerAction: tagOpenProject prompt: @"Open a Project" elements: projects button: sender index: 0];
 }
 
@@ -738,20 +729,7 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) shareAction: (UIButton *) sender {
-    UIPrintInfo *printInfo = [UIPrintInfo printInfo];
-    printInfo.jobName = [sourceConsoleSplitView.sourceView.path lastPathComponent];
-
-    UIPrintInteractionController *print = [UIPrintInteractionController sharedPrintController];
-    print.printInfo = printInfo;
-    print.showsPageRange = YES;
-    print.printFormatter = sourceConsoleSplitView.sourceView.viewPrintFormatter;
-    
-    void (^completionHandler) (UIPrintInteractionController *, BOOL, NSError *) = ^(UIPrintInteractionController *print, BOOL completed, NSError *error) {
-        if (!completed && error) {
-            [Common reportError: error];
-        }
-    };
-    [print presentFromRect: sender.frame inView: toolBarView animated: YES completionHandler: completionHandler];
+    [self pickerAction: tagShare prompt: @"Share" elements: nil button: sender index: 0];
 }
 
 /*!
@@ -781,7 +759,7 @@ static DetailViewController *this;						// This singleton instance of this class
     NSString *oldName = [[ProjectViewController defaultProjectViewController] project].name;
     if (oldName && oldName.length > 0) {
         NSString *prompt = [NSString stringWithFormat: @"Rename the %@ project", oldName];
-        projects = [self findProjects];
+        projects = [Common findProjects];
         [self pickerAction: tagRenameProject prompt: prompt elements: projects button: sender index: 0];
     }
 }
@@ -1185,6 +1163,45 @@ static DetailViewController *this;						// This singleton instance of this class
                 [delegate detailViewControllerRenameFile: oldName newName: name];
         }
     }
+}
+
+#pragma mark - ShareViewControllerDelegate
+
+/*!
+ * Tells the delegate the EMail button was tapped.
+ */
+
+- (void) shareViewControllerEMail {
+    [popoverController dismissPopoverAnimated: YES];
+    
+    if ([delegate respondsToSelector: @selector(detailViewControllerEMail)])
+        [delegate detailViewControllerEMail];
+}
+
+/*!
+ * Tells the delegate the print button was tapped.
+ */
+
+- (void) shareViewControllerPrint {
+    [popoverController dismissPopoverAnimated: YES];
+
+    UIPrintInfo *printInfo = [UIPrintInfo printInfo];
+    printInfo.jobName = [sourceConsoleSplitView.sourceView.path lastPathComponent];
+
+    UIPrintInteractionController *print = [UIPrintInteractionController sharedPrintController];
+    print.printInfo = printInfo;
+    print.showsPageRange = YES;
+    print.printFormatter = sourceConsoleSplitView.sourceView.viewPrintFormatter;
+    
+    void (^completionHandler) (UIPrintInteractionController *, BOOL, NSError *) = ^(UIPrintInteractionController *print, 
+                                                                                    BOOL completed, 
+                                                                                    NSError *error) 
+    {
+        if (!completed && error) {
+            [Common reportError: error];
+        }
+    };
+    [print presentFromRect: shareButton.frame inView: toolBarView animated: YES completionHandler: completionHandler];
 }
 
 #pragma mark - SourceViewDelegate

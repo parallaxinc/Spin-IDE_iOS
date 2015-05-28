@@ -13,13 +13,6 @@
 
 #define SPACE (14.0)										/* Space between keys. */
 
-// TODO: Add selection point location after insert.
-// TODO: Add the various multi-line selections, like FOR-NEXT, SUB-END SUB
-// TODO: Cull the reserved words
-// TODO: Add methods
-// TODO: Add event subrtoutines
-// TODO: createCompletionButtons is called twice when a letter is typed or deleted
-
 @interface CodeInputAccessoryView ()
 
 @property (nonatomic, retain) NSMutableArray *buttons;		// The current completion buttons.
@@ -39,11 +32,10 @@
 #pragma mark - Misc
 
 /*!
- * Add a gradient background, replaceing the old one it it exists.
+ * Add a gradient background, replacing the old one it it exists.
  */
 
 - (void) addGradient {
-    // TODO: Gradient is set for iPad portrait. iPad landscape and iPhone use different gradients. Other O/S versions may, too.
     if (gradient != nil) {
         [gradient removeFromSuperlayer];
     }
@@ -92,71 +84,112 @@
  */
 
 - (void) createCompletionButtons {
-	// Remove any old completion buttons.
-    while (buttons.count > 0) {
-        CodeCompletionButton *button = [buttons objectAtIndex: 0];
-        [buttons removeObjectAtIndex: 0];
-        [button removeFromSuperview];
-    }
-    
-    // Create the new completion buttons.
-    float left = self.frame.size.width/2.0;
-    float right = left;
-    BOOL doRight = YES;
-    int index = 0;
-    NSArray *codeCompletions = [self codeCompletions];
-    BOOL done = codeCompletions.count == 0;
-    
-    while (!done) {
-        CodeCompletionButton *compButton = [CodeCompletionButton buttonWithType: UIButtonTypeCustom];
-        CodeCompletion *codeCompletion = codeCompletions[index++];
-        compButton.codeCompletion = codeCompletion;
-        [compButton setTitleColor: codeCompletion.color forState: UIControlStateNormal];
-        [compButton addTarget: self action: @selector(completeCurrentWord:) forControlEvents: UIControlEventTouchUpInside];
-        [compButton setTitle: codeCompletion.name forState: UIControlStateNormal];
-        [compButton sizeToFit];
-
-        CGRect frame = compButton.frame;
-        frame.size.width += 16;
-        if (frame.size.width < 30)
-            frame.size.width = 30;
-        frame.size.height = 30.0;
-        frame.origin.y = 10.0;
-        if (right == left) {
-            frame.origin.x = left - frame.size.width/2.0;
-            left = frame.origin.x;
-            right = left + frame.size.width;
-        } else if (doRight) {
-            if (right + 2*SPACE + frame.size.width < self.frame.size.width) {
-                frame.origin.x = right + SPACE;
-                right = right + frame.size.width + SPACE;
-                doRight = NO;
-            } else if (left - 2*SPACE - frame.size.width > 0) {
-                frame.origin.x = left - SPACE - frame.size.width;
-                left = left - frame.size.width - SPACE;
-                doRight = YES;
-            } else
-                done = YES;
-        } else {
-            if (left - 2*SPACE - frame.size.width > 0) {
-                frame.origin.x = left - SPACE - frame.size.width;
-                left = left - frame.size.width - SPACE;
-                doRight = YES;
-            } else if (right + 2*SPACE + frame.size.width < self.frame.size.width) {
-                frame.origin.x = right + SPACE;
-                right = right + frame.size.width + SPACE;
-                doRight = NO;
-            } else
-                done = YES;
+    // Check to be sure initialization is complete before trying to create buttons.
+    if (buttons != nil) {
+        // Remove any old completion buttons.
+        while (buttons.count > 0) {
+            CodeCompletionButton *button = [buttons objectAtIndex: 0];
+            [buttons removeObjectAtIndex: 0];
+            [button removeFromSuperview];
         }
-        compButton.frame = frame;
         
-        if (!done) {
-            [self addSubview: compButton];
-            [buttons addObject: compButton];
+        // Create the new completion buttons.
+#if 1
+        float left = SPACE/2;
+        int index = 0;
+        NSArray *codeCompletions = [self codeCompletions];
+        BOOL done = codeCompletions.count == 0;
+        
+        while (!done) {
+            CodeCompletionButton *compButton = [CodeCompletionButton buttonWithType: UIButtonTypeCustom];
+            CodeCompletion *codeCompletion = codeCompletions[index++];
+            compButton.codeCompletion = codeCompletion;
+            [compButton setTitleColor: codeCompletion.color forState: UIControlStateNormal];
+            [compButton addTarget: self action: @selector(completeCurrentWord:) forControlEvents: UIControlEventTouchUpInside];
+            [compButton setTitle: codeCompletion.name forState: UIControlStateNormal];
+            [compButton sizeToFit];
             
-            done = index >= codeCompletions.count;
+            CGRect frame = compButton.frame;
+            frame.size.width += 16;
+            if (frame.size.width < 30)
+                frame.size.width = 30;
+            frame.size.height = 30.0;
+            frame.origin.y = 10.0;
+            
+            frame.origin.x = left;
+            left += frame.size.width + SPACE;
+            
+            compButton.frame = frame;
+            
+            done = left - SPACE > self.frame.size.width - SPACE/2;
+            
+            if (!done) {
+                [self addSubview: compButton];
+                [buttons addObject: compButton];
+                
+                done = index >= codeCompletions.count;
+            }
         }
+#else
+        float left = self.frame.size.width/2.0;
+        float right = left;
+        BOOL doRight = YES;
+        int index = 0;
+        NSArray *codeCompletions = [self codeCompletions];
+        BOOL done = codeCompletions.count == 0;
+        
+        while (!done) {
+            CodeCompletionButton *compButton = [CodeCompletionButton buttonWithType: UIButtonTypeCustom];
+            CodeCompletion *codeCompletion = codeCompletions[index++];
+            compButton.codeCompletion = codeCompletion;
+            [compButton setTitleColor: codeCompletion.color forState: UIControlStateNormal];
+            [compButton addTarget: self action: @selector(completeCurrentWord:) forControlEvents: UIControlEventTouchUpInside];
+            [compButton setTitle: codeCompletion.name forState: UIControlStateNormal];
+            [compButton sizeToFit];
+            
+            CGRect frame = compButton.frame;
+            frame.size.width += 16;
+            if (frame.size.width < 30)
+                frame.size.width = 30;
+            frame.size.height = 30.0;
+            frame.origin.y = 10.0;
+            if (right == left) {
+                frame.origin.x = left - frame.size.width/2.0;
+                left = frame.origin.x;
+                right = left + frame.size.width;
+            } else if (doRight) {
+                if (right + 2*SPACE + frame.size.width < self.frame.size.width) {
+                    frame.origin.x = right + SPACE;
+                    right = right + frame.size.width + SPACE;
+                    doRight = NO;
+                } else if (left - 2*SPACE - frame.size.width > 0) {
+                    frame.origin.x = left - SPACE - frame.size.width;
+                    left = left - frame.size.width - SPACE;
+                    doRight = YES;
+                } else
+                    done = YES;
+            } else {
+                if (left - 2*SPACE - frame.size.width > 0) {
+                    frame.origin.x = left - SPACE - frame.size.width;
+                    left = left - frame.size.width - SPACE;
+                    doRight = YES;
+                } else if (right + 2*SPACE + frame.size.width < self.frame.size.width) {
+                    frame.origin.x = right + SPACE;
+                    right = right + frame.size.width + SPACE;
+                    doRight = NO;
+                } else
+                    done = YES;
+            }
+            compButton.frame = frame;
+            
+            if (!done) {
+                [self addSubview: compButton];
+                [buttons addObject: compButton];
+                
+                done = index >= codeCompletions.count;
+            }
+        }
+#endif
     }
 }
 

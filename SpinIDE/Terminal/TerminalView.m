@@ -611,11 +611,11 @@ static TerminalView *this;
                 theText = [theText substringFromIndex: 1];
             } else {
                 if (index < 0)
-                    index = theText.length;
+                    index = (int) theText.length;
                 NSString *text = [theText substringToIndex: index];
                 NSRange range = terminalOutputView.selectedRange;
                 int length = (int) text.length;
-                int pos = range.location;
+                int pos = (int) range.location;
                 while (length-- && pos < terminalOutputView.text.length && [terminalOutputView.text characterAtIndex: pos] != '\n') {
                     ++range.length;
                     ++pos;

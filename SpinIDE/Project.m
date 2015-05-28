@@ -20,7 +20,10 @@
 @synthesize spinCompilerOptions;
 
 /*!
- * Read a project, initializing this object for that project's contents. Any values i this object refering to an old project will be lost.
+ * Read a project, initializing this object for that project's contents. Any values in this object refering to an old project will be lost.
+ *
+ * @param projectName		The name of hte project. Thi does not include the path.
+ * @param error				(Output) Set to the error if the project could not be read.
  */
 
 - (void) readSideFile: (NSString *) projectName error: (NSError **) error {

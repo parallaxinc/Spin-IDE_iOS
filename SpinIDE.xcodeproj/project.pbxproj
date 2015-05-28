@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2723DB561B152AC7005CAAC1 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 2723DB551B152AC7005CAAC1 /* SSZipArchive.m */; };
+		2723DB601B152ACD005CAAC1 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 2723DB581B152ACD005CAAC1 /* ioapi.c */; };
+		2723DB611B152ACD005CAAC1 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 2723DB5A1B152ACD005CAAC1 /* mztools.c */; };
+		2723DB621B152ACD005CAAC1 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 2723DB5C1B152ACD005CAAC1 /* unzip.c */; };
+		2723DB631B152ACD005CAAC1 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 2723DB5E1B152ACD005CAAC1 /* zip.c */; };
+		2723DB671B15300B005CAAC1 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2723DB651B15300B005CAAC1 /* ShareViewController.m */; };
+		2723DB681B15300B005CAAC1 /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2723DB661B15300B005CAAC1 /* ShareViewController.xib */; };
+		272559FE1B16229C00F3EA7B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 272559FD1B16229C00F3EA7B /* libz.dylib */; };
 		272BC75B1AD5D48000827C40 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 272BC75A1AD5D48000827C40 /* main.m */; };
 		272BC75E1AD5D48000827C40 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 272BC75D1AD5D48000827C40 /* AppDelegate.m */; };
 		272BC7691AD5D48000827C40 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 272BC7681AD5D48000827C40 /* Images.xcassets */; };
@@ -16,7 +24,7 @@
 		272BC78E1AD5D6F400827C40 /* libgas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272BC7861AD5D6F400827C40 /* libgas.a */; };
 		272BC78F1AD5D6F400827C40 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272BC7871AD5D6F400827C40 /* libiberty.a */; };
 		272BC7901AD5D6F400827C40 /* libopcodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272BC7881AD5D6F400827C40 /* libopcodes.a */; };
-		272BC7911AD5D6F400827C40 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272BC78A1AD5D6F400827C40 /* libz.a */; };
+		272BC7911AD5D6F400827C40 /* libzcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272BC78A1AD5D6F400827C40 /* libzcpp.a */; };
 		272BC7921AD5D6F400827C40 /* ReadMe.txt in Resources */ = {isa = PBXBuildFile; fileRef = 272BC78B1AD5D6F400827C40 /* ReadMe.txt */; };
 		272BC7941AD5D72D00827C40 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 272BC7931AD5D72D00827C40 /* libiconv.dylib */; };
 		272BC7961AD5D73A00827C40 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 272BC7951AD5D73A00827C40 /* CoreGraphics.framework */; };
@@ -222,6 +230,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2723DB541B152AC7005CAAC1 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSZipArchive.h; path = SSZipArchive/SSZipArchive.h; sourceTree = "<group>"; };
+		2723DB551B152AC7005CAAC1 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SSZipArchive.m; path = SSZipArchive/SSZipArchive.m; sourceTree = "<group>"; };
+		2723DB571B152ACD005CAAC1 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypt.h; path = SSZipArchive/minizip/crypt.h; sourceTree = "<group>"; };
+		2723DB581B152ACD005CAAC1 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ioapi.c; path = SSZipArchive/minizip/ioapi.c; sourceTree = "<group>"; };
+		2723DB591B152ACD005CAAC1 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ioapi.h; path = SSZipArchive/minizip/ioapi.h; sourceTree = "<group>"; };
+		2723DB5A1B152ACD005CAAC1 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mztools.c; path = SSZipArchive/minizip/mztools.c; sourceTree = "<group>"; };
+		2723DB5B1B152ACD005CAAC1 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mztools.h; path = SSZipArchive/minizip/mztools.h; sourceTree = "<group>"; };
+		2723DB5C1B152ACD005CAAC1 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unzip.c; path = SSZipArchive/minizip/unzip.c; sourceTree = "<group>"; };
+		2723DB5D1B152ACD005CAAC1 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = SSZipArchive/minizip/unzip.h; sourceTree = "<group>"; };
+		2723DB5E1B152ACD005CAAC1 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zip.c; path = SSZipArchive/minizip/zip.c; sourceTree = "<group>"; };
+		2723DB5F1B152ACD005CAAC1 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = SSZipArchive/minizip/zip.h; sourceTree = "<group>"; };
+		2723DB641B15300B005CAAC1 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShareViewController.h; path = UtilityViews/ShareViewController.h; sourceTree = "<group>"; };
+		2723DB651B15300B005CAAC1 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShareViewController.m; path = UtilityViews/ShareViewController.m; sourceTree = "<group>"; };
+		2723DB661B15300B005CAAC1 /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShareViewController.xib; path = UtilityViews/ShareViewController.xib; sourceTree = "<group>"; };
+		272559FD1B16229C00F3EA7B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		272BC7551AD5D48000827C40 /* Spin IDE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Spin IDE.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272BC7591AD5D48000827C40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		272BC75A1AD5D48000827C40 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -237,7 +260,7 @@
 		272BC7871AD5D6F400827C40 /* libiberty.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libiberty.a; path = SupportingFiles/libiberty.a; sourceTree = "<group>"; };
 		272BC7881AD5D6F400827C40 /* libopcodes.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopcodes.a; path = SupportingFiles/libopcodes.a; sourceTree = "<group>"; };
 		272BC7891AD5D6F400827C40 /* libpropeller-elf-cpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "libpropeller-elf-cpp.h"; path = "SupportingFiles/libpropeller-elf-cpp.h"; sourceTree = "<group>"; };
-		272BC78A1AD5D6F400827C40 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = SupportingFiles/libz.a; sourceTree = "<group>"; };
+		272BC78A1AD5D6F400827C40 /* libzcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzcpp.a; path = SupportingFiles/libzcpp.a; sourceTree = "<group>"; };
 		272BC78B1AD5D6F400827C40 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReadMe.txt; path = SupportingFiles/ReadMe.txt; sourceTree = "<group>"; };
 		272BC78C1AD5D6F400827C40 /* SimpleIDE-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "SimpleIDE-Prefix.pch"; path = "SupportingFiles/SimpleIDE-Prefix.pch"; sourceTree = "<group>"; };
 		272BC7931AD5D72D00827C40 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
@@ -498,7 +521,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				272BC7911AD5D6F400827C40 /* libz.a in Frameworks */,
+				272559FE1B16229C00F3EA7B /* libz.dylib in Frameworks */,
+				272BC7911AD5D6F400827C40 /* libzcpp.a in Frameworks */,
 				272BC7941AD5D72D00827C40 /* libiconv.dylib in Frameworks */,
 				272BC7961AD5D73A00827C40 /* CoreGraphics.framework in Frameworks */,
 				272BC7901AD5D6F400827C40 /* libopcodes.a in Frameworks */,
@@ -520,9 +544,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2723DB521B152AA9005CAAC1 /* SSZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				2723DB541B152AC7005CAAC1 /* SSZipArchive.h */,
+				2723DB551B152AC7005CAAC1 /* SSZipArchive.m */,
+				2723DB531B152ABB005CAAC1 /* minizip */,
+			);
+			name = SSZipArchive;
+			sourceTree = "<group>";
+		};
+		2723DB531B152ABB005CAAC1 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				2723DB571B152ACD005CAAC1 /* crypt.h */,
+				2723DB581B152ACD005CAAC1 /* ioapi.c */,
+				2723DB591B152ACD005CAAC1 /* ioapi.h */,
+				2723DB5A1B152ACD005CAAC1 /* mztools.c */,
+				2723DB5B1B152ACD005CAAC1 /* mztools.h */,
+				2723DB5C1B152ACD005CAAC1 /* unzip.c */,
+				2723DB5D1B152ACD005CAAC1 /* unzip.h */,
+				2723DB5E1B152ACD005CAAC1 /* zip.c */,
+				2723DB5F1B152ACD005CAAC1 /* zip.h */,
+			);
+			name = minizip;
+			sourceTree = "<group>";
+		};
 		272BC74C1AD5D48000827C40 = {
 			isa = PBXGroup;
 			children = (
+				272559FD1B16229C00F3EA7B /* libz.dylib */,
 				272BC7931AD5D72D00827C40 /* libiconv.dylib */,
 				272BC7571AD5D48000827C40 /* SpinIDE */,
 				272BC7741AD5D48000827C40 /* SpinIDETests */,
@@ -546,6 +597,7 @@
 				272BC90B1AD5E21F00827C40 /* OpenSpin */,
 				272BC91E1AD5E26B00827C40 /* PropellerCompiler */,
 				27AF78411AD87512005C8396 /* Terminal */,
+				2723DB521B152AA9005CAAC1 /* SSZipArchive */,
 				272BC8F81AD5E1B000827C40 /* TextHighlighting */,
 				272BC8EE1AD5E12E00827C40 /* UDP */,
 				272BC87C1AD5DFF900827C40 /* UtilityViews */,
@@ -590,7 +642,7 @@
 				272BC7871AD5D6F400827C40 /* libiberty.a */,
 				272BC7881AD5D6F400827C40 /* libopcodes.a */,
 				272BC7891AD5D6F400827C40 /* libpropeller-elf-cpp.h */,
-				272BC78A1AD5D6F400827C40 /* libz.a */,
+				272BC78A1AD5D6F400827C40 /* libzcpp.a */,
 				274844121AD7471E001EE772 /* LICENSE */,
 				274844131AD7471E001EE772 /* README.md */,
 				272BC78B1AD5D6F400827C40 /* ReadMe.txt */,
@@ -781,6 +833,9 @@
 				272BC8971AD5E01200827C40 /* RenameFileOrProjectViewController.h */,
 				272BC8981AD5E01200827C40 /* RenameFileOrProjectViewController.m */,
 				272BC8991AD5E01200827C40 /* RenameFileOrProjectViewController.xib */,
+				2723DB641B15300B005CAAC1 /* ShareViewController.h */,
+				2723DB651B15300B005CAAC1 /* ShareViewController.m */,
+				2723DB661B15300B005CAAC1 /* ShareViewController.xib */,
 				272BC89A1AD5E01200827C40 /* SpinCompilerOptionsView.h */,
 				272BC89B1AD5E01200827C40 /* SpinCompilerOptionsView.m */,
 				272BC89C1AD5E01200827C40 /* SplitArrows.h */,
@@ -1007,6 +1062,7 @@
 			files = (
 				272BC85F1AD5D7DF00827C40 /* VGA.spin in Resources */,
 				272BC84E1AD5D7DF00827C40 /* Simple_Numbers.spin in Resources */,
+				2723DB681B15300B005CAAC1 /* ShareViewController.xib in Resources */,
 				272BC8721AD5D80D00827C40 /* FloatMath.spin in Resources */,
 				272BC8461AD5D7DF00827C40 /* PropellerLoader.spin in Resources */,
 				272BC8301AD5D7DF00827C40 /* COILREAD.spin in Resources */,
@@ -1163,6 +1219,7 @@
 			files = (
 				272BC8CB1AD5E06C00827C40 /* CodeUndo.m in Sources */,
 				27A09C8B1AEEF56C00A1374B /* SplitViewController.m in Sources */,
+				2723DB611B152ACD005CAAC1 /* mztools.c in Sources */,
 				272BC8A91AD5E01200827C40 /* NewFileOrProjectViewController.m in Sources */,
 				272BC8B61AD5E01200827C40 /* SplitView.m in Sources */,
 				272BC8781AD5DE5600827C40 /* Common.m in Sources */,
@@ -1187,6 +1244,7 @@
 				272BC8AD1AD5E01200827C40 /* OpenProjectViewController.m in Sources */,
 				272BC8F71AD5E19800827C40 /* NavToolBar.m in Sources */,
 				272BC75E1AD5D48000827C40 /* AppDelegate.m in Sources */,
+				2723DB561B152AC7005CAAC1 /* SSZipArchive.m in Sources */,
 				272BC9191AD5E23500827C40 /* objectheap.cpp in Sources */,
 				272BC9181AD5E23500827C40 /* flexbuf.cpp in Sources */,
 				272BC8B71AD5E01200827C40 /* SplitViewControl.m in Sources */,
@@ -1202,15 +1260,18 @@
 				272BC93F1AD5E28600827C40 /* StringConstantRoutines.cpp in Sources */,
 				272BC8EA1AD5E10B00827C40 /* ProgressView.m in Sources */,
 				272BC8741AD5D80D00827C40 /* Hello_Message.c in Sources */,
+				2723DB671B15300B005CAAC1 /* ShareViewController.m in Sources */,
 				27AF78441AD87549005C8396 /* TerminalView.m in Sources */,
 				272BC8A61AD5E01200827C40 /* FindViewController.m in Sources */,
 				272BC8B21AD5E01200827C40 /* RenameFileOrProjectViewController.m in Sources */,
 				272BC91B1AD5E23500827C40 /* pathentry.cpp in Sources */,
 				272BC8CD1AD5E06C00827C40 /* CodeView.m in Sources */,
 				272BC93B1AD5E28600827C40 /* ErrorStrings.cpp in Sources */,
+				2723DB631B152ACD005CAAC1 /* zip.c in Sources */,
 				272BC8F11AD5E14200827C40 /* GCDAsyncUdpSocket.m in Sources */,
 				272BC8E71AD5E10B00827C40 /* Loader.m in Sources */,
 				272BC9391AD5E28600827C40 /* DistillObjects.cpp in Sources */,
+				2723DB621B152ACD005CAAC1 /* unzip.c in Sources */,
 				27A09C511AEEDB6500A1374B /* CodeCompletionButton.m in Sources */,
 				272BC91D1AD5E23500827C40 /* textconvert.cpp in Sources */,
 				272BC9381AD5E28600827C40 /* CompileUtilities.cpp in Sources */,
@@ -1218,6 +1279,7 @@
 				272BC8B11AD5E01200827C40 /* ProjectOptionsView.m in Sources */,
 				272BC87B1AD5DFC000827C40 /* DetailViewController.m in Sources */,
 				272BC8C91AD5E06C00827C40 /* CodeMagnifierView.m in Sources */,
+				2723DB601B152ACD005CAAC1 /* ioapi.c in Sources */,
 				272BC9341AD5E28600827C40 /* BlockNestStackRoutines.cpp in Sources */,
 				272BC93E1AD5E28600827C40 /* PropellerCompiler.cpp in Sources */,
 				272BC9411AD5E28600827C40 /* Utilities.cpp in Sources */,

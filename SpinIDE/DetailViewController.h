@@ -12,6 +12,7 @@
 #import "OpenFileViewController.h"
 #import "OpenProjectViewController.h"
 #import "RenameFileOrProjectViewController.h"
+#import "ShareViewController.h"
 #import "SourceConsoleSplitView.h"
 
 @protocol DetailViewControllerDelegate <NSObject>
@@ -59,6 +60,12 @@
  */
 
 - (void) detailViewControllerDeleteProject;
+
+/*!
+ * Tells the delegate to share the current project via email.
+ */
+
+- (void) detailViewControllerEMail;
 
 /*!
  * Open a new file in the current project.
@@ -139,7 +146,8 @@
 typedef enum {stateNothingOpen, stateOpenProject, stateOpenFiles, stateOpenProjectAndFilesEditingProjectFile, stateOpenProjectAndFilesEditingNonProjectFile} buttonStates;
 
 
-@interface DetailViewController : UIViewController <NewFileOrProjectViewControllerDelegate, OpenFileViewControllerDelegate, OpenProjectViewControllerDelegate, RenameFileOrProjectViewControllerDelegate, UIPopoverControllerDelegate, SourceViewDelegate>
+@interface DetailViewController : UIViewController <NewFileOrProjectViewControllerDelegate, OpenFileViewControllerDelegate, OpenProjectViewControllerDelegate, RenameFileOrProjectViewControllerDelegate, UIPopoverControllerDelegate, SourceViewDelegate,
+    ShareViewControllerDelegate>
 
 @property (nonatomic) buttonStates buttonState;
 @property (weak, nonatomic) id<DetailViewControllerDelegate> delegate;
