@@ -211,6 +211,9 @@
 		272BC9411AD5E28600827C40 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272BC9321AD5E28600827C40 /* Utilities.cpp */; };
 		272BC9431AD5E54800827C40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 272BC9421AD5E54800827C40 /* Main.storyboard */; };
 		274844141AD7471E001EE772 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 274844121AD7471E001EE772 /* LICENSE */; };
+		2760C5B91B27AFC400F06F91 /* TerminalOutputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2760C5B81B27AFC400F06F91 /* TerminalOutputView.m */; };
+		276FC7891B1CB8E80053BC07 /* led_clear.png in Resources */ = {isa = PBXBuildFile; fileRef = 276FC7871B1CB8E80053BC07 /* led_clear.png */; };
+		276FC78A1B1CB8E80053BC07 /* led_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 276FC7881B1CB8E80053BC07 /* led_red.png */; };
 		27A09C4E1AEED8CF00A1374B /* CodeCompletion.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A09C4D1AEED8CF00A1374B /* CodeCompletion.m */; };
 		27A09C511AEEDB6500A1374B /* CodeCompletionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A09C501AEEDB6500A1374B /* CodeCompletionButton.m */; };
 		27A09C531AEEE35A00A1374B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 27A09C521AEEE35A00A1374B /* Settings.bundle */; };
@@ -504,6 +507,10 @@
 		272BC9421AD5E54800827C40 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		274844121AD7471E001EE772 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = SupportingFiles/LICENSE; sourceTree = "<group>"; };
 		274844131AD7471E001EE772 /* README.md */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; name = README.md; path = SupportingFiles/README.md; sourceTree = "<group>"; };
+		2760C5B71B27AFC400F06F91 /* TerminalOutputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerminalOutputView.h; sourceTree = "<group>"; };
+		2760C5B81B27AFC400F06F91 /* TerminalOutputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerminalOutputView.m; sourceTree = "<group>"; };
+		276FC7871B1CB8E80053BC07 /* led_clear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_clear.png; path = SupportingFiles/Art/led_clear.png; sourceTree = "<group>"; };
+		276FC7881B1CB8E80053BC07 /* led_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_red.png; path = SupportingFiles/Art/led_red.png; sourceTree = "<group>"; };
 		27A09C4C1AEED8CA00A1374B /* CodeCompletion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CodeCompletion.h; path = CodeView/CodeCompletion.h; sourceTree = "<group>"; };
 		27A09C4D1AEED8CF00A1374B /* CodeCompletion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CodeCompletion.m; path = CodeView/CodeCompletion.m; sourceTree = "<group>"; };
 		27A09C4F1AEEDB6500A1374B /* CodeCompletionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CodeCompletionButton.h; path = CodeView/CodeCompletionButton.h; sourceTree = "<group>"; };
@@ -698,6 +705,8 @@
 				272BC7B11AD5D7AB00827C40 /* file-open@2x.png */,
 				272BC7B21AD5D7AB00827C40 /* find.png */,
 				272BC7B31AD5D7AB00827C40 /* find@2x.png */,
+				276FC7871B1CB8E80053BC07 /* led_clear.png */,
+				276FC7881B1CB8E80053BC07 /* led_red.png */,
 				272BC7B41AD5D7AB00827C40 /* magnifier.png */,
 				272BC7B51AD5D7AB00827C40 /* new.png */,
 				272BC7B61AD5D7AB00827C40 /* new@2x.png */,
@@ -972,6 +981,8 @@
 		27AF78411AD87512005C8396 /* Terminal */ = {
 			isa = PBXGroup;
 			children = (
+				2760C5B71B27AFC400F06F91 /* TerminalOutputView.h */,
+				2760C5B81B27AFC400F06F91 /* TerminalOutputView.m */,
 				27AF78421AD87549005C8396 /* TerminalView.h */,
 				27AF78431AD87549005C8396 /* TerminalView.m */,
 			);
@@ -1087,6 +1098,7 @@
 				272BC7E01AD5D7AB00827C40 /* find.png in Resources */,
 				272BC7E21AD5D7AB00827C40 /* magnifier.png in Resources */,
 				272BC8361AD5D7DF00827C40 /* FullDuplexSerial.spin in Resources */,
+				276FC7891B1CB8E80053BC07 /* led_clear.png in Resources */,
 				272BC8561AD5D7DF00827C40 /* tsl230.spin in Resources */,
 				272BC7F41AD5D7AB00827C40 /* undo.png in Resources */,
 				272BC7D61AD5D7AB00827C40 /* edit-closed.png in Resources */,
@@ -1130,6 +1142,7 @@
 				272BC8521AD5D7DF00827C40 /* SPI_Spin.spin in Resources */,
 				272BC7D01AD5D7AB00827C40 /* close.png in Resources */,
 				272BC8451AD5D7DF00827C40 /* Ping.spin in Resources */,
+				276FC78A1B1CB8E80053BC07 /* led_red.png in Resources */,
 				272BC7F71AD5D7AB00827C40 /* xbee@2x.png in Resources */,
 				272BC7DA1AD5D7AB00827C40 /* eeprom.png in Resources */,
 				272BC7DF1AD5D7AB00827C40 /* file-open@2x.png in Resources */,
@@ -1288,6 +1301,7 @@
 				272BC9371AD5E28600827C40 /* CompileInstruction.cpp in Sources */,
 				272BC8F41AD5E15900827C40 /* Project.m in Sources */,
 				272BC8D31AD5E0D300827C40 /* SourceView.m in Sources */,
+				2760C5B91B27AFC400F06F91 /* TerminalOutputView.m in Sources */,
 				272BC9361AD5E28600827C40 /* CompileExpression.cpp in Sources */,
 				272BC9401AD5E28600827C40 /* SymbolEngine.cpp in Sources */,
 				272BC8EB1AD5E10B00827C40 /* TXBee.m in Sources */,
@@ -1407,6 +1421,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = SpinIDE/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -1423,6 +1438,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = SpinIDE/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;

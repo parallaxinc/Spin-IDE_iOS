@@ -13,9 +13,31 @@
 #import "TXBee.h"
 
 
+@protocol TerminalViewDelegate <NSObject>
+
+/*!
+ * Characters were received from the device.
+ *
+ * @param string		The characters received.
+ */
+
+- (void) terminalViewCharactersReceived: (NSString *) string;
+
+/*!
+ * Characters were sent to the device.
+ *
+ * @param string		The characters sent.
+ */
+
+- (void) terminalViewCharactersSent: (NSString *) string;
+
+@end
+
+
 @interface TerminalView : UIView <CodeViewDelegate, GCDAsyncUdpSocketDelegate>
 
 @property (nonatomic) int baudRate;							// The terminal BAUD rate.
+@property (weak, nonatomic) id<TerminalViewDelegate> delegate;
 @property (nonatomic) BOOL echo;							// Echo terminal input to the output window?.
 
 - (void) clear;

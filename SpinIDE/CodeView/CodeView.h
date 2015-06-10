@@ -131,8 +131,13 @@
 @property (nonatomic) int indentCharacters;				// The number of characters to indent when indenting code.
 @property (nonatomic, retain) CodeInputAccessoryView *inputAccessoryView; // The keyboard input accessory view.
 @property (nonatomic) languageType language;			// The language for the text in this view.
+@property (nonatomic) BOOL latin_1;						// Display input characters as Latin-1, control characters as spaces.
+@property (nonatomic) int maxLines;						// The maximum number of lines. Excess lines are lost from the start of the file.
+                                                        // Use 0 for no limit.
+@property (nonatomic) BOOL scrollAutomatically;			// Implements terminal scrolling. See shouldScroll for details.
 @property (nonatomic) NSRange selectedRange;			// The current selection.
 @property (nonatomic, retain) NSString *text;			// The current contents of the view.
+@property (nonatomic, retain) UIColor *textColor;		// The default text color. Black is used if no value is specified.
 @property (nonatomic, retain) CodeUndoManager *undoManager;	// The undo manager for this document.
 @property (nonatomic) BOOL useSyntaxColoring;			// Perform syntax coloring on the text?
 
@@ -148,6 +153,7 @@
 - (void) didReceiveMemoryWarning;
 - (void) deleteBackward;
 - (CGRect) firstRectForRange: (NSRange) range;
+- (void) offsetsFromRange: (NSRange) range line0: (int *) line0 offset0: (int *) offset0 line1: (int *) line1 offset1: (int *) offset1;
 - (void) purgeUndoBuffer;
 - (void) replaceRange: (NSRange) range withText: (NSString *) text;
 - (void) scrollRangeToVisible: (NSRange) range;

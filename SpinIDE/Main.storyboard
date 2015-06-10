@@ -540,21 +540,53 @@
                                                                     <action selector="clearButtonAction:" destination="yzT-xS-6RV" eventType="touchUpInside" id="6Bt-g0-85g"/>
                                                                 </connections>
                                                             </button>
+                                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RX" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ax6-2x-Hne">
+                                                                <rect key="frame" x="99" y="121" width="23" height="21"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TX" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LNC-bf-b6M" userLabel="TX">
+                                                                <rect key="frame" x="20" y="121" width="21" height="21"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="led_clear.png" translatesAutoresizingMaskIntoConstraints="NO" id="voT-5p-4Nj" userLabel="txLed">
+                                                                <rect key="frame" x="49" y="124" width="15" height="15"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="15" id="V0w-wq-gX9"/>
+                                                                    <constraint firstAttribute="height" constant="15" id="dmP-4P-sDs"/>
+                                                                </constraints>
+                                                            </imageView>
+                                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="led_clear.png" translatesAutoresizingMaskIntoConstraints="NO" id="N0Q-hZ-eeJ" userLabel="rxLed">
+                                                                <rect key="frame" x="130" y="124" width="15" height="15"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="15" id="ZuR-rq-RM4"/>
+                                                                    <constraint firstAttribute="height" constant="15" id="lbL-UM-1wg"/>
+                                                                </constraints>
+                                                            </imageView>
                                                         </subviews>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <constraints>
                                                             <constraint firstItem="q1x-6c-Ile" firstAttribute="centerY" secondItem="TEu-WB-hzK" secondAttribute="centerY" constant="0.5" id="0MW-XB-0dn"/>
                                                             <constraint firstAttribute="trailing" secondItem="zKK-PB-qQd" secondAttribute="trailing" constant="20" id="2v9-cK-vGf"/>
+                                                            <constraint firstItem="voT-5p-4Nj" firstAttribute="centerY" secondItem="LNC-bf-b6M" secondAttribute="centerY" id="5mT-YR-JiC"/>
                                                             <constraint firstItem="1gy-Ok-7bx" firstAttribute="centerY" secondItem="zKK-PB-qQd" secondAttribute="centerY" constant="-4.5" id="9AO-pZ-I8v"/>
+                                                            <constraint firstItem="voT-5p-4Nj" firstAttribute="leading" secondItem="LNC-bf-b6M" secondAttribute="trailing" constant="8" id="9kA-yh-nOq"/>
+                                                            <constraint firstItem="LNC-bf-b6M" firstAttribute="top" secondItem="TEu-WB-hzK" secondAttribute="bottom" constant="17" id="Ema-hl-wJj"/>
                                                             <constraint firstItem="1gy-Ok-7bx" firstAttribute="leading" secondItem="krk-sn-kmV" secondAttribute="leading" constant="20" id="KwW-6h-I1M"/>
+                                                            <constraint firstItem="LNC-bf-b6M" firstAttribute="leading" secondItem="krk-sn-kmV" secondAttribute="leading" constant="20" id="Ls2-Oa-wMY"/>
                                                             <constraint firstItem="TEu-WB-hzK" firstAttribute="leading" secondItem="krk-sn-kmV" secondAttribute="leading" constant="20" id="OcN-uf-1gL"/>
                                                             <constraint firstItem="WIh-b4-lP6" firstAttribute="leading" secondItem="krk-sn-kmV" secondAttribute="leading" constant="20" id="Oqd-89-2K8"/>
                                                             <constraint firstItem="zKK-PB-qQd" firstAttribute="top" secondItem="krk-sn-kmV" secondAttribute="top" constant="5" id="Rv3-J4-eaW"/>
                                                             <constraint firstItem="TEu-WB-hzK" firstAttribute="top" secondItem="WIh-b4-lP6" secondAttribute="bottom" constant="17" id="TGf-a3-oHa"/>
                                                             <constraint firstItem="Fap-ff-1Qd" firstAttribute="centerY" secondItem="WIh-b4-lP6" secondAttribute="centerY" id="U8P-jx-neJ"/>
                                                             <constraint firstItem="WIh-b4-lP6" firstAttribute="top" secondItem="zKK-PB-qQd" secondAttribute="bottom" constant="10" id="UhB-NF-RU3"/>
+                                                            <constraint firstItem="ax6-2x-Hne" firstAttribute="leading" secondItem="LNC-bf-b6M" secondAttribute="trailing" constant="58" id="dFX-iU-5d8"/>
+                                                            <constraint firstItem="ax6-2x-Hne" firstAttribute="centerY" secondItem="N0Q-hZ-eeJ" secondAttribute="centerY" id="eIB-I1-1Xl"/>
                                                             <constraint firstAttribute="trailing" secondItem="q1x-6c-Ile" secondAttribute="trailing" constant="-24" id="jV4-5l-OxU"/>
+                                                            <constraint firstItem="ax6-2x-Hne" firstAttribute="centerY" secondItem="LNC-bf-b6M" secondAttribute="centerY" id="qlv-KV-gOp"/>
                                                             <constraint firstAttribute="trailing" secondItem="Fap-ff-1Qd" secondAttribute="trailing" constant="20" id="v6P-wd-aXU"/>
+                                                            <constraint firstItem="N0Q-hZ-eeJ" firstAttribute="leading" secondItem="ax6-2x-Hne" secondAttribute="trailing" constant="8" id="vla-pL-GPa"/>
                                                         </constraints>
                                                     </view>
                                                 </subviews>
@@ -638,12 +670,14 @@
                         <outlet property="optionsSegmentedControl" destination="Ax6-aq-QJV" id="lOq-5O-TUs"/>
                         <outlet property="optionsView" destination="Rhg-XU-QWb" id="Hb2-ju-9mJ"/>
                         <outlet property="projectOptionsView" destination="78d-ut-Q0W" id="Zww-pf-NhG"/>
+                        <outlet property="rxLed" destination="N0Q-hZ-eeJ" id="P6z-Gz-aQY"/>
                         <outlet property="simpleIDEOptionsView" destination="oeX-vm-YZE" id="Y0F-q2-JNL"/>
                         <outlet property="spinCompilerOptionsView" destination="QaE-fv-Xfq" id="meG-C5-xEf"/>
                         <outlet property="spinIDEOptionsView" destination="NY7-tE-J3t" id="JAV-Gn-F4K"/>
                         <outlet property="spinOnlyCompilerView" destination="woa-SY-Rpj" id="w6S-hq-sVZ"/>
                         <outlet property="spinOptionsView" destination="kkB-og-Y6F" id="74Y-u3-b3d"/>
                         <outlet property="spinTerminalOptionsView" destination="krk-sn-kmV" id="DV5-P6-ICo"/>
+                        <outlet property="txLed" destination="voT-5p-4Nj" id="Ph9-ig-C1n"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vuh-Ry-pW6" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -670,6 +704,9 @@
             <point key="canvasLocation" x="-686.5" y="351"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="led_clear.png" width="66" height="66"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

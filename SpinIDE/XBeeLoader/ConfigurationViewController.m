@@ -245,6 +245,17 @@ static NSArray *xBeeDevices;	// The currently known XBee devices.
                         self.progress = nil;
                         totalScanTime = CFAbsoluteTimeGetCurrent() - startScanTime;
                     }];
+    
+    // If no devices were found, flag an error an blank the IP Address.
+    if (devices.count == 0) {
+        ipAddressTextField.text = @"";
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"No Devices Found"
+                                                        message: @"No valid XBee devices were found.\n\nMake sure teh XBee devices are powered up and in range, then try scanning again." 
+                                                       delegate: nil 
+                                              cancelButtonTitle: @"OK" 
+                                              otherButtonTitles: nil];
+        [alert show];
+    }
 }
 
 /*!

@@ -9,7 +9,7 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>com.parallax.project.pzip</string>
+				<string>com.parallax.project.zipspin</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Spin Project</string>
@@ -19,7 +19,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.parallax.project.pzip</string>
+				<string>com.parallax.project.zipspin</string>
 			</array>
 		</dict>
 		<dict>
@@ -54,15 +54,13 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.0.11</string>
+	<string>1.0.0.12</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>
 	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -102,11 +100,11 @@
 			<key>UTTypeDescription</key>
 			<string>Spin Project</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.parallax.project.pzip</string>
+			<string>com.parallax.project.zipspin</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
-				<string>pzip</string>
+				<string>zipspin</string>
 				<key>public.mime-type</key>
 				<string>application/spinproject</string>
 			</dict>

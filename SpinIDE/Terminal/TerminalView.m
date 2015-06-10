@@ -13,9 +13,11 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import "CodeRect.h"
 #import "Common.h"
 #import "Loader.h"
 #import "SplitView.h"
+#import "TerminalOutputView.h"
 #import "XBeeCommon.h"
 
 #define DEBUG_ME (0)
@@ -47,15 +49,16 @@ static TerminalView *this;
 @interface TerminalView () {
     int cursorCommand;						// When processing a multi-character terminal control sequence, this is the control character.
     int cursorPositionX;					// The x position when processing control character 2.
+    char lastCh;							// The last character processed by terminal output.
     int needsCursorPosition;				// Set to a non-zero value if a terminal control sequence needs additional characters.
 }
 
-@property (nonatomic, retain) NSCharacterSet *controlCharacters;	// The control characters recognized during terminal output.
-@property (nonatomic, retain) SplitView *splitView;			// The split view that holds the terminal input and output views.
-@property (nonatomic, retain) CodeView *terminalInputView;	// The view that shows terminal input.
-@property (nonatomic, retain) CodeView *terminalOutputView;	// The view that shows terminal output.
-@property (nonatomic, retain) GCDAsyncUdpSocket *udpDataSocket;	// A UDP socket manager object.
-@property (nonatomic, retain) TXBee *xBee;					// The XBee device for sends.
+@property (nonatomic, retain) NSCharacterSet *controlCharacters;		// The control characters recognized during terminal output.
+@property (nonatomic, retain) SplitView *splitView;						// The split view that holds the terminal input and output views.
+@property (nonatomic, retain) CodeView *terminalInputView;				// The view that shows terminal input.
+@property (nonatomic, retain) TerminalOutputView *terminalOutputView;	// The view that shows terminal output.
+@property (nonatomic, retain) GCDAsyncUdpSocket *udpDataSocket;			// A UDP socket manager object.
+@property (nonatomic, retain) TXBee *xBee;								// The XBee device for sends.
 
 @end
 
@@ -65,6 +68,7 @@ static TerminalView *this;
 
 @synthesize baudRate;
 @synthesize controlCharacters;
+@synthesize delegate;
 @synthesize echo;
 @synthesize splitView;
 @synthesize terminalInputView;
@@ -92,16 +96,22 @@ static TerminalView *this;
     self.splitView.splitControl.splitTitle = @"Terminal      Input \u2191     Output \u2193";
     
     self.terminalInputView = [[CodeView alloc] initWithFrame: [splitView.topView frame]];
-    terminalInputView.backgroundColor = [UIColor colorWithRed: 1.0 green: 1.0 blue: 0.8 alpha: 1.0];
+    terminalInputView.backgroundColor = [UIColor whiteColor];
     terminalInputView.codeViewDelegate = self;
     terminalInputView.followIndentation = NO;
+    terminalInputView.latin_1 = YES;
     splitView.topView = terminalInputView;
     
-    self.terminalOutputView = [[CodeView alloc] initWithFrame: [splitView.bottomView frame]];
-    terminalOutputView.backgroundColor = [UIColor colorWithRed: 0.8 green: 0.8 blue: 1.0 alpha: 1.0];
+    self.terminalOutputView = [[TerminalOutputView alloc] initWithFrame: [splitView.bottomView frame]];
+    terminalOutputView.backgroundColor = [UIColor colorWithRed: 0.0 green: 0.0 blue: 160.0/256.0 alpha: 1.0];
+    terminalOutputView.scrollIndicatorColor = [UIColor colorWithRed: 0.3 green: 0.3 blue: 160.0/256.0 alpha: 1.0];
+    terminalOutputView.textColor = [UIColor whiteColor];
     terminalOutputView.codeViewDelegate = self;
     terminalOutputView.editable = NO;
     terminalOutputView.followIndentation = NO;
+    terminalOutputView.scrollAutomatically = NO;
+    terminalOutputView.latin_1 = YES;
+    terminalOutputView.maxLines = 8192;
     splitView.bottomView = terminalOutputView;
     
     splitView.location = 0.2;
@@ -197,6 +207,7 @@ static TerminalView *this;
 
 - (void) testTerminal {
     // Give instructions.
+    [NSThread sleepForTimeInterval: 1.0];
     [self processTerminalOuput: 
      @"Size the terminal window so you can see at least 80 columns of text and 24\r"
      @"lines.\r"
@@ -206,9 +217,9 @@ static TerminalView *this;
      @"line 6\r"
      @"line 7\r"
      @"line 8\r"
-     @"line 9\r"
-     @"line 10\r"
-     @"line 11\r"
+     @"line 9\r\n"
+     @"line 10\n"
+     @"line 11\n\r"
      @"line 12\r"
      @"line 13\r"
      @"line 14\r"
@@ -270,13 +281,13 @@ static TerminalView *this;
     [self processTerminalOuput: @"\2\3\7\10"];
     [self processTerminalOuput: @"\2\0\10Nothing should appear after the 1 in the following line."];
     [self processTerminalOuput: @"\2\5\11\13"];
-    [self processTerminalOuput: @"\2\0\13Nothing should appear after the next 1, even on other lines."];
+    [self processTerminalOuput: @"\2\0\13Nothing should appear after this line."];
     [self processTerminalOuput: @"\2\10\14\14"];
     [terminalOutputView performSelectorOnMainThread: @selector(setNeedsDisplay) withObject: nil waitUntilDone: YES];
     
     // Test cursor movement with just X and Y and tabs.
     [NSThread sleepForTimeInterval: 9.0];
-    [self processTerminalOuput: @"\1The following should have a diagonal of * across an otherwise\rblank screen.\14"];
+    [self processTerminalOuput: @"\1The following should have a diagonal of * across an otherwise\rblank screen.\n\14"];
     [self processTerminalOuput: @"\16\0\17\2*"];
     for (int i = 2; i <= 10; ++i) {
         [self processTerminalOuput: [NSString stringWithFormat: @"%c%c%c%c*", 14, i - 1, 15, i + 1]];
@@ -288,7 +299,7 @@ static TerminalView *this;
     
     // Test cursor movement by direction.
     [NSThread sleepForTimeInterval: 9.0];
-    [self processTerminalOuput: @"\1And now for a little spiral screen art.\14"];
+    [self processTerminalOuput: @"\1\14And now for a little spiral screen art.\n"];
     char ch = 'a';
     [self processTerminalOuput: @"\2\36\12a\3"];
     int count = 1;
@@ -313,6 +324,41 @@ static TerminalView *this;
         [self processTerminalOuput: [NSString stringWithFormat: @"%c%c\3", dir, ++ch]];
     }
     [terminalOutputView performSelectorOnMainThread: @selector(setNeedsDisplay) withObject: nil waitUntilDone: YES];
+
+    // Test scrolling.
+    [NSThread sleepForTimeInterval: 9.0];
+    [self processTerminalOuput: @"\1\14"];
+    for (int i = 1; i <= 100; ++i)
+        [self processTerminalOuput: [NSString stringWithFormat: @"line %d\n", i]];
+    [self processTerminalOuput:
+     @"Scroll up so this line is not visible. In 5 seconds, other lines will be\n"
+     @"displayed at the end of the display, and all control characters will be tested\n"
+     @"near the start of the disply. These should not cause scrolling, but you should\n"
+     @"see the Additional text display light up.\n\n"
+     @"After about 5 seconds, scroll to verify the new text appeared at both the top\n"
+     @"and bottom of the display."];
+    [NSThread sleepForTimeInterval: 5.0];
+    for (int i = 101; i < 111; ++i)
+        [self processTerminalOuput: [NSString stringWithFormat: @"line %d\n", i]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c#", 1]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c%c%c", 2, 1, 1]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 3]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 4]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 5]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 6]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 7]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 8]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 8]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 9]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c%c%c", 2, 2, 1]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 10]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c%c", 14, 3]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c%c", 15, 3]];
+    [NSThread sleepForTimeInterval: 5.0];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c%c\0", 2, 3]];
+    [self processTerminalOuput: [NSString stringWithFormat: @"%c", 12]];
+    [self processTerminalOuput: 
+     @"This line should appear in an otherwise empty terminal window."];
 }
 #endif
 
@@ -532,8 +578,7 @@ static TerminalView *this;
                 break;
             }
                 
-            case 6: // Move cursor down
-            case 10: { // New line
+            case 6: { // Move cursor down
                 cursorLocation loc = [self findCursorLocation];
                 [self setCursorPositionX: loc.x y: loc.y + 1];
                 break;
@@ -543,17 +588,30 @@ static TerminalView *this;
                 AudioServicesPlaySystemSound(1106);
                 break;
                 
-            case 8: // Backspace
-                [terminalOutputView deleteBackward];
+            case 8: { // Backspace
+                cursorLocation loc = [self findCursorLocation];
+                terminalOutputView.scrollEnabled = NO;
+                if (loc.x > 0) {
+                	[terminalOutputView deleteBackward];
+            	} else {
+                    NSRange range = terminalOutputView.selectedRange;
+                    range.length = 0;
+                    range.location = range.location == 0 ? 0 : range.location - 1;
+                    terminalOutputView.selectedRange = range;
+                }
+                terminalOutputView.scrollEnabled = YES;
                 break;
+            }
                 
             case 9: { // Tab
+                terminalOutputView.scrollEnabled = NO;
                 cursorLocation loc = [self findCursorLocation];
                 int count = TAB_SIZE - loc.x%TAB_SIZE;
                 NSString *spaces = @"";
                 while (count--)
                     spaces = [spaces stringByAppendingString: @" "];
                 [terminalOutputView insertText: spaces];
+                terminalOutputView.scrollEnabled = YES;
                 break;
             }
             
@@ -571,6 +629,9 @@ static TerminalView *this;
             }
             
             case 12: { // Clear lines below
+                cursorLocation loc = [self findCursorLocation];
+                [self setCursorPositionX: 0 y: loc.y];
+                
                 NSRange range = terminalOutputView.selectedRange;
                 range.length = terminalOutputView.text.length - range.location;
                 if (range.length > 0) {
@@ -580,9 +641,18 @@ static TerminalView *this;
                 break;
             }
             
-            case 13: { // Carriage return
-                cursorLocation loc = [self findCursorLocation];
-                [self setCursorPositionX: 0 y: loc.y + 1];
+            case 10:
+            case 13: { // Carriage return or line feed
+                if ((lastCh == 10 && ch == 13)
+                    || (lastCh == 13 && ch == 10)) 
+                {
+                    // Do nothing--eat the control character.
+                } else if (terminalOutputView.text.length == terminalOutputView.selectedRange.location) {
+                    [terminalOutputView insertText: @"\n"];
+                } else {
+                    cursorLocation loc = [self findCursorLocation];
+                    [self setCursorPositionX: 0 y: loc.y + 1];
+                }
                 break;
             }
             
@@ -592,6 +662,7 @@ static TerminalView *this;
                 needsCursorPosition = 1;
                 break;
         }
+        lastCh = ch;
     }
 }
 
@@ -603,17 +674,30 @@ static TerminalView *this;
 
 - (void) processTerminalOuput: (NSString *) theText {
     // Check for control characters, giving them special treatment if found.
-    if ([self hasControlCharacters: theText] || needsCursorPosition > 0) {
-        while (theText.length > 0) {
-            int index = [self firstIndexOfControlCharacter: theText];
-            if (index == 0 || needsCursorPosition > 0) {
-                [self handleControlCharacter: [theText characterAtIndex: 0]];
-                theText = [theText substringFromIndex: 1];
-            } else {
-                if (index < 0)
-                    index = (int) theText.length;
-                NSString *text = [theText substringToIndex: index];
+    while (theText.length > 0) {
+        int index = [self firstIndexOfControlCharacter: theText];
+        if (index == 0 || needsCursorPosition > 0) {
+            [self handleControlCharacter: [theText characterAtIndex: 0]];
+            theText = [theText substringFromIndex: 1];
+        } else {
+            // Place the text on the screen, blocking lines longer than MAX_COLUMNS characters.
+            if (index < 0)
+                index = (int) theText.length;
+            NSString *text = [theText substringToIndex: index];
+            if (text.length > 0)
+	            lastCh = [text characterAtIndex: text.length - 1];
+            while (text.length > 0) {
+                // Get all of the characters that will fit on this line, placing leftovers in text2.
+                NSString *text2 = @"";
                 NSRange range = terminalOutputView.selectedRange;
+                int line, column;
+                [terminalOutputView offsetsFromRange: range line0: &line offset0: &column line1: nil offset1: nil];
+                if (column + text.length > MAX_COLUMNS) {
+                    text2 = [text substringFromIndex: MAX_COLUMNS - column];
+                    text = [text substringToIndex: MAX_COLUMNS - column];
+                }
+                
+                // Place the characters in the terminal view.
                 int length = (int) text.length;
                 int pos = (int) range.location;
                 while (length-- && pos < terminalOutputView.text.length && [terminalOutputView.text characterAtIndex: pos] != '\n') {
@@ -621,11 +705,17 @@ static TerminalView *this;
                     ++pos;
                 }
                 [terminalOutputView replaceRange: range withText: text];
-                theText = [theText substringFromIndex: index];
+                
+                // If there are remaining characters, place them on the next line.
+                text = text2;
+                if (text.length > 0) {
+                    cursorLocation loc = [self findCursorLocation];
+                    [self setCursorPositionX: 0 y: loc.y + 1];
+                }
             }
+            theText = [theText substringFromIndex: index];
         }
-    } else
-        [terminalOutputView replaceRange: terminalOutputView.selectedRange withText: theText];
+    }
 }
 
 /*!
@@ -661,7 +751,7 @@ static TerminalView *this;
             // There are not enough lines. Add one and set the selection to that point.
             NSRange range = {terminalOutputView.text.length, 0};
             [terminalOutputView replaceRange: range withText: @"\n"];
-            ++range.location;
+            range.location = terminalOutputView.text.length;
             terminalOutputView.selectedRange = range;
             index = (int) terminalOutputView.text.length;
         } else {
@@ -730,10 +820,15 @@ static TerminalView *this;
 #endif
     // If this arrived from the serial port, add the text to the console output.
     NSMutableData *bytes = [NSMutableData dataWithData: data];
-    int zero = 0;
-    [bytes appendBytes: &zero length: 1];
-    NSString *string = [NSString stringWithUTF8String: bytes.bytes]; 
+    char *chars = malloc(bytes.length + 1);
+    [bytes getBytes: chars length: data.length];
+    chars[data.length] = (char) 0;
+    NSString *string = [NSString stringWithCString: chars encoding: NSISOLatin1StringEncoding];
     [self processTerminalOuput: string];
+    
+    // Notify the delegate of the input.
+    if ([delegate respondsToSelector: @selector(terminalViewCharactersReceived:)])
+        [delegate terminalViewCharactersReceived: string];
 }
 
 /*!
@@ -789,6 +884,11 @@ static TerminalView *this;
             free(packet);
             
             [udpDataSocket sendData: dataPacket toHost: xBee.ipAddr port: [XBeeCommon udpPort] withTimeout: 0.1 tag: 0];
+            
+            // Notify the delegate of the output.
+            if ([delegate respondsToSelector: @selector(terminalViewCharactersSent:)])
+                [delegate terminalViewCharactersSent: text2];
+            
 #if DEBUG_ME
             printf("sending: ");
             for (int i = 0; i < dataPacket.length; ++i) {

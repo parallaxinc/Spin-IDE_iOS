@@ -840,7 +840,7 @@ typedef struct {
             
             // Set up the UDP data socket. This is the one that will receive data back from the Propeller board, and be used for
             // serial output.
-            if (!udpDataSocket) {
+            if (!err && !udpDataSocket) {
                 udpDataSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate: self delegateQueue: dispatch_get_main_queue()];
                 [udpDataSocket bindToPort: SERIAL_PORT error: &err];
                 if (err == nil)
@@ -973,6 +973,8 @@ typedef struct {
         
         if (err != nil && !cancelling) {
             --retry;
+            if (err && err.code == 1)
+                cancelling = YES;
             if (retry == 0) {
                 acknowledged = YES;
             } else {

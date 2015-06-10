@@ -40,9 +40,10 @@
     float charWidth;											// The width of a character.
     int cursorColumn;											// The column index for the cursor for the most recent up or down arrow key, or -1 for other keys.
     int cursorState;											// A value form 0 to 2 indicating if the cursor is on or off. 0 is off.
+    BOOL selectionVisible;											// Was the end of file visible when text was inserted.
     BOOL firstTap;												// Used to track the first tap at a new selection location.
     int repeatKeyStartCounter;									// A count down timer so the repeat key does not start too fast.
-    
+    BOOL showingEditMenu;										// Set to YES while showing an edit menu, this allows copy from a non-editable view.
     BOOL firstLollipop;											// If trackingSelection, YES for the initial selection mark, or NO for the end selection mark.
     BOOL hardwareKeyboard;										// Have we detected the use of a hardware keyboard?
     NSRange initialRange;										// selectedRange when the drag selection or shift selection started.
@@ -77,8 +78,7 @@
 
 @end
 
-// TODO: SensorTag Accelerometer will not scroll all the way to the end using Bluetooth keyboard after starting with software keyboard.
-// TODO: After Undo, select the change.
+// TODO: With the software keyboard, hold down the delete button. It should auto-repeat, but does not.
 
 @implementation CodeView
 
@@ -95,16 +95,20 @@
 @synthesize indentCharacters;
 @synthesize inputAccessoryView;
 @synthesize language;
+@synthesize latin_1;
 @synthesize lines;
 @synthesize magnifierTouch;
 @synthesize magnifierTimer;
 @synthesize magnifierView;
+@synthesize maxLines;
 @synthesize multilineHighlights;
 @synthesize repeatKeyCommand;
 @synthesize repeatKeyTimer;
+@synthesize scrollAutomatically;
 @synthesize selectedRange;
 @synthesize selectionRects;
 @synthesize text;
+@synthesize textColor;
 @synthesize theKeyCommands;
 @synthesize touchScrollTimer;
 @synthesize undoManager;
@@ -272,6 +276,43 @@
 }
 
 /*!
+ * Calculate line breaks and enforce limits on the number of lines allowed.
+ */
+
+- (void) doLineBreaks {
+    // Break the text into lines.
+    self.lines = [text componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
+    
+    // If there is a maximum line count, enforce it.
+    if (maxLines > 0 && self.lines.count > maxLines) {
+        // Count the characters in any lines that will be removed.
+        unsigned long count = 0;
+        unsigned long linesToDelete = self.lines.count - maxLines;
+        for (int i = 0; i < linesToDelete; ++i)
+            count += 1 + ((NSString *) self.lines[i]).length;
+        
+        // Remove extra lines.
+        NSRange range = {linesToDelete, maxLines};
+        self.lines = [self.lines subarrayWithRange: range];
+        NSString *theText = self.lines[0];
+        for (int i = 1; i < self.lines.count; ++i)
+            theText = [NSString stringWithFormat: @"%@\n%@", theText, self.lines[i]];
+        self.text = theText;
+        
+        // Adjust the selection point.
+        if (selectedRange.location > count)
+            selectedRange.location -= count;
+        else
+            selectedRange.location = 0;
+        if (selectedRange.location + selectedRange.length > theText.length)
+            selectedRange.length = theText.length - selectedRange.location;
+    }
+    
+    // Update the scroll view size.
+    [self updateViewSize];
+}
+
+/*!
  * For each line marked by the current selection, remove indentCharacter spaces to the start of the line. If there are not
  * indentCharacter spaces at the start of the line, remove any that are there.
  */
@@ -408,11 +449,15 @@
         if (scanningIdentifier || isalpha(ch)) {
             // We're scanning an identifier. Scan to the first character that cannot be a part of
             // an identifier.
+            ++offset;
             while (offset < text.length && !done) {
-                ++offset;
                 ch = [text characterAtIndex: offset];
-                done = !(isalnum(ch) || ch == '_');
+                if (isalnum(ch) || ch == '_')
+                    ++offset;
+                else
+                    done = YES;
             }
+            done = YES;
         } else if (ch == '-' || ch == '+' || ch == '.' || scanningNumber) {
             // A sign character or decimal point unabiguously identifies a number.
             
@@ -527,6 +572,19 @@
 }
 
 /*!
+ * Hide the edit menu.
+ */
+
+- (void) hideEditMenu {
+    showingEditMenu = YES;
+    [self becomeFirstResponder];
+    [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+    if (!editable)
+        [self resignFirstResponder];
+    showingEditMenu = NO;
+}
+
+/*!
  * Do initializetion common to all initialization methods.
  */
 
@@ -558,6 +616,8 @@
     self.keyboardType = UIKeyboardTypeDefault;
     self.returnKeyType = UIReturnKeyDefault;
     self.secureTextEntry = NO;
+    self.scrollAutomatically = YES;
+    showingEditMenu = NO;
     
     self.allowEditMenu = YES;
     
@@ -593,6 +653,22 @@
 
 - (BOOL) istoken: (int) ch {
     return isalnum(ch) || ch == '+' || ch == '-' || ch == '_' || ch == '.';
+}
+
+/*!
+ * Looks to see if the locaiton of the current selection point is visible in the terminal output window.
+ *
+ * @return			YES if the selection point is visible, else NO.
+ */
+
+- (BOOL) isSelectionVisible {
+    NSRange range = {selectedRange.location, 0};
+    NSArray *rects = [self selectionRectsForRange: range];
+    CGRect viewRect;
+    viewRect.origin.x = self.contentOffset.x;
+    viewRect.origin.y = self.contentOffset.y;
+    viewRect.size = self.bounds.size;
+    return CGRectIntersectsRect(((CodeRect *) rects[0]).rect, viewRect);
 }
 
 /*!
@@ -736,9 +812,13 @@
             if (command.modifierFlags & UIKeyModifierShift)
                 [self extendSelectionTo: [self offsetToLine: line + 1 column: cursorColumn]];
             else {
-                if (selectedRange.length == 0)
+                if (selectedRange.length == 0) {
                     selectedRange.location = [self offsetToLine: line + 1 column: cursorColumn];
-                else {
+                    if (selectedRange.location == self.text.length) {
+                        [self offsetsFromRange: [self extendSelectionTailRange] line0: &line offset0: &offset line1: nil offset1: nil];
+                        cursorColumn = offset;
+                    }
+                } else {
                     selectedRange.location += selectedRange.length;
                     selectedRange.length = 0;
                 }
@@ -757,7 +837,7 @@
         if (selectedRange.length > 0)
 	        [self showEditMenu: [self lastRectForRange: selectedRange]];
         else
-            [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+            [self hideEditMenu];
         
         // Start a new undo group.
         [undoManager beginNewUndoGroup];
@@ -818,7 +898,7 @@
             if (selectedRange.length > 0)
                 [self showEditMenu: [self firstRectForRange: selectedRange]];
             else
-                [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+                [self hideEditMenu];
         }
         
         // Start a new undo group.
@@ -881,7 +961,7 @@
         if (selectedRange.length > 0)
             [self showEditMenu: [self lastRectForRange: selectedRange]];
         else
-            [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+            [self hideEditMenu];
         
         // Start a new undo group.
         [undoManager beginNewUndoGroup];
@@ -932,6 +1012,18 @@
                     [self selectionChanged];
                 }
                 [self cursorVisible];
+            } else if (selectedRange.location > 0) {
+                [self cursorOff];
+                if (command.modifierFlags & UIKeyModifierShift) {
+                    [self extendSelectionTo: 0];
+                } else {
+                    selectedRange.location = 0;
+                    selectedRange.length = 0;
+                    [self selectionChanged];
+                }
+                [self cursorVisible];
+                
+                cursorColumn = 0;
             }
             
             // Scroll to the start of the selected range.
@@ -941,7 +1033,7 @@
             if (selectedRange.length > 0)
                 [self showEditMenu: [self firstRectForRange: selectedRange]];
             else
-                [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+                [self hideEditMenu];
         }
         
         // Start a new undo group.
@@ -968,7 +1060,7 @@
     }
     
     // Turn off the edit menu.
-    [UIMenuController sharedMenuController].menuVisible = NO;
+    [self hideEditMenu];
     
     // Update the view.
     if (selectedRange.length > 0 || needsDisplay) {
@@ -977,6 +1069,64 @@
             [self cursorVisible];
     }
 }
+
+/*!
+ * Preprocess incomming text so it conforms with the specified character conventions.
+ *
+ * @param theText	The text to process.
+ *
+ * @return			The processed theText.
+ */
+
+- (NSString *) preprocessText: (NSString *) theText {
+    theText = [theText stringByReplacingOccurrencesOfString: @"\r\n" withString: @"\n"];
+    theText = [theText stringByReplacingOccurrencesOfString: @"\n\r" withString: @"\n"];
+    theText = [theText stringByReplacingOccurrencesOfString: @"\r" withString: @"\n"];
+    if (latin_1) {
+        // Strip control characters from Latin-1 input.
+        const char *latin = [theText cStringUsingEncoding: NSISOLatin1StringEncoding];
+        int length = (int) strlen(latin);
+        char *str = malloc(length + 1);
+        strcpy(str, latin);
+        BOOL changed = NO;
+        for (int i = 0; i < length; ++i) {
+            UInt8 ch = str[i];
+            if (ch <= 7
+                || ch == 9
+                || ch == 11
+                || ch == 12
+                || (ch >= 14 && ch <= 31)
+                || (ch >= 127 && ch <= 159))
+            {
+                str[i] = ' ';
+                changed = YES;
+            }
+        }
+        if (changed)
+            theText = [NSString stringWithCString: str encoding: NSISOLatin1StringEncoding];
+    }
+    return theText;
+}
+/*!
+ * Removes the control characters form a Latin-1 encoded c string, replacing them with spaces.
+ *
+ * @param str		The string to process. The characters are replaced in the passed string.
+ */
+
+- (void) removeLatin1ControlCharacacters: (char *) str {
+    int length = (int) strlen(str);
+    for (int i = 0; i < length; ++i) {
+        UInt8 ch = str[i];
+        if (ch <= 7
+            || ch == 9
+            || ch == 11
+            || ch == 12
+            || (ch >= 14 && ch <= 31)
+            || (ch >= 127 && ch <= 159))
+            str[i] = ' ';
+    }
+}
+
 
 /*!
  * Starting at a given location in the text, find the start of the previoius token.
@@ -993,15 +1143,20 @@
  */
 
 - (int) previousToken: (int) offset {
-    char ch = [text characterAtIndex: offset];
+    BOOL done = NO;
+    BOOL scanningNumber = NO;
+    BOOL scanningIdentifier = NO;
+
+    if (offset >= text.length)
+        offset = offset == 0 ? 0 : offset - 1;
+    char ch = ' ';
+    if (offset > 0)
+	    ch = [text characterAtIndex: offset];
     while (offset > 0 && ![self istoken: ch]) {
         --offset;
         ch = [text characterAtIndex: offset];
     }
     
-    BOOL done = NO;
-    BOOL scanningNumber = NO;
-    BOOL scanningIdentifier = NO;
     while (!done && offset > 0) {
         if (scanningIdentifier || isalpha(ch)) {
             // We're scanning an identifier. Skip back to the first character that can be a part of
@@ -1111,6 +1266,42 @@
     if ([codeViewDelegate respondsToSelector: @selector(codeViewDidChangeSelection:)])
         [codeViewDelegate codeViewDidChangeSelection: self];
     [inputAccessoryView setContext: text selection: selectedRange];
+    if (selectedRange.location < text.length) {
+        selectionVisible = NO;
+    }
+}
+
+/*!
+ * Select the word at the current slection point.
+ */
+
+- (void) selectWord {
+    [self cursorOff];
+    
+    selectedRange.location = [self previousToken: (int) selectedRange.location];
+    selectedRange.length = (int) ([self endOfToken: (int) selectedRange.location] - selectedRange.location);
+
+    if (selectedRange.length == 0) {
+        if (selectedRange.location < text.length)
+            selectedRange.length = 1;
+        else if (selectedRange.location > 0) {
+            selectedRange.length = 1;
+            --selectedRange.location;
+        }
+    }
+    
+    if (selectedRange.length > 0) {
+        initialRange = selectedRange;
+        [self showEditMenu: [self firstRectForRange: selectedRange]];
+    }
+    
+    [self cursorOn];
+    
+    cursorColumn = -1;
+    [undoManager beginNewUndoGroup];
+    [self selectionChanged];
+    
+    [self setNeedsDisplay];
 }
 
 /*!
@@ -1129,6 +1320,34 @@
 }
 
 /*!
+ * The selection area has been changed. Should the view scroll to follow it?
+ *
+ * If scrolling is anabled and scrollAutomatically is YES, this method always returns YES.
+ *
+ * If scrolling is disabled, the method reurns NO.
+ *
+ * If scrollAutomatically is NO, the method returns YES only if the new selection point is visible when the last character 
+ * replacement began.
+ *
+ * The issue of whether the selection point is visible is a bit tricky, since multiple characters may arrive while scrolling
+ * occurs. This is handled by setting a variable selectionVisible to YES if the selection point is visible when characters 
+ * are added. This variable is not cleared, however, until the selection point is changed by something other than adding text 
+ * or until the view is maually scrolled.
+ *
+ * @return		YES of the view should scroll to see the selection, else NO.
+ */
+
+- (BOOL) shouldScroll {
+    BOOL result = YES;
+    if (!self.scrollEnabled)
+        result = NO;
+    else if (!scrollAutomatically) {
+        result = selectionVisible && selectedRange.location >= text.length;
+    }
+    return result;
+}
+
+/*!
  * Show the edit menu.
  *
  * @param r				The display rectangle where the menu will be shown.
@@ -1138,7 +1357,10 @@
     if (allowEditMenu) {
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         [menuController setTargetRect: r inView: self];
+        showingEditMenu = YES;
+        [self becomeFirstResponder];
         [menuController setMenuVisible: YES animated: NO];
+        showingEditMenu = NO;
     }
 }
 
@@ -1425,14 +1647,23 @@
             // If scrolling is enabled, we are not tracking a lollipop. Start a timer that will look at the 
             // touch location later to see if the touch moved.
             self.magnifierTouch = [touches anyObject];
+            if (magnifierTimer != nil) {
+                [magnifierTimer invalidate];
+                self.magnifierTimer = nil;
+            }
             self.magnifierTimer = [NSTimer scheduledTimerWithTimeInterval: MAGNIFIER_TIME 
                                                                    target: self 
                                                                  selector: @selector(trackMagnifier:) 
                                                                  userInfo: nil 
                                                                   repeats: NO];
         }
-    } else if (touches.count == 2)
+    } else if (touches.count == 2) {
+        if (magnifierTimer != nil) {
+            [magnifierTimer invalidate];
+            self.magnifierTimer = nil;
+        }
         [self startTrackingPinch: touches];
+	}
 }
 
 /*!
@@ -1472,104 +1703,98 @@
     UITouch *touch = [touches anyObject];
     if (touches.count == 1 && touch) {
         if ([touch tapCount] > 0 || magnifierView != nil) {
-            if ([self becomeFirstResponder]) {
-                int tapCount = ([touch tapCount] - 1)%3 + 1;
-                switch (tapCount) {
-                    case 1: {
-                        if ([self isTouchInLollipop: touch]) {
-                            // Single taps in a lollipop display the edit menu.
-                            CGPoint location = [touch locationInView: self];
-                            [self showEditMenu: CGRectMake(location.x, location.y, 5, 5)];
-                        } else {
-                            // Single taps place the insertion point at the tap location and cause us to 
-                            // becoem first responder.
-                            int location = (int) selectedRange.location;
-                            
-                            selectedRange.location = [self offsetFromLocation: [touch locationInView: self]];
-                            if (selectedRange.length > 0) {
-                                selectedRange.length = 0;
-                                [self setNeedsDisplay];
-                                [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
-                            } else {
-                                if (location == selectedRange.location && magnifierView == nil && !firstTap) {
-                                    [self showEditMenu: [self firstRectForRange: selectedRange]];
-                                } else {
-                                    [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
-                                }
-                            }
-                            
-                            cursorColumn = -1;
-                            [undoManager beginNewUndoGroup];
-                            [self selectionChanged];
-                        }
-                        break;
-                    }
-                        
-                    case 2: 
-                        // Double taps select a word.
-                        [self cursorOff];
-                        
-                        selectedRange.location = [self previousToken: [self offsetFromLocation: [touch locationInView: self]]];
-                        selectedRange.length = (int) ([self endOfToken: (int) selectedRange.location] - selectedRange.location);
-                        if (selectedRange.length == 0) {
-                            if (selectedRange.location < text.length)
-                                selectedRange.length = 1;
-                            else if (selectedRange.location > 0) {
-                                selectedRange.length = 1;
-                                --selectedRange.location;
-                            }
-                        }
-                        
-                        if (selectedRange.length > 0) {
-                            initialRange = selectedRange;
-                            [self showEditMenu: [self firstRectForRange: selectedRange]];
-                        }
-                        
-                        [self cursorOn];
-                        
-                        cursorColumn = -1;
-                        [undoManager beginNewUndoGroup];
-                        [self selectionChanged];
-                        
-                        [self setNeedsDisplay];
-                        break;
-                        
-                    case 3: 
-                        // Tripple taps select a line.
-                        [self cursorOff];
+            int tapCount = ([touch tapCount] - 1)%3 + 1;
+            switch (tapCount) {
+                case 1: {
+                    if ([self isTouchInLollipop: touch]) {
+                        // Single taps in a lollipop display the edit menu.
+                        CGPoint location = [touch locationInView: self];
+                        [self showEditMenu: CGRectMake(location.x, location.y, 5, 5)];
+                    } else {
+                        // Single taps place the insertion point at the tap location and cause us to 
+                        // becoem first responder.
+                        int location = (int) selectedRange.location;
                         
                         selectedRange.location = [self offsetFromLocation: [touch locationInView: self]];
-                        while (selectedRange.location > 0 && [text characterAtIndex: selectedRange.location - 1] != '\n') {
-                            --selectedRange.location;
-                            ++selectedRange.length;
-                        }
-                        while (selectedRange.location + selectedRange.length < text.length - 1 
-                               && [text characterAtIndex: selectedRange.location + selectedRange.length] != '\n') 
-                        {
-                            ++selectedRange.length;
-                        }
-                        
                         if (selectedRange.length > 0) {
-                            initialRange = selectedRange;
-                            [self showEditMenu: [self firstRectForRange: selectedRange]];
+                            selectedRange.length = 0;
+                            [self setNeedsDisplay];
+                            [self hideEditMenu];
+                        } else {
+                            if (location == selectedRange.location && magnifierView == nil && !firstTap) {
+                                [self showEditMenu: [self firstRectForRange: selectedRange]];
+                            } else {
+                                [self hideEditMenu];
+                            }
                         }
-                        
-                        [self cursorOn];
                         
                         cursorColumn = -1;
                         [undoManager beginNewUndoGroup];
                         [self selectionChanged];
-                        
-                        [self setNeedsDisplay];
-                        break;
+                    }
+                    break;
                 }
-                firstTap = NO;
+                    
+                case 2: 
+                    // Double taps select a word.
+                    selectedRange.location = [self offsetFromLocation: [touch locationInView: self]];
+                    selectedRange.length = 0;
+                    [self selectWord];
+                    
+                    // Cancel any magnifier timers.
+                    if (magnifierTimer != nil) {
+                        [magnifierTimer invalidate];
+                        self.magnifierTimer = nil;
+                    }
+                    break;
+                    
+                case 3: 
+                    // Cancel any magnifier timers.
+                    if (magnifierTimer != nil) {
+                        [magnifierTimer invalidate];
+                        self.magnifierTimer = nil;
+                    }
+                    
+                    // Tripple taps select a line.
+                    [self cursorOff];
+                    
+                    selectedRange.location = [self offsetFromLocation: [touch locationInView: self]];
+                    while (selectedRange.location > 0 && [text characterAtIndex: selectedRange.location - 1] != '\n') {
+                        --selectedRange.location;
+                        ++selectedRange.length;
+                    }
+                    while (selectedRange.location + selectedRange.length < text.length - 1 
+                           && [text characterAtIndex: selectedRange.location + selectedRange.length] != '\n') 
+                    {
+                        ++selectedRange.length;
+                    }
+                    
+                    if (selectedRange.length > 0) {
+                        initialRange = selectedRange;
+                        [self showEditMenu: [self firstRectForRange: selectedRange]];
+                    }
+                    
+                    [self cursorOn];
+                    
+                    cursorColumn = -1;
+                    [undoManager beginNewUndoGroup];
+                    [self selectionChanged];
+                    
+                    [self setNeedsDisplay];
+                    break;
             }
+            firstTap = NO;
         }
     }
     
+    if (trackingSelection) {
+    	trackingSelection = NO;
+
+        CGPoint location = [touch locationInView: self];
+        [self showEditMenu: CGRectMake(location.x, location.y, 5, 5)];
+    }
+
     self.scrollEnabled = YES;
-    trackingSelection = NO;
     trackingPinch = NO;
     
     if (magnifierTimer != nil) {
@@ -1595,6 +1820,9 @@
 - (void) touchesMoved: (NSSet *) touches withEvent: (UIEvent *) event {
     if (touches.count == 1) {
         if (trackingSelection) {
+            // Hide the edit menu.
+            [self hideEditMenu];
+            
             // Handle dragging lollipops (the ends of selection ranges).
             trackingTouchScroll = NO;
             [touchScrollTimer invalidate];
@@ -1627,7 +1855,7 @@
                 selectedRange.length = 0;
             [self cursorVisible];
             [self setNeedsDisplay];
-            [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+            [self hideEditMenu];
             [self selectionChanged];
         } else if (magnifierTimer != nil) {
             // See if the touch has moved far enough from the original for it to make sense to cancel the magnifier timer.
@@ -1666,7 +1894,7 @@
 - (void) setAllowEditMenu: (BOOL) theAllowEditMenu {
     allowEditMenu = theAllowEditMenu;
     if (!allowEditMenu)
-        [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+        [self hideEditMenu];
 }
 
 /*!
@@ -1680,6 +1908,7 @@
 
     NSDictionary *fontAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                     font, NSFontAttributeName, 
+                                    textColor == nil ? [UIColor blackColor] : textColor, NSForegroundColorAttributeName,
                                     nil];
     charWidth = [@"W" sizeWithAttributes: fontAttributes].width;
     
@@ -1713,12 +1942,34 @@
 }
 
 /*!
+ * Set max lines. Pass 0 to allow any number of lines.
+ *
+ * This also disables undo if maxLines is non-zero.
+ *
+ * @param value		The new maxLines value.
+ */
+
+- (void) setMaxLines: (int) value {
+    maxLines = value;
+    if (maxLines == 0)
+        [undoManager enableUndoRegistration];
+    else {
+        [undoManager removeAllActions];
+        [undoManager disableUndoRegistration];
+    }
+}
+
+/*!
  * Set the selection range.
  *
  * @param range		The new selection range.
  */
 
 - (void) setSelectedRange: (NSRange) range {
+    if (range.location > text.length)
+        range.location = text.length;
+    if (range.location + range.length > text.length)
+        range.length = text.length - range.location;
     [self setSelectedRangeNoUndoGroup: range];
     [undoManager beginNewUndoGroup];
     firstTap = YES;
@@ -1731,10 +1982,8 @@
  */
 
 - (void) setText: (NSString *) theText {
-    text = [theText stringByReplacingOccurrencesOfString: @"\r\n" withString: @"\n"];
-    text = [text stringByReplacingOccurrencesOfString: @"\r" withString: @"\n"];
-    self.lines = [text componentsSeparatedByCharactersInSet: [NSCharacterSet newlineCharacterSet]];
-    [self updateViewSize];
+    text = [self preprocessText: theText];
+    [self doLineBreaks];
     [self setNeedsDisplay];
     self.backgroundHighlights = [highlighter highlightBlocks: text];
     self.multilineHighlights = [highlighter multilineHighlights: text];
@@ -1790,9 +2039,10 @@
     // Set up the arrays used to track syntax highlighting.
     NSDictionary *defaultAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                        font, NSFontAttributeName, 
+                                       textColor == nil ? [UIColor blackColor] : textColor, NSForegroundColorAttributeName,
                                        nil];
     self.attributes = [NSMutableArray arrayWithObject: defaultAttributes];
-    self.colors = [NSMutableArray arrayWithObject: [UIColor blackColor]];
+    self.colors = [NSMutableArray arrayWithObject: textColor == nil ? [UIColor blackColor] : textColor];
     
     int highlightIndexSize = 0;
     for (int i = firstLine; i <= lastLine && lines.count > i; ++i)
@@ -1931,7 +2181,13 @@
     NSRange substringRange;
     substringRange.location = 0;
     substringRange.length = text.length;
-    [text getBytes: buffer maxLength: 2*text.length usedLength: nil encoding: NSUnicodeStringEncoding options: 0 range: substringRange remainingRange: nil];
+    [text getBytes: buffer 
+         maxLength: 2*text.length 
+        usedLength: nil 
+          encoding: NSUnicodeStringEncoding 
+           options: 0 
+             range: substringRange 
+    remainingRange: nil];
     
     int textLine = 0;
     int i = 0;
@@ -1960,7 +2216,13 @@
     substringRange.location = 0;
     substringRange.length = text.length;
     if (substringRange.length > 0) {
-        [text getBytes: buffer maxLength: 2*text.length usedLength: nil encoding: NSUnicodeStringEncoding options: 0 range: substringRange remainingRange: nil];
+        [text getBytes: buffer 
+             maxLength: 2*text.length 
+            usedLength: nil 
+              encoding: NSUnicodeStringEncoding 
+               options: 0 
+                 range: substringRange 
+        remainingRange: nil];
         
         int line = (int) (location.y/font.lineHeight);
         if (line < 0)
@@ -2003,14 +2265,20 @@
     NSRange substringRange;
     substringRange.location = 0;
     substringRange.length = text.length;
-    [text getBytes: buffer maxLength: 2*text.length usedLength: nil encoding: NSUnicodeStringEncoding options: 0 range: substringRange remainingRange: nil];
+    [text getBytes: buffer 
+         maxLength: 2*text.length 
+        usedLength: nil 
+          encoding: NSUnicodeStringEncoding 
+           options: 0 
+             range: substringRange 
+    remainingRange: nil];
     
     int offset = 0;
-    while (line && offset < substringRange.length - 1)
+    while (line && offset < substringRange.length)
         if (buffer[offset++] == '\n')
             --line;
     
-    while (column && offset < substringRange.length - 1)
+    while (column && offset < substringRange.length)
         if (buffer[offset] == '\n')
             break;
         else {
@@ -2079,45 +2347,47 @@
  */
 
 - (void) scrollRangeToVisible: (NSRange) range {
-    // Get the line/column for the range.
-    int line0, column0, line1, column1;
-    [self offsetsFromRange: range line0: &line0 offset0: &column0 line1: &line1 offset1: &column1];
-    
-    // Find the pixel offsets for the range.
-    float x0 = charWidth*column0;
-    float x1 = charWidth*column1;
-    float y0 = font.lineHeight*line0;
-    float y1 = font.lineHeight*line1;
-    
-    // Get the size for the display.
-    float width = self.bounds.size.width;
-    float height = self.bounds.size.height;
-    
-    // Find the offset for the end of the selction first. Finding the offset for the first part last
-    // gives visual preference to the selection start.
-    float offsetX = self.contentOffset.x;
-    if (x1 > offsetX + width - charWidth)
-        offsetX = x1 - width + charWidth;
-    else if (x1 < offsetX)
-        offsetX = x1 < charWidth ? x1 : x1 - charWidth;
-    if (x0 > offsetX + width - charWidth)
-        offsetX = x0 - width + charWidth;
-    else if (x0 < offsetX)
-        offsetX = x0 < charWidth ? x0 : x0 - charWidth;
-
-    float offsetY = self.contentOffset.y;
-    if (y1 > offsetY + height - font.lineHeight)
-        offsetY = y1 - height + font.lineHeight*2;
-    else if (y1 < offsetY)
-        offsetY = y1;
-    if (y0 > offsetY + height - font.lineHeight)
-        offsetY = y0 - height + font.lineHeight*2;
-    else if (y0 < offsetY)
-        offsetY = y0;
-    
-    // Update the screen location.
-    if (offsetX != self.contentOffset.x || offsetY != self.contentOffset.y)
-        [self setContentOffset: CGPointMake(offsetX, offsetY) animated: YES];
+    if ([self shouldScroll]) {
+        // Get the line/column for the range.
+        int line0, column0, line1, column1;
+        [self offsetsFromRange: range line0: &line0 offset0: &column0 line1: &line1 offset1: &column1];
+        
+        // Find the pixel offsets for the range.
+        float x0 = charWidth*column0;
+        float x1 = charWidth*column1;
+        float y0 = font.lineHeight*line0;
+        float y1 = font.lineHeight*line1;
+        
+        // Get the size for the display.
+        float width = self.bounds.size.width;
+        float height = self.bounds.size.height;
+        
+        // Find the offset for the end of the selction first. Finding the offset for the first part last
+        // gives visual preference to the selection start.
+        float offsetX = self.contentOffset.x;
+        if (x1 > offsetX + width - charWidth)
+            offsetX = x1 - width + charWidth;
+        else if (x1 < offsetX)
+            offsetX = x1 < charWidth ? x1 : x1 - charWidth;
+        if (x0 > offsetX + width - charWidth)
+            offsetX = x0 - width + charWidth;
+        else if (x0 < offsetX)
+            offsetX = x0 < charWidth ? x0 : x0 - charWidth;
+        
+        float offsetY = self.contentOffset.y;
+        if (y1 > offsetY + height - font.lineHeight)
+            offsetY = y1 - height + font.lineHeight*2;
+        else if (y1 < offsetY)
+            offsetY = y1;
+        if (y0 > offsetY + height - font.lineHeight)
+            offsetY = y0 - height + font.lineHeight*2;
+        else if (y0 < offsetY)
+            offsetY = y0;
+        
+        // Update the screen location.
+        if (offsetX != self.contentOffset.x || offsetY != self.contentOffset.y)
+            [self setContentOffset: CGPointMake(offsetX, offsetY) animated: YES];
+    }
 }
 
 /*!
@@ -2145,14 +2415,20 @@
         CodeRect *rect = [[CodeRect alloc] initWithX: x0 y: y0 width: x1 - x0 height: font.lineHeight];
         [localSelectionRects addObject: rect];
     } else if (line0 + 1 == line1) {
-        CodeRect *rect = [[CodeRect alloc] initWithX: x0 y: y0 width: self.self.contentSize.width - x0 height: font.lineHeight];
+        float width = self.self.contentSize.width - x0;
+        if (width == 0)
+            width = charWidth;
+        CodeRect *rect = [[CodeRect alloc] initWithX: x0 y: y0 width: width height: font.lineHeight];
         [localSelectionRects addObject: rect];
         if (offset1 > 0) {
             rect = [[CodeRect alloc] initWithX: 0 y: y0 + font.lineHeight width: x1 height: font.lineHeight];
             [localSelectionRects addObject: rect];
         }
     } else {
-        CodeRect *rect = [[CodeRect alloc] initWithX: x0 y: y0 width: self.self.contentSize.width - x0 height: font.lineHeight];
+        float width = self.self.contentSize.width - x0;
+        if (width == 0)
+            width = charWidth;
+        CodeRect *rect = [[CodeRect alloc] initWithX: x0 y: y0 width: width height: font.lineHeight];
         [localSelectionRects addObject: rect];
         CGFloat centerHeight = font.lineHeight*(line1 - line0 - 1);
         rect = [[CodeRect alloc] initWithX: 0 y: y0 + font.lineHeight width: self.self.contentSize.width height: centerHeight];
@@ -2179,7 +2455,7 @@
     if (self.isFirstResponder)
         return YES;
     
-    if (!editable)
+    if (!editable && !showingEditMenu)
         return NO;
     
     if ([super becomeFirstResponder]) {
@@ -2203,7 +2479,7 @@
  */
 
 - (BOOL) canBecomeFirstResponder {
-    return editable;
+    return editable || showingEditMenu;
 }
 
 /*!
@@ -2224,13 +2500,16 @@
 - (BOOL) canPerformAction: (SEL) action withSender: (id) sender {
     BOOL result = NO;
     if (action == @selector(cut:) 
-        || action == @selector(copy:) 
         || action == @selector(delete:)) 
     {
+        result = editable && selectedRange.length > 0;
+    } else if (action == @selector(copy:)) {
         result = selectedRange.length > 0;
+    } else if (action == @selector(select:)) {
+        result = selectedRange.length == 0;
     } else if (action == @selector(paste:)) {
         NSString *scrap = [UIPasteboard generalPasteboard].string;
-        result = scrap && scrap.length > 0;
+        result = editable && scrap && scrap.length > 0;
     } else if (action == @selector(selectAll:)) {
         result = text && text.length > 0;
     } else if (action == @selector(keyCommand:)) {
@@ -2263,7 +2542,6 @@
         if (![defaults boolForKey: @"code_completion_preference"])
             return nil;
 
-    
     if (!inputAccessoryView) {
         CGRect accessFrame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen] bounds].size.width, PREFERRED_ACCESSORY_HEIGHT);
         inputAccessoryView = [[BASICInputAccessoryView alloc] initWithFrame: accessFrame];
@@ -2279,6 +2557,8 @@
  * A responder object that supports hardware keyboard commands can redefine this property and use it to return an array 
  * of UIKeyCommand objects that it supports. Each key command object represents the keyboard sequence to recognize and 
  * the action method of the responder to call in response.
+ *
+ * @return		The key commands.
  */
 
 - (NSArray *) keyCommands {
@@ -2366,6 +2646,10 @@
  */
 
 - (void) deleteBackward {
+    // Check for a cursor at the end of the file.
+    BOOL localSelectionVisible = selectionVisible || [self isSelectionVisible];
+    
+    // Handle the deletion.
     [self cursorOff];
     NSRange undoRange = selectedRange;
     if (selectedRange.length == 0 && selectedRange.location > 0) {
@@ -2385,7 +2669,10 @@
 
     cursorColumn = -1;
 
-    [UIMenuController sharedMenuController].menuVisible = NO;
+    [self hideEditMenu];
+    
+    // Set the selection visible flag.
+    selectionVisible = localSelectionVisible;
     
     [self textChanged];
 }
@@ -2405,12 +2692,18 @@
  */
 
 - (void) insertText: (NSString *) theText {
+    // Check for a cursor at the end of the file.
+    BOOL localSelectionVisible = selectionVisible || [self isSelectionVisible];
+    
     // Make sure we should do the edit.
     BOOL allowChange = YES;
     if ([codeViewDelegate respondsToSelector: @selector(codeView:shouldChangeTextInRange:replacementText:)])
         allowChange = [codeViewDelegate codeView: self shouldChangeTextInRange: selectedRange replacementText: theText];
     
     if (allowChange) {
+        // Preprocess the characters.
+        theText = [self preprocessText: theText];
+        
         // Regsiter the action for undo.
         NSString *removedText = nil;
         if (selectedRange.length > 0)
@@ -2420,12 +2713,20 @@
         if ([codeViewDelegate respondsToSelector: @selector(codeViewTextChanged)])
             [codeViewDelegate codeViewTextChanged];
         
+        // See if we need to recompute lines.
+        NSRange range = [theText rangeOfString: @"\n"];
+        BOOL redoLines = range.location != NSNotFound;
+        if (!redoLines && selectedRange.length > 0) {
+            range = [self.text rangeOfString: @"\n" options: 0 range: selectedRange];
+            redoLines = range.location != NSNotFound;
+        }
+        
         // Insert the text.
         [self cursorOff];
         self.text = [text stringByReplacingCharactersInRange: selectedRange withString: theText];
-        selectedRange.length = 0;
+		selectedRange.length = 0;
         selectedRange.location += theText.length;
-
+        
         // Follow indents on returns.
         if (followIndentation 
             && theText.length > 0 
@@ -2448,6 +2749,10 @@
                     [self performSelector: @selector(insertText:) withObject: [line substringToIndex: whiteSpaceIndex] afterDelay: 0.02];
             }
         }
+        
+        // If needed, redo the line break calculations.
+        if (redoLines)
+            [self doLineBreaks];
 
         [self cursorOn];
         
@@ -2458,7 +2763,10 @@
         cursorColumn = -1;
         
         // Hide the edit menu.
-        [UIMenuController sharedMenuController].menuVisible = NO;
+        [self performSelectorOnMainThread: @selector(hideEditMenu) withObject: nil waitUntilDone: YES];
+        
+        // Set the selection visible flag.
+        selectionVisible = localSelectionVisible;
         
         [self textChanged];
     }
@@ -2487,9 +2795,21 @@
 
 - (void) scrollViewDidScroll: (UIScrollView *) scrollView {
     [self setNeedsDisplay];
-    [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+    [self hideEditMenu];
     if ([codeViewDelegate respondsToSelector: @selector(codeViewDidScroll:)])
         [codeViewDelegate codeViewDidScroll: self];
+}
+
+/*!
+ * Tells the delegate when the scroll view is about to start scrolling the content.
+ *
+ * The delegate might not receive this message until dragging has occurred over a small distance.
+ *
+ * @param scrollView	The scroll-view object that is about to scroll the content view.
+ */
+
+- (void) scrollViewWillBeginDragging: (UIScrollView *) scrollView {
+    selectionVisible = NO;
 }
 
 #pragma mark - UIResponderStandardEditActions
@@ -2504,7 +2824,7 @@
     if (selectedRange.length > 0) {
         NSString *scrap = [text substringWithRange: selectedRange];
         [[UIPasteboard generalPasteboard] setValue: scrap forPasteboardType: (NSString *) kUTTypeSourceCode];
-        [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+        [self hideEditMenu];
     }
 }
 
@@ -2515,11 +2835,11 @@
  */
 
 - (void) cut: (id) sender {
-    if (selectedRange.length > 0) {
+    if (selectedRange.length > 0 && editable) {
         NSString *scrap = [text substringWithRange: selectedRange];
         [[UIPasteboard generalPasteboard] setValue: scrap forPasteboardType: (NSString *) kUTTypeSourceCode];
         [self insertText: @""];
-        [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+        [self hideEditMenu];
     }
 }
 
@@ -2530,9 +2850,9 @@
  */
 
 - (void) delete: (id) sender {
-    if (selectedRange.length > 0) {
+    if (selectedRange.length > 0 && editable) {
         [self insertText: @""];
-        [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+        [self hideEditMenu];
     }
 }
 
@@ -2544,10 +2864,20 @@
 
 - (void) paste: (id) sender {
     NSString *scrap = [UIPasteboard generalPasteboard].string;
-    if (scrap && scrap.length > 0) {
+    if (scrap && scrap.length > 0 && editable) {
         [self insertText: scrap];
-        [[UIMenuController sharedMenuController] setMenuVisible: NO animated: YES];
+        [self hideEditMenu];
     }
+}
+
+/*!
+ * Select the current word.
+ *
+ * @param sender		The object calling this method.
+ */
+
+- (void) select: (id) sender {
+    [self selectWord];
 }
 
 /*!

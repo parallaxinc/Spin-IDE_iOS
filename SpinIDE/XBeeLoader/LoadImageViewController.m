@@ -75,7 +75,6 @@
  */
 
 - (void) loadPreferences {
-    // TODO: Add support for FTP binaries
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *preferenceIPAddress = [defaults stringForKey: @"ip_address_preference"];
     if (preferenceIPAddress != nil)

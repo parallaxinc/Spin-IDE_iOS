@@ -8,16 +8,18 @@
 
 #import "ProjectViewController.h"
 
+#include <pthread.h>
+
 #import "Common.h"
 #import "ConfigurationViewController.h"
 #import "ErrorViewController.h"
 #import "openspin.h"
 #import "PickerViewController.h"
 #import "SSZipArchive.h"
-#import "TerminalView.h"
 
 
 #define DEBUG_SPEW 0
+#define LED_TIME 0.1
 
 
 typedef enum {tagBAUDRate, tagBoardType, tagCompilerType, tagMemoryModel, tagOptimization} pickerTags;
@@ -26,25 +28,26 @@ typedef enum {alertDeleteFile, alertDeleteProject, alertWarning} alertTags;
 
 static ProjectViewController *this;						// This singleton instance of this class.
 
+// Semephore used to prevent isues when access occurs from multiple threads.
+static pthread_mutex_t mutex;
+static BOOL mutexInitialized = FALSE;
 
 // TODO: EPROM Support
 
 // TODO: Turn the loader into a library.
-
-// TODO: when a scan is unsuccessful, show an error dialog. Blank the IP address if nothing is found.
-// TODO: When Run is pressed, and no device is present, abort faster (or right away).
 // TODO: Sumbit iOS Changes to the Spin compiler as a repository branch.
 // TODO: Turn the loader into a library so it is easier to use in other iOS projects.
-// TODO: Software keyboard hides compiler options.
 
 @interface ProjectViewController () <UIPopoverControllerDelegate> {
     CGRect keyboardViewRect;							// View rectangle when the keyboard was shwn.
     BOOL keyboardVisible;								// Is the keyboard visible?
+    double rxExpires;									// The rime when the RX LED should be dimmed.
     int selectedBAUDPickerElementIndex;					// The index of the selected BAUD rate picker element.
     int selectedBoardTypePickerElementIndex;			// The index of the selected Board Type picker element.
     int selectedCompilerTypePickerElementIndex;			// The index of the selected Compiler Type picker element.
     int selectedMemoryModelPickerElementIndex;			// The index of the selected Memory Model picker element.
     int selectedOptimizationPickerElementIndex;			// The index of the selected Optimization picker element.
+    double txExpires;									// The rime when the TX LED should be dimmed.
 }
 
 @property (nonatomic, retain) UIAlertView *alert;		// The current alert.
@@ -58,6 +61,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @property (nonatomic, retain) NSArray *memoryModelPickerElements;
 @property (nonatomic, retain) NSArray *optimizationPickerElements;
 @property (nonatomic, retain) UIPopoverController *pickerPopoverController;
+@property (nonatomic, retain) NSTimer *rxTimer;			// The timer for the RX light..
+@property (nonatomic, retain) NSTimer *txTimer;			// The timer for the TX light..
 @property (nonatomic) TXBee *xBee;						// Information about the current device.
 @property (nonatomic, retain) UIPopoverController *xbeePopoverController;
 @property (nonatomic, retain) NSString *zip;			// The most recently zipped project.
@@ -93,6 +98,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize pickerPopoverController;
 @synthesize project;
 @synthesize projectOptionsView;
+@synthesize rxLed;
+@synthesize rxTimer;
 @synthesize simpleIDEOptionsView;
 @synthesize spinCompilerOptionsView;
 @synthesize spinCompilerOptionsTextField;
@@ -100,6 +107,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
 @synthesize spinOptionsView;
 @synthesize spinIDEOptionsView;
 @synthesize spinTerminalOptionsView;
+@synthesize txLed;
+@synthesize txTimer;
 @synthesize xBee;
 @synthesize xbeePopoverController;
 @synthesize zip;
@@ -439,6 +448,30 @@ static ProjectViewController *this;						// This singleton instance of this clas
 }
 
 /*!
+ * Check the LED timer to see if it is time to turn the indicator off.
+ *
+ * @param string		The characters received.
+ */
+
+- (void) checkLedTimer: (NSTimer *) timer {
+    [self getLock];
+    if (timer == rxTimer) {
+        if (CFAbsoluteTimeGetCurrent() > rxExpires) {
+            [rxTimer invalidate];
+            self.rxTimer = nil;
+            rxLed.image = [UIImage imageNamed: @"led_clear.png"];
+        }
+    } else if (timer == txTimer) {
+        if (CFAbsoluteTimeGetCurrent() > txExpires) {
+            [txTimer invalidate];
+            self.txTimer = nil;
+            txLed.image = [UIImage imageNamed: @"led_clear.png"];
+        }
+    }
+    pthread_mutex_unlock(&mutex);
+}
+
+/*!
  * Break a command line up into space delimited tokens.
  *
  * @param line		The command line to break up.
@@ -565,6 +598,18 @@ static ProjectViewController *this;						// This singleton instance of this clas
 }
 
 /*!
+ * Get a lock, creating the necessary tracking variable if needed.
+ */
+
+- (void) getLock {
+    if (!mutexInitialized) {
+        pthread_mutex_init(&mutex, NULL);
+        mutexInitialized = TRUE;
+    }
+    pthread_mutex_lock(&mutex);
+}
+
+/*!
  * Hide or show the linker option in optionsSegmentedControl.
  *
  * @param hide			YES to hide this option, or NO to show it.
@@ -629,7 +674,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     NSFileManager *manager = [NSFileManager defaultManager];
     NSError *error = nil;
     NSString *extension = [[[url absoluteString] pathExtension] lowercaseString];
-    if ([extension isEqualToString: @"pzip"] || [extension isEqualToString: @"spin"]) {
+    if ([extension isEqualToString: @"zipspin"] || [extension isEqualToString: @"spin"]) {
         // Find the name of the imported project.
         NSString *projectName = [[[url path] lastPathComponent] stringByDeletingPathExtension];
         
@@ -652,7 +697,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
         // Create the project folder.
         NSString *path = [[Common sandbox] stringByAppendingPathComponent: projectName];
         [manager createDirectoryAtPath: path withIntermediateDirectories: YES attributes: nil error: &error];
-        if ([extension isEqualToString: @"pzip"]) {
+        if ([extension isEqualToString: @"zipspin"]) {
             // Load the files in the project folder.
             if (error == nil) {
                 NSString *projectName = [[url absoluteString] lastPathComponent];
@@ -950,7 +995,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
     NSString *result = nil;
     
     if ([self build: YES]) {
-        NSString *zipPath = [project.path stringByAppendingPathComponent: [project.name stringByAppendingPathExtension: @"pzip"]];
+        NSString *zipPath = [project.path stringByAppendingPathComponent: [project.name stringByAppendingPathExtension: @"zipspin"]];
         fileList = [fileList arrayByAddingObject: project.sidePath];
         if ([SSZipArchive createZipFileAtPath: zipPath withFilesAtPaths: fileList]) {
             result = zipPath;
@@ -1145,23 +1190,21 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (void) keyboardWasShown: (NSNotification *) notification {
-    if ([compilerOptionsTextField isFirstResponder] || [linkerOptionsTextField isFirstResponder] || [spinCompilerOptionsTextField isFirstResponder]) {
-        NSDictionary *info = [notification userInfo];
-        CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    NSDictionary *info = [notification userInfo];
+    CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     
-        CGRect rect = self.view.frame;
-        if (keyboardVisible)
-            rect = keyboardViewRect;
-        else
-            keyboardViewRect = rect;
-        rect.size.height -= keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
-        self.view.frame = rect;
-        [UIView animateWithDuration: 0.1 animations: ^{
-            [self.view layoutIfNeeded];
-        }];
-        
-        keyboardVisible = YES;
-    }
+    CGRect rect = self.view.frame;
+    if (keyboardVisible)
+        rect = keyboardViewRect;
+    else
+        keyboardViewRect = rect;
+    rect.size.height -= keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
+    self.view.frame = rect;
+    [UIView animateWithDuration: 0.1 animations: ^{
+        [self.view layoutIfNeeded];
+    }];
+    
+    keyboardVisible = YES;
 }
 
 /*
@@ -1173,22 +1216,20 @@ static ProjectViewController *this;						// This singleton instance of this clas
  */
 
 - (void) keyboardWillBeHidden: (NSNotification *) notification {
-    if ([compilerOptionsTextField isFirstResponder] || [linkerOptionsTextField isFirstResponder] || [spinCompilerOptionsTextField isFirstResponder]) {
-        NSDictionary *info = [notification userInfo];
-        CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-        
-        CGRect rect = self.view.frame;
-        if (keyboardVisible)
-            rect = keyboardViewRect;
-        else
-            rect.size.height += keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
-        self.view.frame = rect;
-        [UIView animateWithDuration: 0.5 animations: ^{
-            [self.view layoutIfNeeded];
-        }];
-        
-        keyboardVisible = NO;
-    }
+    NSDictionary *info = [notification userInfo];
+    CGSize keyboardSize = [[info objectForKey: UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    CGRect rect = self.view.frame;
+    if (keyboardVisible)
+        rect = keyboardViewRect;
+    else
+        rect.size.height += keyboardSize.height < keyboardSize.width ? keyboardSize.height : keyboardSize.width;
+    self.view.frame = rect;
+    [UIView animateWithDuration: 0.5 animations: ^{
+        [self.view layoutIfNeeded];
+    }];
+    
+    keyboardVisible = NO;
 }
 
 /*!
@@ -1393,6 +1434,7 @@ static ProjectViewController *this;						// This singleton instance of this clas
 - (void) loadImageViewControllerLoadComplete {
     [loadImagePopoverController dismissPopoverAnimated: YES];
     self.loadImagePopoverController = nil;
+    [TerminalView defaultTerminalView].delegate = self;
     [[TerminalView defaultTerminalView] performSelectorInBackground: @selector(startTerminal:) withObject: xBee];
 }
 
@@ -1902,6 +1944,48 @@ static ProjectViewController *this;						// This singleton instance of this clas
                                   permittedArrowDirections: UIPopoverArrowDirectionUp
                                                   animated: YES];
     }
+}
+
+#pragma mark - TerminalViewDelegate
+
+/*!
+ * Characters were received from the device.
+ *
+ * @param string		The characters received.
+ */
+
+- (void) terminalViewCharactersReceived: (NSString *) string {
+    rxExpires = CFAbsoluteTimeGetCurrent() + LED_TIME;
+    [self getLock];
+    if (rxTimer == nil) {
+        rxLed.image = [UIImage imageNamed: @"led_red.png"];
+        rxTimer = [NSTimer scheduledTimerWithTimeInterval: LED_TIME/2 
+                                                   target: self 
+                                                 selector: @selector(checkLedTimer:) 
+                                                 userInfo: nil 
+                                                  repeats: YES];
+    }
+    pthread_mutex_unlock(&mutex);
+}
+
+/*!
+ * Characters were sent to the device.
+ *
+ * @param string		The characters sent.
+ */
+
+- (void) terminalViewCharactersSent: (NSString *) string {
+    txExpires = CFAbsoluteTimeGetCurrent() + LED_TIME;
+    [self getLock];
+    if (txTimer == nil) {
+        txLed.image = [UIImage imageNamed: @"led_red.png"];
+        txTimer = [NSTimer scheduledTimerWithTimeInterval: LED_TIME/2 
+                                                   target: self 
+                                                 selector: @selector(checkLedTimer:) 
+                                                 userInfo: nil 
+                                                  repeats: YES];
+    }
+    pthread_mutex_unlock(&mutex);
 }
 
 #pragma mark - UITableViewDataSource
