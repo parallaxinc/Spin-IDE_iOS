@@ -37,7 +37,7 @@
 @implementation LoadImageViewController
 
 @synthesize delegate;
-@synthesize eprom;
+@synthesize eeprom;
 @synthesize ipAddress;
 @synthesize ipAddressLabel;
 @synthesize nameLabel;
@@ -62,7 +62,7 @@
     
     NSError *error = nil;
     [loader load: binary
-           eprom: eprom
+          eeprom: eeprom
             xBee: xBee
     loadAttempts: maxLoads
            error: &error];
@@ -174,7 +174,7 @@
         self.xBee = [[TXBee alloc] init];
         xBee.ipAddr = ipAddress;
         xBee.ipPort = serialPort;
-        xBee.cfgChecksum = CHECKSUM_UNKNOWN;
+        xBee.cfgChecksum = VALUE_UNKNOWN;
         xBee.name = @"";
     }
 }

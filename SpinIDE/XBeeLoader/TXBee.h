@@ -10,9 +10,10 @@
 
 @interface TXBee : NSObject
 
-#define CHECKSUM_UNKNOWN (-1)				/* A checksum value for an unknown checksum. */
+#define VALUE_UNKNOWN (-1)				/* Unknown value; for checksum and firmware. */
 
 @property (nonatomic) int cfgChecksum;					// Configuration checksum
+@property (nonatomic) int firmwareVersion;				// The firmware version
 @property (nonatomic, retain) NSString *ipAddr;			// IP Address
 @property (nonatomic) int ipPort;						// IP Port. This is the port for general serial communication.
 @property (nonatomic, retain) NSString *name;			// The name of the device as returned by the XBee NI command.

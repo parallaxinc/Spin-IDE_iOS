@@ -11,8 +11,26 @@
 @implementation TXBee
 
 @synthesize cfgChecksum;
+@synthesize firmwareVersion;
 @synthesize ipAddr;
 @synthesize ipPort;
 @synthesize name;
+
+/*!
+ * Returns an initialized highlighter object for C.
+ *
+ * @return			The initialized object.
+ */
+
+- (id) init {
+    self = [super init];
+    
+    if (self) {
+        cfgChecksum = VALUE_UNKNOWN;
+        firmwareVersion = VALUE_UNKNOWN;
+    }
+    
+    return self;
+}
 
 @end

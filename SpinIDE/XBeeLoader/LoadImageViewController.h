@@ -61,7 +61,7 @@
 @interface LoadImageViewController : UIViewController <LoaderDelegate>
 
 @property (nonatomic, retain) id<LoadImageViewControllerDelegate> delegate;
-@property (nonatomic) BOOL eprom;									// Set to YES to load the file to EPROM, or leave as NO for RAM.
+@property (nonatomic) BOOL eeprom;									// Set to YES to load the file to EPROM, or leave as NO for RAM.
 @property (nonatomic, retain) IBOutlet UILabel *ipAddressLabel;
 @property (nonatomic, retain) IBOutlet UILabel *nameLabel;
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;

@@ -40,7 +40,7 @@
     float charWidth;											// The width of a character.
     int cursorColumn;											// The column index for the cursor for the most recent up or down arrow key, or -1 for other keys.
     int cursorState;											// A value form 0 to 2 indicating if the cursor is on or off. 0 is off.
-    BOOL selectionVisible;											// Was the end of file visible when text was inserted.
+    BOOL selectionVisible;										// Was the end of file visible when text was inserted.
     BOOL firstTap;												// Used to track the first tap at a new selection location.
     int repeatKeyStartCounter;									// A count down timer so the repeat key does not start too fast.
     BOOL showingEditMenu;										// Set to YES while showing an edit menu, this allows copy from a non-editable view.
@@ -50,6 +50,7 @@
     float keyboardWillShowDelta;								// The size of the keyboard when it was last shown.
     float pinchStartFontSize;									// The font size at the start of a pinch gensture.
     float pinchStartDistance;									// Separation distance in points at the start of a pinch gensture.
+    BOOL recursionProtection;									// Used to prevent recursion for first responder actions.
     CGPoint touchScrollLocation;								// The location of the most recent touch movement.
     BOOL trackingMagnifier;										// YES if we are currently tracking the magnifier.
     BOOL trackingPinch;											// YES if we are currently tracking a pinch operation, else NO.
@@ -77,8 +78,6 @@
 @property(nonatomic, retain) NSTimer *touchScrollTimer;			// Timer for repeating touch scroll events.
 
 @end
-
-// TODO: With the software keyboard, hold down the delete button. It should auto-repeat, but does not.
 
 @implementation CodeView
 
@@ -706,10 +705,14 @@
     float delta = fabs(frameBeginRect.origin.y - frameEndRect.origin.y);
     if (fabs(keyboardWillShowDelta - delta) == PREFERRED_ACCESSORY_HEIGHT && !hardwareKeyboard) {
         hardwareKeyboard = YES;
-        [self resignFirstResponder];
-        [self becomeFirstResponder];
-    }
-}
+            if (!recursionProtection) {
+                recursionProtection = YES;
+        		[self resignFirstResponder];
+        		[self becomeFirstResponder];
+                recursionProtection = NO;
+            }
+    	}
+	}
 }
 
 /*!
@@ -725,29 +728,37 @@
 
 - (void) keyboardWillShow: (NSNotification *) notification {
     if (self.isFirstResponder) {
-    NSDictionary *info = [notification userInfo];
-    
-    NSValue *keyboardFrameBegin = [info valueForKey: UIKeyboardFrameBeginUserInfoKey];
-    CGRect frameBeginRect;
-    [keyboardFrameBegin getValue: &frameBeginRect];
-    NSValue *keyboardFrameEnd = [info valueForKey: UIKeyboardFrameEndUserInfoKey];
-    CGRect frameEndRect;
-    [keyboardFrameEnd getValue: &frameEndRect];
-    
-    keyboardWillShowDelta = fabs(frameBeginRect.origin.y - frameEndRect.origin.y);
-    
-    if (keyboardWillShowDelta == PREFERRED_ACCESSORY_HEIGHT) {
-        if (!hardwareKeyboard) {
-            hardwareKeyboard = YES;
-            [self resignFirstResponder];
-            [self becomeFirstResponder];
-        }
-    } else if (hardwareKeyboard) {
-        hardwareKeyboard = NO;
-        [self resignFirstResponder];
-        [self becomeFirstResponder];
-    }
-}
+		NSDictionary *info = [notification userInfo];
+	
+		NSValue *keyboardFrameBegin = [info valueForKey: UIKeyboardFrameBeginUserInfoKey];
+		CGRect frameBeginRect;
+		[keyboardFrameBegin getValue: &frameBeginRect];
+		NSValue *keyboardFrameEnd = [info valueForKey: UIKeyboardFrameEndUserInfoKey];
+		CGRect frameEndRect;
+		[keyboardFrameEnd getValue: &frameEndRect];
+	
+		keyboardWillShowDelta = fabs(frameBeginRect.origin.y - frameEndRect.origin.y);
+	
+		if (keyboardWillShowDelta == PREFERRED_ACCESSORY_HEIGHT) {
+			if (!hardwareKeyboard) {
+				hardwareKeyboard = YES;
+				if (!recursionProtection) {
+					recursionProtection = YES;
+					[self resignFirstResponder];
+					[self becomeFirstResponder];
+					recursionProtection = NO;
+				}
+			}
+		} else if (hardwareKeyboard) {
+			hardwareKeyboard = NO;
+			if (!recursionProtection) {
+				recursionProtection = YES;
+				[self resignFirstResponder];
+				[self becomeFirstResponder];
+				recursionProtection = NO;
+			}
+		}
+	}
 }
 
 /*!

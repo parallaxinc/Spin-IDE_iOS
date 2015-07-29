@@ -10,6 +10,7 @@
 
 #include <ifaddrs.h>
 #include <arpa/inet.h>
+#include <net/if.h>
 
 @implementation Common
 
@@ -54,136 +55,79 @@
 }
 
 /*!
- * Get the local IP address of this iOS device on the connected network. This can be used as the base address
- * for scanning the network for XBee devices.
+ * Get the local IP address of this device on the connected network. This can be used as the base address
+ * for scanning the network for XBee devices. It multiple connections exist, preference is given to iPv4 
+ * WiFi networks.
  *
- * @return		The IP address for this iOS device on the local network.
+ * @return		The IP address for this device on the local network.
  */
 
+#define IOS_CELLULAR    @"pdp_ip0"
+#define IOS_WIFI        @"en0"
+#define IOS_VPN         @"utun0"
+#define IP_ADDR_IPv4    @"ipv4"
+#define IP_ADDR_IPv6    @"ipv6"
+
 + (NSString *) getIPAddress {
-    NSString *address = @"error";
-    struct ifaddrs *interfaces = NULL;
-    struct ifaddrs *temp_addr = NULL;
-    int success = 0;
+    NSArray *searchArray = @[IOS_VPN @"/" IP_ADDR_IPv4, IOS_VPN @"/" IP_ADDR_IPv6, IOS_WIFI @"/" IP_ADDR_IPv4, IOS_WIFI @"/" IP_ADDR_IPv6, IOS_CELLULAR @"/" IP_ADDR_IPv4, IOS_CELLULAR @"/" IP_ADDR_IPv6 ];
+    
+    NSDictionary *addresses = [Common getIPAddresses];
+    
+    __block NSString *address;
+    [searchArray enumerateObjectsUsingBlock: ^(NSString *key, NSUInteger idx, BOOL *stop) {
+         address = addresses[key];
+         if (address) 
+             *stop = YES;
+     }];
+    return address ? address : @"0.0.0.0";
+}
+
+/*!
+ * Get the local IP addresses of this device on the connected network. There may be more than one, so the result
+ * is an array.
+ *
+ * @return		The IP addresses for this device on the local network.
+ */
+
++ (NSDictionary *) getIPAddresses {
+    NSMutableDictionary *addresses = [NSMutableDictionary dictionaryWithCapacity: 8];
     
     // Retrieve the current interfaces - returns 0 on success.
-    success = getifaddrs(&interfaces);
-    if (success == 0) {
+    struct ifaddrs *interfaces;
+    if (!getifaddrs(&interfaces)) {
         // Loop through linked list of interfaces.
-        temp_addr = interfaces;
-        while (temp_addr != NULL) {
-            if (temp_addr->ifa_addr->sa_family == AF_INET) {
-                // Check if interface is en0 which is the wifi connection on the iPhone.
-                if ([[NSString stringWithUTF8String: temp_addr->ifa_name] isEqualToString: @"en0"]) {
-                    // Get NSString from C String
-                    address = [NSString stringWithUTF8String: inet_ntoa(((struct sockaddr_in *) temp_addr->ifa_addr)->sin_addr)];
+        struct ifaddrs *interface;
+        for (interface = interfaces; interface; interface = interface->ifa_next) {
+            if (!(interface->ifa_flags & IFF_UP) /* || (interface->ifa_flags & IFF_LOOPBACK) */ ) {
+                continue; // deeply nested code harder to read
+            }
+            const struct sockaddr_in *addr = (const struct sockaddr_in *) interface->ifa_addr;
+            char addrBuf[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
+            if (addr && (addr->sin_family == AF_INET || addr->sin_family == AF_INET6)) {
+                NSString *name = [NSString stringWithUTF8String: interface->ifa_name];
+                NSString *type;
+                if (addr->sin_family == AF_INET) {
+                    if (inet_ntop(AF_INET, &addr->sin_addr, addrBuf, INET_ADDRSTRLEN)) {
+                        type = IP_ADDR_IPv4;
+                    }
+                } else {
+                    const struct sockaddr_in6 *addr6 = (const struct sockaddr_in6 *) interface->ifa_addr;
+                    if (inet_ntop(AF_INET6, &addr6->sin6_addr, addrBuf, INET6_ADDRSTRLEN)) {
+                        type = IP_ADDR_IPv6;
+                    }
+                }
+                if (type) {
+                    NSString *key = [NSString stringWithFormat: @"%@/%@", name, type];
+                    addresses[key] = [NSString stringWithUTF8String: addrBuf];
                 }
             }
-            
-            temp_addr = temp_addr->ifa_next;
         }
+        
+        // Free memory
+        freeifaddrs(interfaces);
     }
-    
-    // Free memory
-    freeifaddrs(interfaces);
-    
-    return address;
+    return [addresses count] ? addresses : nil;
 }
-// TODO: Dennis suggests this in an email of 9 Apr 15:
-//- (NSString *)getLocalIPAddress
-//{
-//    NSArray *ipAddresses = [[NSHost currentHost] addresses];
-//    NSArray *sortedIPAddresses = [ipAddresses sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-//    
-//    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-//    numberFormatter.allowsFloats = NO;
-//    
-//    for (NSString *potentialIPAddress in sortedIPAddresses)
-//    {
-//        if ([potentialIPAddress isEqualToString:@"127.0.0.1"]) {
-//            continue;
-//        }
-//        
-//        NSArray *ipParts = [potentialIPAddress componentsSeparatedByString:@"."];
-//        
-//        BOOL isMatch = YES;
-//        
-//        for (NSString *ipPart in ipParts) {
-//            if (![numberFormatter numberFromString:ipPart]) {
-//                isMatch = NO;
-//                break;
-//            }
-//        }
-//        if (isMatch) {
-//            return potentialIPAddress;
-//        }
-//    }
-//    
-//    // No IP found
-//    return @"?.?.?.?";
-//}
-
-// TODO: This method needs to move to the loader library, so move it out of Common.m.
-
-// TODO: New suggestion from Dennis:
-
-//- (NSString *) getIPAddress {
-//    
-//    SCDynamicStoreRef storeRef = SCDynamicStoreCreate(NULL, (CFStringRef)@"FindCurrentInterfaceIpMac", NULL, NULL);
-//    CFPropertyListRef global = SCDynamicStoreCopyValue (storeRef,CFSTR("State:/Network/Interface"));
-//    id primaryInterface = [(__bridge NSDictionary *)global valueForKey:@"Interfaces"];
-//    NSString *ip;
-//    
-//    for (NSString* item in primaryInterface)
-//    {
-//        
-//        if([self getTheAddress: (char *)[item UTF8String]])
-//        {
-//            ip = [NSString stringWithUTF8String:[self getTheAddress: (char *)[item UTF8String]]];
-//            NSLog(@"interface: %@ - %@",item,ip);
-//        } else
-//            NSLog(@"interface: %@",item);
-//    }
-//    return ip;
-//}
-//
-//- (char *) getTheAddress:(char *) interface {
-//    int sock;
-//    uint32_t ip;
-//    struct ifreq ifr;
-//    char *val;
-//    
-//    if (!interface)
-//        return NULL;
-//    
-//    /* determine UDN according to MAC address */
-//    sock = socket (AF_INET, SOCK_STREAM, 0);
-//    if (sock < 0)
-//    {
-//        perror ("socket");
-//        return NULL;
-//    }
-//    
-//    strcpy (ifr.ifr_name, interface);
-//    ifr.ifr_addr.sa_family = AF_INET;
-//    
-//    if (ioctl (sock, SIOCGIFADDR, &ifr) < 0)
-//    {
-//        perror ("ioctl");
-//        close (sock);
-//        return NULL;
-//    }
-//    
-//    val = (char *) malloc (16 * sizeof (char));
-//    ip = ((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr.s_addr;
-//    ip = ntohl (ip);
-//    sprintf (val, "%d.%d.%d.%d",
-//             (ip >> 24) & 0xFF, (ip >> 16) & 0xFF, (ip >> 8) & 0xFF, ip & 0xFF);
-//    
-//    close (sock);
-//    
-//    return val;
-//}
 
 /*!
  * Get the value for the hide files preference.

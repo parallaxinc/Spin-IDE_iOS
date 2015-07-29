@@ -126,9 +126,10 @@
  * Passes the user's request to run the current project to the delegate.
  *
  * @param sender		The UI component that triggered this call. Used to position the popover.
+ * @param eeprom		YES to burn the project to EEPROM, else NO.
  */
 
-- (void) detailViewControllerRunProject: (UIView *) sender;
+- (void) detailViewControllerRunProject: (UIView *) sender eeprom: (BOOL) eeprom;
 
 /*!
  * Seelct an XBee device.

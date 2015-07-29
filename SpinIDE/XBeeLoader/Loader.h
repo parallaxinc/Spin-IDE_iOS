@@ -122,7 +122,7 @@ xbCommand;
 + (Loader *) defaultLoader;
 - (NSString *) getDeviceName: (TXBee *) xBee;
 - (void) load: (NSString *) binary
-        eprom: (BOOL) eprom
+       eeprom: (BOOL) eeprom
          xBee: (TXBee *) xBee
  loadAttempts: (int) loadAttempts
         error: (NSError **) error;

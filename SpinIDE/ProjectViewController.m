@@ -32,11 +32,8 @@ static ProjectViewController *this;						// This singleton instance of this clas
 static pthread_mutex_t mutex;
 static BOOL mutexInitialized = FALSE;
 
-// TODO: EPROM Support
-
 // TODO: Turn the loader into a library.
 // TODO: Sumbit iOS Changes to the Spin compiler as a repository branch.
-// TODO: Turn the loader into a library so it is easier to use in other iOS projects.
 
 @interface ProjectViewController () <UIPopoverControllerDelegate> {
     CGRect keyboardViewRect;							// View rectangle when the keyboard was shwn.
@@ -568,9 +565,9 @@ static BOOL mutexInitialized = FALSE;
         [[DetailViewController defaultDetailViewController] removeProject: project.name];
 
         // Reset the UI for no project.
-        // TODO: Only wipe the currently open file if it was in the project.
         DetailViewController *detailViewController = [DetailViewController defaultDetailViewController];
-        [detailViewController.sourceConsoleSplitView.sourceView setSource: @"" forPath: nil];
+        if ([detailViewController.sourceConsoleSplitView.sourceView.path hasPrefix: project.path])
+	        [detailViewController.sourceConsoleSplitView.sourceView setSource: @"" forPath: nil];
         
         project.files = nil;
         project.name = nil;
@@ -1882,15 +1879,17 @@ static BOOL mutexInitialized = FALSE;
  * Passes the user's request to run the current project to the delegate.
  *
  * @param sender		The UI component that triggered this call. Used to position the popover.
+ * @param eeprom		YES to burn the project to EEPROM, else NO.
  */
 
-- (void) detailViewControllerRunProject: (UIView *) sender {
+- (void) detailViewControllerRunProject: (UIView *) sender eeprom: (BOOL) eeprom {
     if (loadImagePopoverController == nil && xbeePopoverController == nil)
         if ([self build: NO]) {
             // Create the controller and add the root controller.
             LoadImageViewController *loadImageController = [[LoadImageViewController alloc] initWithNibName: @"LoadImageViewController"
                                                                                                      bundle: nil];
             loadImageController.delegate = self;
+            loadImageController.eeprom = eeprom;
             
             // Create the popover.
             UIPopoverController *loadImagePopover = [[NSClassFromString(@"UIPopoverController") alloc]

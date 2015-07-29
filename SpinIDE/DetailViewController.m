@@ -47,7 +47,7 @@ static DetailViewController *this;						// This singleton instance of this class
 @property (nonatomic, retain) UIButton *acopyFileButton;
 @property (nonatomic, retain) UIButton *deleteFileButton;
 @property (nonatomic, retain) UIButton *deleteProjectButton;
-@property (nonatomic, retain) UIButton *epromButton;
+@property (nonatomic, retain) UIButton *eepromButton;
 @property (nonatomic, retain) UIButton *findButton;
 @property (nonatomic, retain) UIButton *anewFileButton;
 @property (nonatomic, retain) UIButton *redoButton;
@@ -76,7 +76,7 @@ static DetailViewController *this;						// This singleton instance of this class
 @synthesize acopyFileButton;
 @synthesize deleteFileButton;
 @synthesize deleteProjectButton;
-@synthesize epromButton;
+@synthesize eepromButton;
 @synthesize findButton;
 @synthesize anewFileButton;
 @synthesize redoButton;
@@ -473,7 +473,7 @@ static DetailViewController *this;						// This singleton instance of this class
         x += space;
         self.runButton = [self addButtonWithImageNamed: @"run.png" x: &x action: @selector(runProjectAction)];
         x += space;
-        self.epromButton = [self addButtonWithImageNamed: @"eeprom.png" x: &x action: @selector(runProjectAction)]; // TODO: Implement
+        self.eepromButton = [self addButtonWithImageNamed: @"eeprom.png" x: &x action: @selector(eepromProjectAction)];
     } else {
         [self addButtonWithImageNamed: @"build-closed.png" x: &x action: @selector(showHideBuildButtonsAction)];
     }
@@ -666,6 +666,15 @@ static DetailViewController *this;						// This singleton instance of this class
 }
 
 /*!
+ * Handle a hit on the EEprom Project button.
+ */
+
+- (void) eepromProjectAction {
+    if ([delegate respondsToSelector: @selector(detailViewControllerRunProject:eeprom:)])
+        [delegate detailViewControllerRunProject: eepromButton eeprom: YES];
+}
+
+/*!
  * Handle a hit on the Open Project button.
  *
  * @param sender		The button that triggered this action.
@@ -769,8 +778,8 @@ static DetailViewController *this;						// This singleton instance of this class
  */
 
 - (void) runProjectAction {
-    if ([delegate respondsToSelector: @selector(detailViewControllerRunProject:)])
-        [delegate detailViewControllerRunProject: runButton];
+    if ([delegate respondsToSelector: @selector(detailViewControllerRunProject:eeprom:)])
+        [delegate detailViewControllerRunProject: runButton eeprom: NO];
 }
 
 /*!
