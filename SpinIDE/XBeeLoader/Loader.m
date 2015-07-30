@@ -17,6 +17,7 @@
 #import "UDPDataBuffer.h"
 
 #define DEBUG_ME (0)
+#define PACKET_DUMP (0)
 
 #define CLOCK_MODE_INDEX (4)				/* The default clock mode index. Unused for now; may be set later by a user control. */
 #define CLOCK_SPEED (80000000)				/* The clock speed. */
@@ -424,6 +425,33 @@ typedef struct {
     }
     return this;
 }
+
+/*!
+ * Dumps a data packet in binary format.
+ *
+ * This is used for debuggong transmissions to and from the XBee. Set PACKET_DUMP to 1 to include this method in the
+ * build, or to 0 to eliminate it.
+ *
+ * @param packet	The packet to dump.
+ * @param title		A string identifying the packet being dumped. Pass nil if no title is needed.
+ */
+
+#if PACKET_DUMP
+- (void) dump: (NSData *) packet title: (NSString *) title {
+    if (title)
+        printf("%s", [title UTF8String]);
+    if (packet == nil)
+        printf("\nnil packet\n");
+    else {
+        for (int i = 0; i < packet.length; ++i) {
+            if (i%16 == 0)
+                printf("\n%04X:", i);
+            printf(" %02X", ((UInt8 *) packet.bytes)[i]);
+        }
+        printf("\n");
+    }
+}
+#endif
 
 /*!
  * Returns serial timeout adjusted for recent communication delays; minimum MinSerTimeout s, maximum SerTimeout s.
@@ -971,6 +999,9 @@ typedef struct {
         if (!err && !cancelling) {
             // Send initial packet and wait for 200 ms (reset period) + serial transfer time + 20 ms (to position timing templates)
             [self setStateInDelegate: @"Sending initial packet."];
+#if PACKET_DUMP
+            [self dump: txBuff title: @"Initial packet: (via sendUDP)"];
+#endif
             if ([self sendUDP: txBuff useAppService: YES autoRetry: NO err: &err])
                 [NSThread sleepForTimeInterval: (200 + txBuff.length*10.0*1000.0/INITIL_BAUD + 20)/1000.0];
         }
@@ -984,6 +1015,10 @@ typedef struct {
             free(txBytes);
             if ([self sendUDP: txData useAppService: YES autoRetry: NO err: &err])
                 [NSThread sleepForTimeInterval: txData.length*10.0/INITIL_BAUD];
+#if PACKET_DUMP
+            // Time critical--do not dump.
+            printf("\nSending timing template (%d bytes of 0xF9)\n", MAX_DATA_SIZE);
+#endif
 
             // Flush receive buffer and get handshake response. This loops if a response was incorrect, flushing the buffer 
             // of junk responses from a noisy connection.
@@ -991,6 +1026,10 @@ typedef struct {
                 do {
                     // Get the UDP response.
                     if ([self receiveUDP: &rxBuff timeout: SER_TIMEOUT]) {
+#if PACKET_DUMP
+                        // Time critical--do not dump.
+                        printf("\nReceived hardware version packet of %d bytes.\n", rxBuff.length);
+#endif
                         if (rxBuff.length == 129) {
                             for (int i = 0; i < 124; ++i)
                                 if (((UInt8 *) rxBuff.bytes)[i] != rxHandshake[i])
@@ -1014,6 +1053,9 @@ typedef struct {
                     err = [self getError: 7];
                 else if (((UInt8 *) rxBuff.bytes)[0] != 0x00FE)
                     err = [self getError: 8];
+#if PACKET_DUMP
+                [self dump: rxBuff title: @"\nChecksum response (via receiveUDP):"];
+#endif
 
                 // Notify delegates of any error.
                 if (err && [delegate respondsToSelector: @selector(checksumFailure)])
@@ -1023,6 +1065,9 @@ typedef struct {
         
         if (!err && !cancelling) {
             acknowledged = [self receiveUDP: &rxBuff timeout: [self dynamicSerTimeout]];
+#if PACKET_DUMP
+            [self dump: rxBuff title: @"\nHandshake response (via receiveUDP):"];
+#endif
             if (!acknowledged || rxBuff.length != 8)
                 err = [self getError: 9];
         }
@@ -1050,6 +1095,9 @@ typedef struct {
                 memcpy(byteBuff + 8, ((UInt8 *) fileBytes.bytes) + offset, txBuffLength - 8);
                 
                 // Transmit packet (retransmit as necessary)
+#if PACKET_DUMP
+                printf("\nSend packet with packet ID %d (via transmitPacket):", packetID);
+#endif
                 int response = [self transmitPacket: byteBuff length: txBuffLength err: &err];
                 if (response != packetID - 1)
                     err = [self getError: 11];
@@ -1069,6 +1117,9 @@ typedef struct {
             [self setStateInDelegate: @"Verifying RAM."];
             packetID = 0;
             [self generateLoaderPacket: ltVerifyRAM packetID: packetID];
+#if PACKET_DUMP
+            printf("\nSend ltVerifyRAM with packet ID %d (via transmitPacket):", packetID);
+#endif
             int checksumID = [self transmitPacket: (UInt8 *) txBuff.bytes length: (int) txBuff.length err: &err];
             if (checksumID != -checksum)
                 err = [self getError: 12];
@@ -1083,6 +1134,9 @@ typedef struct {
             
             // Send Program/Verify EEPROM command.
             [self generateLoaderPacket: ltProgramEEPROM packetID: packetID];
+#if PACKET_DUMP
+            printf("\nSend ltProgramEEPROM (via transmitPacket):");
+#endif
             if ([self transmitPacket: (UInt8 *) txBuff.bytes 
                               length: (int) txBuff.length 
                       ignoreResponse: FALSE 
@@ -1090,15 +1144,17 @@ typedef struct {
                                  err: &err] != -checksum*2) 
             {
                 err = [self getError: 15];
-                packetID = -checksum*2;
             }
+            packetID = -checksum*2;
         }
 
         // Send verified/launch command.
         if (!err && !cancelling) {
             [self generateLoaderPacket: ltReadyToLaunch packetID: packetID];
-            int expected = eeprom ? packetID*2 : packetID-1;
-            if ([self transmitPacket: (UInt8 *) txBuff.bytes length: (int) txBuff.length err: &err] != expected)
+#if PACKET_DUMP
+            printf("\nSend ltReadyToLaunch with packet ID %d (via transmitPacket):", packetID);
+#endif
+            if ([self transmitPacket: (UInt8 *) txBuff.bytes length: (int) txBuff.length err: &err] != packetID-1)
                 err = [self getError: 13];
             --packetID;
         }
@@ -1108,6 +1164,9 @@ typedef struct {
             [self setStateInDelegate: @"Send launch command."];
             [self generateLoaderPacket: ltLaunchNow packetID: packetID];
             // Transmit last packet (Launch step 2) only once (no retransmission); ignoring any response.
+#if PACKET_DUMP
+            printf("\nSend ltLaunchNow with packet ID %d (via transmitPacket):", packetID);
+#endif
             [self transmitPacket: (UInt8 *) txBuff.bytes 
                           length: (int) txBuff.length 
                   ignoreResponse: YES 
@@ -1340,6 +1399,9 @@ typedef struct {
         
         // (Re)transmit packet.
         txBuff = [NSData dataWithBytes: packet length: length];
+#if PACKET_DUMP
+        [self dump: txBuff title: nil];
+#endif
         [self sendUDP: txBuff useAppService: NO autoRetry: NO err: &localErr];
         
         // Determine proper timeout; dynamic (typical) or extended custom (rare).
@@ -1373,6 +1435,9 @@ typedef struct {
             *err = [self getError: 14];
     }
     
+#if PACKET_DUMP
+    printf("transmitPacket response: %d\n", ignoreResponse ? 0 : rxPacketID);
+#endif
     return ignoreResponse ? 0 : rxPacketID;
 }
 
@@ -1794,6 +1859,9 @@ typedef struct {
     txPacketPtr packet = [self prepareAppBuffer: xbIPAddr tParamValueSize: 0 needReply: YES];
     NSData *dataPacket = [[NSData alloc] initWithBytes: packet length: sizeof(txPacket)];
     free(packet);
+#if PACKET_DUMP
+    [self dump: dataPacket title: @"\nSending scan command."];
+#endif
     [udpSocket sendData: dataPacket toHost: subnet port: commandPort withTimeout: 0.1 tag: 3];
     
     // Wait for replies for 1 second.
@@ -1804,6 +1872,9 @@ typedef struct {
         double udpTime;
         
         if ([udpStack pull: &udpPacket udpAddress: &udpAddress udpTime: &udpTime]) {
+#if PACKET_DUMP
+            [self dump: udpPacket title: @"\nScan response."];
+#endif
             if (udpPacket) {
                 UInt8 *bytes = (UInt8 *) udpPacket.bytes;
                 if (udpPacket.length == 16 && bytes[9] == 'M' && bytes[10] == 'Y' && bytes[11] == 0) {
